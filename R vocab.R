@@ -2,12 +2,12 @@
 # R VOCABULARY 
 # __________________________________________________________________
 
-library("dplyr", lib="H:/R packages")
-library("reshape2", lib="H:/R packages")
-library("lazyeval", lib="H:/R packages")
-library("ggplot2",  lib="H:/R packages")
-library("labeling",  lib="H:/R packages")
-library("lubridate",  lib="H:/R packages")
+library("dplyr")
+library("reshape2")
+library("lazyeval")
+library("ggplot2")
+library("labeling")
+library("lubridate")
 
 
 # help(package="base")
