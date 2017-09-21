@@ -25,6 +25,12 @@ library("lubridate")
 (unname(unlist(l)))  # returns numeric vector; also try: unlist(l) %>% unname  
 
 
+# flattening a list of dates does weird stuff: 
+datelist = as.list(c(ymd("2017-01-01"), ymd("2017-01-01")))
+unlist(datelist)  # not good 
+do.call("c", datelist)  # this is good 
+
+
 # rep and seq: --------------------
 rep(letters[1:3], times=2)  # same as rep(letters[1:3], 2)
 rep(letters[1:3], each=2)
@@ -702,6 +708,7 @@ countOs("Markov chains were introduced by Andrei Andreevich Markov (1856-1922) a
 # note how the function "countOs" promotes modularity and abstraction in the code: it is completely self-contained, so it doesn't need to refer to a function or object defined anywhere else, so you can use it in any environment. Just give it the input it expects and it will give you the output you expect. This is how you keep code from getting ridiculously complicated and interconnected. 
 
 gsub("g", "Goose", letters)
+gsub("g", NA, letters)
 
 strings <- c("foo", "foo", "bar", "foo", "qux")
 sub("foo", "yib", strings) 
