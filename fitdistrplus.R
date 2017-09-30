@@ -87,17 +87,19 @@ str(ed.start.times)
 ed.start.times$starttime
 
 interarrival <- diff(ed.start.times$starttime) %>% as.numeric
-str(interarrival)
+interarrival.scaled <- interarrival + 0.001  
+# above: 0 values are causing problems, so we rescale.
+str(interarrival.scaled)
 
 
 # plotting with plotdist() --------
-plotdist(interarrival, 
+plotdist(interarrival.scaled, 
          histo=TRUE, 
          demp=TRUE)
 
 # description with descdist() ----------
-descdist(interarrival)  # suggests gamma, exp and beta are possibilities  
-descdist(interarrival, 
+descdist(interarrival.scaled)  # suggests gamma, exp and beta are possibilities  
+descdist(interarrival.scaled, 
          boot=1000)  # suggests beta is most likely?? 
 
 
@@ -117,9 +119,6 @@ summary(fexp)
 #                  "beta")  
 # weird error. see https://stackoverflow.com/questions/44507568/error-when-fitting-a-beta-distribution-the-function-mle-failed-to-estimate-the 
 
-interarrival.scaled <- (interarrival - min(interarrival) + 
-                              0.001) / (max(interarrival) - 
-                                              min(interarrival) + 0.002)
 fbeta <- fitdist(interarrival.scaled,
                  "beta")
 summary(fbeta)
