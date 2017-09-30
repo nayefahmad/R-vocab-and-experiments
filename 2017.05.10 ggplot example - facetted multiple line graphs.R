@@ -1,12 +1,10 @@
-library("RODBC", lib="H:/R packages")
-library("ggplot2", lib="H:/R packages")
-library("labeling", lib="H:/R packages")
-library("digest", lib="H:/R packages")
-library("reshape2", lib="H:/R packages")
-library("magrittr", lib="H:/R packages")
-require("reshape2", lib="H:/R packages")
-require("dplyr", lib="H:/R packages")
-require("lazyeval", lib="H:/R packages")
+
+
+library("ggplot2")
+library("reshape2")
+library("magrittr")
+require("reshape2")
+require("dplyr")
 
 # rm(list=ls())
 
@@ -47,9 +45,14 @@ alldf.m <- melt(alldf, id.vars = c("fn", "ID"))
 str(alldf.m); alldf.m
 
 # CREATE PLOT: -----------------------------------
-p1 <- ggplot(data=alldf.m, aes(x=variable, y = value, colour = ID, group = ID)) + 
-      geom_line() + facet_wrap(~fn)
-p1 
+p1 <- ggplot(data=alldf.m, 
+             aes(x=variable, 
+                 y = value, 
+                 colour = ID, 
+                 group = ID)) + 
+      
+      geom_line() + 
+      facet_wrap(~fn); p1 
 
 
 # VERSION 2: -------------------------------------
@@ -104,12 +107,10 @@ p2 <- ggplot() +
             axis.text.y=element_text(size=14), 
             axis.title.y=element_text(size=18), 
             strip.text.x=element_text(size=18),
-            panel.border = element_rect(colour = "black", fill=NA, size=.5)) 
+            panel.border = element_rect(colour = "black", fill=NA, size=.5)); p2 
       
 
 
-# print plot: 
-p2 
 
 # TODO: how to add legend? 
 #...p2.2 Add legend: --------------
@@ -148,10 +149,8 @@ p2.2 <- ggplot() +
                                         fill=NA, size=.5),
             legend.text = element_text(colour="black", size=12, 
                                        face="bold")
-            ) 
+            ); p2.2  
 
-# print plot:
-p2.2
 
 # OTHER EXPERIMENTS: --------------------
 #...p3 (variant of p2 that's not useful) ----------------------
