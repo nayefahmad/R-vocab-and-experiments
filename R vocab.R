@@ -174,7 +174,35 @@ str(df)  # factor levels reset
 ggplot(df, aes(x=area, y=total)) + geom_bar(stat="identity")  # SUCCESS!
 
 
+# if there is an obvious way to order your factor levels (e.g. alphabetical), 
+# you can try using ordered(): 
+# create a factor with default ordering: 
+ordered(rep(1:12, length=24))
+ordered(c("blue", "green", "yellow"))
+ordered(paste0("level_", 1:30))  # doesn't work well 
 
+# let's try again: 
+two.digits.numbers <- 
+      sapply(1:30, function(x){
+      x.char <- as.character(x)
+      if (nchar(x.char) < 2){
+            x <- paste0("0", x)
+      } else {
+            x <- x.char
+      }
+      return(x)
+}
+)
+
+ordered(paste0("level_", two.digits.numbers))  # works! 
+
+#**************************************************
+
+
+
+
+
+#**************************************************
 pmin(1:4, 0:3)  # gives "parallel" min - min of each pair of elements, where one element is from vector1, the other from v2. 
 
 x <- sort(rnorm(100));  cH <- 1.35
