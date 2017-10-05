@@ -184,15 +184,15 @@ ordered(paste0("level_", 1:30))  # doesn't work well
 # let's try again: 
 two.digits.numbers <- 
       sapply(1:30, function(x){
-      x.char <- as.character(x)
-      if (nchar(x.char) < 2){
-            x <- paste0("0", x)
-      } else {
-            x <- x.char
+            x.char <- as.character(x)
+            if (nchar(x.char) < 2){
+                  x <- paste0("0", x)
+            } else {
+                  x <- x.char
+            }
+            return(x)
       }
-      return(x)
-}
-)
+      )
 
 ordered(paste0("level_", two.digits.numbers))  # works! 
 
