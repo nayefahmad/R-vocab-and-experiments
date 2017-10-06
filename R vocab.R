@@ -676,7 +676,52 @@ p1 <- ggplot(normal_curves_long, aes(x=x, y=value, group=variable)) +
                 aes(label=variable), 
                 col="red") ; p1 
 
+# splitting data frames with split( ) :  --------------------------
+split(mtcars, mtcars$cyl)
 
+# example from split( ) help: 
+require(stats); require(graphics)
+n <- 10; nn <- 100
+g <- factor(round(n * runif(n * nn)))  # 1000 integer values between 0:10  
+x <- rnorm(n * nn) + sqrt(as.numeric(g))  # 1000 random values 
+xg <- split(x, g)  %>% print  # note that each vector is of a different length 
+boxplot(xg, col = "lavender")  # when g is large, sqrt(g) is large, so x values 
+      # are higher 
+
+sapply(xg, length)  # how many values in each group? lapply() %>% unlist( )
+      # also works: 
+# lapply(xg, length) %>% unlist
+sapply(xg, mean)  # mean x value by level of g
+# lapply(xg, mean) %>% unlist 
+
+
+### Calculate 'z-scores' by group (standardize to mean zero, variance one)
+z <- unsplit(lapply(split(x, g), scale), g)
+
+# same thing, using pipes: 
+z <- split(x,g) %>%  # split by levels of g 
+      lapply(scale) %>%  # apply function scale() to each component 
+      unsplit(g)   # combine back into a vector
+plot(z)
+
+
+# and check that the within-group std dev is indeed one:  
+tapply(z, g, sd)  
+# Interpretation: tapply takes 2 vectors, *splits* the first according to levels of 
+# the second (thus creating a "ragged array"), then it *applies* a function to 
+# each component, then it *combines* the results back into a vector.
+
+
+# scale(x, center = TRUE, scale = TRUE): -----------
+# If center is TRUE then centering is done by subtracting the column 
+# means (omitting NAs) of x from their corresponding columns, and if 
+# center is FALSE, no centering is done. 
+# You can also supply a numeric vector of same length as num cols of x 
+# to specify a particular value to subtract from each column entry. 
+# 
+# If scale is TRUE then scaling is done by dividing the (centered) 
+# columns of x by their standard deviations if center is TRUE, and 
+# the root mean square otherwise.
 
 
 # Pattern Matching and Replacement -------------------------------
