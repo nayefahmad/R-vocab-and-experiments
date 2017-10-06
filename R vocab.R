@@ -991,6 +991,8 @@ filter(mtcars, gear==5) %>% select(cyl) %>% arrange(cyl) %>% unique
 count(mtcars, cyl)
 count(mtcars, cyl, gear)
 
+# another option to count rows: 
+mtcars %>% group_by(cyl, gear) %>% summarise(n= n() ) 
 
 #replace() ----
 head(mtcars); str(mtcars)

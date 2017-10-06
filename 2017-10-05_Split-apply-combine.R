@@ -9,6 +9,7 @@ library("plyr")
 
 # ************************************************
 # Ex 1: InsectSprays data ---------------
+# https://www.r-bloggers.com/a-quick-primer-on-split-apply-combine-problems/ 
 # ************************************************
 
 str(InsectSprays)
@@ -18,7 +19,9 @@ head(InsectSprays)
 (count_by_spray <- split(InsectSprays$count, InsectSprays$spray))
 # splits the vector of counts into components of a list, organized by levels of 
 # spray types 
-# Note that this does not split the entire data frame 
+# e.g. splitting a data frame: 
+# split(mtcars, mtcars$cyl) %>% str
+# split(mtcars, mtcars$cyl)[[1]]
 
 mean_by_spray <- lapply(count_by_spray, mean) %>% print 
 mean_by_spray <- unlist(mean_by_spray) %>% print 
@@ -49,7 +52,8 @@ aggregate(count ~ spray, InsectSprays, mean)
 # another example: 
 # aggregate(state.x77, list(Region = state.region), mean)
 # > state.x77 is a data frame 
-# > list(Region = state.region) specifies how to group rows together 
+# > list(Region = state.region) specifies how to group rows together. Think of it 
+#   as creating a column that states which region each state is in. 
 
 ## example with character variables and NAs
 # testDF <- data.frame(v1 = c(1,3,5,7,8,3,5,NA,4,5,7,9),
@@ -62,4 +66,16 @@ aggregate(count ~ spray, InsectSprays, mean)
 
 
 # > Approach 4: using plyr: ----------------
+ddply(InsectSprays, .(spray), summarise, mean.count = mean(count))
+# outputs a df
+
+dlply(InsectSprays, .(spray), summarise, mean.count = mean(count))
+# outputs a list 
+
+
+# > Approach 5: using dplyr --------------------
+InsectSprays %>% group_by(spray) %>% summarize(mean.count = mean(count))
+
+# counting rows with dplyr: 
+count(InsectSprays, spray)
 
