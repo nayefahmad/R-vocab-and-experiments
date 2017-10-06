@@ -38,8 +38,12 @@ vapply(count_by_spray, mean, numeric(1))
 
 # > Approach 3: tapply OR by OR aggregate: ------------
 tapply(InsectSprays$count, InsectSprays$spray, mean)
-# Apply a function to each cell of a ragged array, that is to each (non-empty)
-# group of values given by a unique combination of the levels of certain factors.
+# "Apply a function to each cell of a ragged array, that is to each (non-empty)
+      # group of values given by a unique combination of the levels of 
+      #certain factors." 
+# Interpretation: tapply takes 2 vectors, *splits* the first according to levels of 
+      # the second (thus creating a "ragged array"), then it *applies* a function to 
+      # each component, then it *combines* the results back into a vector.
 
 by(InsectSprays$count, InsectSprays$spray, mean)
 # Function by is an object-oriented wrapper for tapply applied to data frames.
@@ -63,6 +67,8 @@ aggregate(count ~ spray, InsectSprays, mean)
 # aggregate(x = testDF, by = list(by1, by2), FUN = "mean")
 # adds by1 and by2 as cols to testDF, then finds all combinations of by1 and by2,
 # and groups testDF according to them, then applies summary function
+
+# ?aggregate  # worth looking into for more examples 
 
 
 # > Approach 4: using plyr: ----------------
