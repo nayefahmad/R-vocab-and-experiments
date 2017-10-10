@@ -8,6 +8,12 @@ library("purrr")
 library("plyr")
 
 # ************************************************
+# TODO: -----------
+# > fix purrr code 
+# ************************************************
+
+
+# ************************************************
 # Ex 1: InsectSprays data ---------------
 # https://www.r-bloggers.com/a-quick-primer-on-split-apply-combine-problems/ 
 # ************************************************
@@ -85,3 +91,9 @@ InsectSprays %>% group_by(spray) %>% summarize(mean.count = mean(count))
 # counting rows with dplyr: 
 count(InsectSprays, spray)
 
+
+# > Approach 6: using purrr --------------------
+# InsectSprays %>% 
+#       split(.$spray) %>% 
+#       select(count) %>% 
+#       map(~mean)
