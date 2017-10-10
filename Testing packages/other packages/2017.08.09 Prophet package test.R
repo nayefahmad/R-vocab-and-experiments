@@ -1,13 +1,13 @@
 
-# install.packages("prophet")
+install.packages("prophet")
 # install.packages("Rcpp")
 # install.packages("wikipediatrend")
 
 library("dplyr")
-library("DBI")
-library("Rcpp")
+# library("DBI")
+# library("Rcpp")
 library("curl")
-# library("prophet")
+library("prophet")  # why doesn't this work? 
 # library("prophet", lib="H:/R/R-3.4.1/library")  # why specify path for this?
 # library("wikipediatrend")
 
