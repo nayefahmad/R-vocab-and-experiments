@@ -38,6 +38,7 @@ rep(letters[1:3], times=2, each=2)
 rep(letters[1:3], times=2, each=2, length.out=2)
 rep_len(letters[1:3], length.out=40)  # could be useful if you don't know the length of a vector, but you want to keep recycling it until total length reaches a target value. 
 rep(letters[1:3], times=(1:3))
+rep(letters[1:3], c(1,5,12))
 
 seq(1,26)
 seq(1,26,by=3)
@@ -127,8 +128,16 @@ cummin(1:10)  # along the entire length of input vector, 1 is min
 cummax(10:1)
 
 
+# row and column sums, means: ---------------
+x <- data.frame(x=rnorm(10)*10, y=rnorm(10)) %>% print 
+colSums(x)
+rowSums(x) %>% data.frame()
 
-# first differencing: 
+apply(x, 1, mean)  # means of rows 
+apply(x, 2, mean)  # means of columns 
+
+
+# first differencing: -----------
 diff(1:10, lag = 1, differences = 1)  # diff gives differecnes between successive elements in a vector 
 diff(seq(1,50, by=5), lag=1, differences=1)
 (diffs1 <-diff(c(1,5,2,2,10,.5,-1,3,-4,30), lag = 1, differences = 1))
@@ -586,19 +595,57 @@ df1
 identical(big_data, df1)  # TRUE 
 
 # LAPPLY AND FRIENDS: -------------------------------
-x <- list(a = 1:10, beta = exp(-3:3), logic = c(TRUE,FALSE,FALSE,TRUE))
+x <- list(a = 1:10, beta = exp(-3:3), logic = c(TRUE,FALSE,FALSE,TRUE)) %>% print 
+
+# > lapply: -------------
 # compute the list mean for each list element
 lapply(x, mean)
 # median and quartiles for each list element
 lapply(x, quantile, probs = 1:3/4)
 # Format for lapply is lapply(X, FUN, ...). Note that "probs=1:3/4" is being passed to "..." above, and is "passed to" the function quantile(). 
 
+# > sapply and vapply ------
 sapply(x, quantile)
 i39 <- sapply(3:9, seq) # list of vectors
-sapply(i39, fivenum)
+sapply(i39, fivenum)  # five number summary as a vector 
+vapply(i39, fivenum)
 vapply(i39, fivenum,
-       c(Min. = 0, "1st Qu." = 0, Median = 0, "3rd Qu." = 0, Max. = 0))
+       c(Min. = 0, "1st Qu." = 0, Median = 0, "3rd Qu." = 0, Max. = 0))  
+#^^ 3rd arg is FUN.VALUE: a vector template for the return value from FUN
+# vapply is very similar to sapply, but with predefined format for output 
 
+
+
+
+# > using apply to find row/column means -------
+apply(x, 1, mean)  # means of rows 
+apply(x, 2, mean)  # means of columns 
+
+# > mapply: --------------
+# mapply is a multivariate version of sapply
+mapply(rep, x = 4:1, times=4:1)
+# each iteration, rep takes 2 args one from the first arg from mapply, one 
+#     from the second 
+
+mapply(rep, times = 1:4, MoreArgs = list(x = 42))
+# MoreArgs is used to pass arguments that are NOT "vectorized over"...? 
+mapply(rep, times = 1:4, x=list(x = 42))  # what's the difference? 
+
+mapply(function(x, y) seq_len(x) + y,  # define function to be applied 
+       c(a =  1, b = 2, c = 3),  # names from first
+       c(A = 10, B = 0, C = -10))
+# pseudocode: create sequence of length a=1, then add A=10 to EACH element; 
+#             create sequence of length b=2, then add B=0 
+
+rnorms <- data.frame(n=rep(10,2), 
+                     mean=c(4,50), 
+                     var=c(.5, 3)) %>% print 
+mapply(rnorm,
+       n=rnorms$n, 
+       mean=rnorms$mean, 
+       sd=sqrt(rnorms$var))
+
+# **********************************
 (v <- structure(10*(5:8), names = LETTERS[1:4], 
                 types=c("red", "yellow", "blue", "green")))
 # structure() returns the given object with further attributes that you can 
