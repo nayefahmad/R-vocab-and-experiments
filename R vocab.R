@@ -15,7 +15,6 @@ library("lubridate")
 
 # TODO: -------
 # duplicated, charmatch, aggregate, do.call
-# remove "lib" arg in library calls 
        
 
 
@@ -230,20 +229,23 @@ y <- 1
 
 if (x==1 & y==1){print("yes")} else {print("no")}
 if (x==1 && y==1){print("yes")} else {print("no")}
-# when x and y are single element vectors, doesn't seem to make a diff
+# when x and y are single element vectors, doesn't make a difference 
 
 x <- c(1,1) 
 y <- c(1,0)
 
 if (x==1 & y==1){print("yes")} else {print("no")}
-# single & returns warning: only first element used 
+# "single &" returns warning: only first element used. Compare with: 
+x==1 & y==1  # no warning, but this output can't be used in an if()
+               # condition easily 
 
 if (x==1 && y==1){print("yes")} else {print("no")}
-# no warning, but doesn't seem to give right answer 
+# && evaluates left to right examining only the first element of each vector
+# Hence, && is preferred in if conditions 
 
-# NOTE: apparently && is preferred in if conditions 
-
-
+# compare: 
+x==1 && y==1
+x[2]==1 && y==1  # comparing second element of x with first element of y
 
 
 # merge: -------------------------------
@@ -637,13 +639,13 @@ mapply(function(x, y) seq_len(x) + y,  # define function to be applied
 # pseudocode: create sequence of length a=1, then add A=10 to EACH element; 
 #             create sequence of length b=2, then add B=0 
 
-rnorms <- data.frame(n=rep(10,2), 
+rnorms <- data.frame(n=rep(100,2), 
                      mean=c(4,50), 
                      var=c(.5, 3)) %>% print 
 mapply(rnorm,
        n=rnorms$n, 
        mean=rnorms$mean, 
-       sd=sqrt(rnorms$var))
+       sd=sqrt(rnorms$var)) %>% as.data.frame 
 
 # **********************************
 (v <- structure(10*(5:8), names = LETTERS[1:4], 

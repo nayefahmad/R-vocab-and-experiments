@@ -3,9 +3,10 @@
 # Split-apply-combine problems, using dplyr, tidyr and purrr
 # ************************************************
 
+library("plyr")
 library("dplyr")
 library("purrr")
-library("plyr")
+
 
 # ************************************************
 # TODO: -----------
