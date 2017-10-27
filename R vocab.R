@@ -15,7 +15,7 @@ library("lubridate")
 
 # TODO: -------
 # duplicated, charmatch, aggregate, do.call
-       
+# use regular expressions to break filenames into type of file        
 
 
 # flatten a list: 
@@ -245,7 +245,8 @@ if (x==1 && y==1){print("yes")} else {print("no")}
 
 # compare: 
 x==1 && y==1
-x[2]==1 && y==1  # comparing second element of x with first element of y
+x[2]==1 && y==1  # comparing second element of x (which is first element
+                 # of x[2]) with first element of y
 
 
 # merge: -------------------------------
@@ -548,6 +549,36 @@ sample(c("hi", "bye"), 30, replace=TRUE)
 # simulate 100 rolls of a die: 
 sample(6, 100, replace=TRUE) %>% mean
 sample(6, 100, replace=TRUE) %>% mean
+
+
+# find all files in a folder and all subfolders: ---------
+setwd("\\\\vch.ca/departments/Projects (Dept VC)/Patient Flow Project/Coastal HSDA/2017 Requests/2017.10.10 LGH redevelopment - patient flow between old and new buildings")
+list.files()
+list.files(recursive = TRUE)
+writeClipboard(list.files(recursive = TRUE))  # paste in notepad
+
+files.df <- data.frame(files=as.character(list.files(recursive = TRUE)))
+files.df <- mutate(files.df, 
+                   files=as.character(files), # for some reason as.character 
+                                              # didn't work above  
+                   type=sapply(files, 
+                               function(x){
+                                     l <- nchar(x)
+                                     substr(x, (l-3), l)
+                               }
+                   ))
+
+# examine structure: 
+str(files.df)
+head(files.df, 10); tail(files.df, 10)  
+# doesn't work very well because type can be of different length: 
+#     .R vs .sql
+# todo: use reg expressions 
+
+# get only text files: 
+text.files <- filter(files.df, 
+                  type==".txt")
+
 
 # FILL CONTAINER WITH LOOP: ----------------------
 # create an empty container and fill it using a loop. We require that any type and any number of objects can be placed in the container, regardless of whether they are numeric or character or logical: 
