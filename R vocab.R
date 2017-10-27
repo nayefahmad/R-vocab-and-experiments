@@ -557,27 +557,26 @@ list.files()
 list.files(recursive = TRUE)
 writeClipboard(list.files(recursive = TRUE))  # paste in notepad
 
-files.df <- data.frame(files=as.character(list.files(recursive = TRUE)))
+files.df <- data.frame(file=as.character(list.files(recursive = TRUE)))
 files.df <- mutate(files.df, 
-                   files=as.character(files), # for some reason as.character 
+                   file=as.character(file), # for some reason as.character 
                                               # didn't work above  
-                   type=sapply(files, 
+                   type=sapply(file, 
                                function(x){
-                                     l <- nchar(x)
-                                     substr(x, (l-3), l)
+                                     splitname <- strsplit(x, split="\\.") %>% 
+                                                unlist %>% unname 
+                                     l <- length(splitname)
+                                     return(splitname[l])
                                }
                    ))
 
 # examine structure: 
 str(files.df)
 head(files.df, 10); tail(files.df, 10)  
-# doesn't work very well because type can be of different length: 
-#     .R vs .sql
-# todo: use reg expressions 
 
-# get only text files: 
-text.files <- filter(files.df, 
-                  type==".txt")
+# get only R files: 
+r.files <- filter(files.df, 
+                  type=="R") %>% print
 
 
 # FILL CONTAINER WITH LOOP: ----------------------
