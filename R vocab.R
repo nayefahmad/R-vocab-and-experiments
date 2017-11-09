@@ -14,7 +14,7 @@ library("lubridate")
 # rm(list=ls())
 
 # TODO: -------
-# duplicated, charmatch, aggregate, do.call
+# duplicated, charmatch, aggregate
 # use regular expressions to break filenames into type of file        
 
 
@@ -150,6 +150,10 @@ length(diffs2)  # note that this has one less element than diffs1
 # differencing at lags (i.e. not immediately successive elements)
 (diffs3 <-diff(c(1,5,2,2,10,.5,-1,3,-4,30), lag = 2, differences = 1))  
 length(diffs3)
+
+
+# removing duplicate rows from a df: -----------
+# path.join.filter.dedup <- path.join.filter[!duplicated(path.join.filter), ]
 
 
 # cut a range to get a factor: -------------------
@@ -325,6 +329,11 @@ finaldf <- mutate(finaldf,
 finaldf.m <- melt(mutate(finaldf, dates=as.character(dates))) %>% print 
 dcast(finaldf.m, dates ~ variable)  # reverses the melting operation 
 dcast(finaldf.m, variable ~ dates)  # reverse rows and columns 
+
+# ... merging with dplyr::right_join: --------
+# path.join.phn <- right_join(path, path.waitlist.data,
+#                             by =c("mrn" = "mrn.w", 
+#                                   "ad.date.adtc" = "ad.date"))
 
 
 # sort and order: ------------------
