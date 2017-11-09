@@ -61,7 +61,7 @@ denscomp(candidate.dist,
          legendtext = plot.legend)
 # Error in as.graphicsAnnot(legend) : object 'plot.legend' not found
 
-par(mfrow=c(2,2))
+par(mfrow=c(2,2))  # can use "setpar <- par(..)" then later "par(setpar)" to reset par
 
 denscomp(candidate.dist)
 qqcomp(candidate.dist)
@@ -70,10 +70,14 @@ ppcomp(candidate.dist)
 
 par(mfrow=c(1,1))
 
+# statistical goodness of fit tests: 
+gofstat(candidate.dist)
+
+
 
 
 #*********************************
-# ANOTHER EXAMPLE: 
+# ANOTHER EXAMPLE ED INTERARRIVALS: ----------
 #*********************************
 
 ed.start.times <- read.csv("H:/VCH files - Nayef/R-vocab-and-experiments/data/Lunch&Learn data.csv", 
@@ -135,3 +139,8 @@ cdfcomp(interarrival.candidate.dist)
 ppcomp(interarrival.candidate.dist)
 
 par(mfrow=c(1,1))
+
+
+# you can use ecdf() and density to get empirical distributions: 
+ecdf(interarrival) %>% plot 
+density(interarrival) %>% plot 
