@@ -706,18 +706,34 @@ replicate(10000, mean(rexp(10))) %>% hist
 df <- replicate(10000, mean(rexp(10))) %>% as.data.frame  
 colnames(df) <- "value"
 
+# set a theme variable that can be used for graphs later: 
+mytheme <- theme(axis.text.x=element_text(size = 16),
+                 axis.text.y=element_text(size=14),
+                 
+                 axis.title.x=element_text(size=20), 
+                 axis.title.y=element_text(size=18), 
+                 
+                 strip.text.x=element_text(size=18), 
+                 
+                 panel.background = element_rect(fill = NA))
+
+# without setting theme: 
 p1 <- ggplot(df, aes(x=value)) + 
   geom_histogram(aes(y=..count..)) + # not really necessary to specify 
   # aes(y=..count..), but good to be explicit. You can just give 
   # "+ geom_histogram() +"  ...
   scale_x_continuous(limits=c(0,3), 
-                        labels=seq(0,3, .25), breaks=seq(0,3, .25)) + 
-  geom_hline(yintercept=0, size=1) + 
-  theme(axis.text.x=element_text(size = 16),
-        axis.title.x=element_text(size=20), 
-        axis.text.y=element_text(size=14), 
-        axis.title.y=element_text(size=18), 
-        strip.text.x=element_text(size=18));p1
+                     labels=seq(0,3, .25), 
+                     breaks=seq(0,3, .25), 
+                     expand = c(0,0)) +  # used to remove space between 
+                                         # axis and labels  
+      scale_y_continuous(expand = c(0,0)) + 
+      
+      geom_hline(yintercept=0, size=1) + 
+      geom_vline(xintercept = 0, size=1);p1
+
+# with theme: 
+p1 + mytheme
 
 # add density: 
 (p2 <- p1 + geom_density(aes(y=..density..*900), size=1, colour="blue", alpha=.8))
