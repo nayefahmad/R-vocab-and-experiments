@@ -809,6 +809,7 @@ z <- split(x,g) %>%  # split by levels of g
 plot(z)
 
 
+
 # and check that the within-group std dev is indeed one:  
 tapply(z, g, sd)  
 # Interpretation: tapply takes 2 vectors, *splits* the first according to levels of 
@@ -826,6 +827,27 @@ tapply(z, g, sd)
 # If scale is TRUE then scaling is done by dividing the (centered) 
 # columns of x by their standard deviations if center is TRUE, and 
 # the root mean square otherwise.
+
+
+
+# Compound assignment pipe operator: ---------
+# let's say we want an input vector of norm rvs, but it's lenght has to also be 
+# a POISSON rv. We start by assigning the lenght, then generate a rnorm vector of 
+# that length: 
+
+# > approach 1: --------
+set.seed(111)
+(input <- rpois(1, 10))
+
+# now update input
+input <- input %>% rnorm %>% print 
+
+# > approach 2: ----------
+input %<>% rnorm %>% print 
+
+
+
+
 
 
 # Pattern Matching and Replacement -------------------------------
