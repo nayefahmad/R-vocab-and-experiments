@@ -31,10 +31,10 @@ add.zero.in.front <- function(input.number, output.length){
 
 #******************************************************
 # test with numbers from Excel: ----------
-# input.numbers <- readClipboard()  # copy numbers from excel
-# output.numbers <- sapply(input.numbers, add.zero.in.front, output.length=5)
-# 
-# write.table(output.numbers, file="clipboard", sep="\t",  # copy back to Excel
-#              row.names=FALSE,
-#              col.names = FALSE)
+input.numbers <- readClipboard()  # copy numbers from excel
+output.numbers <- sapply(input.numbers, add.zero.in.front, output.length=7)
+
+write.table(output.numbers, file="clipboard", sep="\t",  # copy back to Excel
+             row.names=FALSE,
+             col.names = FALSE)
 

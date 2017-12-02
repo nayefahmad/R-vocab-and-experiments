@@ -26,7 +26,7 @@ add.quotes <- function(input.number, isInsertedIntoSqltable){
 input.numbers <- readClipboard()  # copy numbers from excel
 output.numbers <- sapply(input.numbers, 
                          add.quotes, 
-                         isInsertedIntoSqltable=TRUE) %>% as.data.frame
+                         isInsertedIntoSqltable=FALSE) %>% as.data.frame
 
 write.table(output.numbers, file="clipboard", sep="\t",  # copy to Excel
             row.names=FALSE,
