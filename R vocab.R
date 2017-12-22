@@ -1183,3 +1183,57 @@ mtcars2 %>%
       as.data.frame %>% print 
 
 
+
+
+#***************************************************
+# DATAPASTA PACKAGE ----
+#***************************************************
+
+# to paste data as tibble into R from clipboard: -----
+# 1. copy the data
+# 2. in your R script (not console?) use the addin "paste as tribble" 
+#           > tools>>addins OR 
+#           > use the toolbar "Addins" in RStudio
+#           > shortcut: ctrl + shift + t
+
+
+data <- tibble::tribble(
+                                     ~X,           ~Location, ~Min, ~Max,
+                       "Partly cloudy.",          "Brisbane",  19L,  29L,
+                       "Partly cloudy.",  "Brisbane Airport",  18L,  27L,
+                     "Possible shower.",        "Beaudesert",  15L,  30L,
+                       "Partly cloudy.",         "Chermside",  17L,  29L,
+       "Shower or two. Possible storm.",            "Gatton",  15L,  32L,
+                     "Possible shower.",           "Ipswich",  15L,  30L,
+                       "Partly cloudy.",     "Logan Central",  18L,  29L,
+                        "Mostly sunny.",             "Manly",  20L,  26L,
+                       "Partly cloudy.",     "Mount Gravatt",  17L,  28L,
+                     "Possible shower.",             "Oxley",  17L,  30L,
+                       "Partly cloudy.",         "Redcliffe",  19L,  27L
+      )
+
+# does it work with excel? YES!
+df2 <- tibble::tribble(
+                  ~task, ~time,
+                  "sim", 125L,
+              "vgh mdc",  25L
+             )  # %>% as.data.frame 
+
+
+# paste as data frame from Excel: ------
+# > shortcut: ctrl + shift + d 
+df3 <- data.frame(
+              CTAS.Code = c(1L, 2L, 3L),
+          X2016.Wkend.1 = c(2L, 66L, 293L)
+       )
+
+
+# try pasting as vector from excel: --------
+# > shortcut: ctrl + shift + v 
+months <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct")
+
+
+
+
+# copy to clipboard from R: -------
+mtcars$cyl %>% dmdclip()  # doesn't actually seem that useful 
