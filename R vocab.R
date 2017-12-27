@@ -1188,6 +1188,7 @@ mtcars2 %>%
 #***************************************************
 # DATAPASTA PACKAGE ----
 #***************************************************
+# help(package="datapasta")
 
 # to paste data as tibble into R from clipboard: -----
 # 1. copy the data
@@ -1231,6 +1232,19 @@ df3 <- data.frame(
 # try pasting as vector from excel: --------
 # > shortcut: ctrl + shift + v 
 months <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct")
+
+# you can also paste as vertical vector
+# > shortcut: ctrl + shift + alt + v 
+months.v <- c("jan",
+              "feb",
+              "mar",
+              "apr",
+              "may",
+              "jun",
+              "jul",
+              "aug",
+              "sep",
+              "oct")
 
 
 
