@@ -16,7 +16,7 @@ library("lubridate")
 # TODO: -------
 # duplicated, charmatch, aggregate
 # use regular expressions to break filenames into type of file        
-
+# reorder factors with forcats package 
 
 # flatten a list: 
 (l <- list(item1=4, item2=2, item3=c(100, 200)))  # surrounding with () calls print 
@@ -166,6 +166,7 @@ table(cut(x, breaks=seq(0,100,5), labels= paste("Level", 1:20)))
 
 
 # reorder factor levels using values in another column -------------
+# todo: update with package forcats
 # first create data: 
 df <- data.frame(area=letters[1:10], 
                  total=c(10,2,1,rnorm(6),20)); df
@@ -1182,7 +1183,13 @@ mtcars2 %>%
       select(12,1:11) %>% 
       as.data.frame %>% print 
 
+# reorder cols to bring specified cols to the front: --------
+str(mtcars)
 
+# let's say you want disp and qsec at the front: 
+mtcars %>% 
+      select(disp, qsec, everything()) %>% 
+      str
 
 
 #***************************************************
@@ -1251,3 +1258,17 @@ months.v <- c("jan",
 
 # copy to clipboard from R: -------
 mtcars$cyl %>% dmdclip()  # doesn't actually seem that useful 
+
+
+
+# HERE PACKAGE: ------------------
+# motivation: hardcoded file paths are bad. Instead, do everything relative 
+#     to the top-level folder. 
+# here() does this by searching for either a .git or .Rproj file 
+# NOTE: here() is kinda useless without an R project!!
+
+library("here")
+here()  # gives current working directory 
+here("docs")
+
+
