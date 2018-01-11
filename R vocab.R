@@ -1039,6 +1039,33 @@ plot(p57~p08)
 
 
 
+# SAVING R OBJECTS TO FILE: ---------------------------------
+# let's say it takes 30 min to read in a csv. You don't want to do that 
+#     every time. So, read in once, save as an R object that you can 
+#     quickly load later. 
+
+# 2 options: 
+#     > save( )         : produces Rdata (aka Rda) file 
+#     > saveRDS( )      : produces RDA file 
+
+# apparently saveRDS is better, because when you load, you can edit the 
+#     object?? 
+
+toyota.rows <- grep("Toyota", rownames(mtcars))
+mtcars[toyota.rows, ] %>% 
+      saveRDS("mtcars-toyota.rds")
+
+
+# now read it in with readRDS( ): 
+toyo <- readRDS("mtcars-toyota.rds")
+
+rownames(toyo)[1] <- "BEST CAR EVER"
+print(toyo) 
+
+
+
+
+
 
 # RESHAPE PACKAGE:  ---------------------------------------------
 # Melting: going from wide to long 
