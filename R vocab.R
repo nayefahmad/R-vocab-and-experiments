@@ -1292,10 +1292,11 @@ mtcars$cyl %>% dmdclip()  # doesn't actually seem that useful
 # motivation: hardcoded file paths are bad. Instead, do everything relative 
 #     to the top-level folder. 
 # here() does this by searching for either a .git or .Rproj file 
+#     > Create .Rproj files in the project root folder, not in src!!!
 # NOTE: here() is kinda useless without an R project!!
 
 library("here")
-here()  # gives current working directory 
+here()  # gives current working directory; should be the project root
 here("docs")
 
 
