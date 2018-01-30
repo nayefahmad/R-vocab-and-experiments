@@ -136,6 +136,45 @@ apply(x, 1, mean)  # means of rows
 apply(x, 2, mean)  # means of columns 
 
 
+# using sweep( ):-------------
+
+# args: x, matrix/array input
+#     margin = 1 for sweeping col ACROSS along rows ,
+#                 2 for sweeping row DOWN along column 
+# returns an array of same shape, but with "summary stats swept out" 
+
+# example 1 : 
+Product <- c("A", "B", "C", "Total")
+Continent <- c("Africa", "America", "Asia", "Australia", "Europe")
+values <- c(0.4, 0.2, 0.4, 0.1, 0.3, 0.4, 0.3, 0.4, 0.5, 0.2, 
+            0.3, 0.2, 0.4, 0.3, 0.3, 0.1, 0.4, 0.4, 0.2, 0.2)
+
+M <- matrix(values, ncol=5, dimnames=list(Product, Continent)) %>% print 
+
+# create new matrix using sweep(): 
+swept.M <- sweep(M[1:3, ],  # use only top 3 rows as input 
+                 2,  # margin = 2 to sweep a row DOWN along the columns 
+                 M[4,],  # stats = the summary stat to be swept out 
+                         #    you could use a fn like colSums( ) 
+                 
+                 # specify fn as multiplication: 
+                 "*"  ) %>% print
+# note that swept.M is 3 x 5, just like M[1:3, ]
+
+
+# example 2: 
+input.matrix <- matrix(rpois(6, 30), 
+                       ncol = 2)
+colnames(input.matrix) <- c("Cat A", 
+                            "Cat B") 
+
+proportions.matrix <- sweep(input.matrix, 
+                            1,  # margin =1 to sweep a column ACROSS along rows 
+                            rowSums(input.matrix), 
+                            "/") %>% print 
+
+
+
 # first differencing: -----------
 diff(1:10, lag = 1, differences = 1)  # diff gives differecnes between successive elements in a vector 
 diff(seq(1,50, by=5), lag=1, differences=1)
