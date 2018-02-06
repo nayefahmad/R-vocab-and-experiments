@@ -4,7 +4,7 @@
 #***********************************
 
 library("shiny")
-
+library("here")
 
 # Example: Hello Shiny ---------------
 runExample("01_hello")
@@ -21,3 +21,5 @@ runExample("01_hello")
 
 
 
+# Example 2: ----------------
+runApp(here("App-1", "app.R"))

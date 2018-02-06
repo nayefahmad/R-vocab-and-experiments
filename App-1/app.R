@@ -5,17 +5,45 @@
 
 library(shiny)
 
+#TODO: ----------------------------------- 
+# > where are we passing input to the function server( )? 
+
+#*****************************************
 
 
 
+#*****************************************
 # 1) Define UI for app that draws a histogram ----
 ui <- fluidPage(
       
       # App title ----
-      titlePanel("Hello World!"),
+      titlePanel("Example 1"),
+      h1("heading 1"),  # you can use this instead of titlePanel? 
       
+      h3("H3 is fine without tags and so is code here"),
+      
+      # you can use HTML tags: --------------
+      # display blockquote: 
+      tags$blockquote("block quote requires tags - less common than h3(), h1() or code()"),
+      
+      # display code: 
+      code("data.frame(a=1:10, b=1:10)"), 
+      
+      # display body text: 
+      tags$body("\nlist of tags: http://shiny.rstudio.com/articles/html-tags.html"), 
+      
+      
+      # customize sidebar: ----------------
       # Sidebar layout with input and output definitions ----
       sidebarLayout(
+      
+      # other layout options: http://shiny.rstudio.com/articles/layout-guide.html 
+            # > fluidRow( )
+            # > tabSetPanel( ) : to be used within mainPanel below
+            # > navlistPanel( )
+            # > navbarPage( ) 
+            # > navbarMenu()
+            
             
             # Sidebar panel for inputs ----
             sidebarPanel(
@@ -57,7 +85,10 @@ server <- function(input, output) {
             x    <- faithful$waiting
             bins <- seq(min(x), max(x), length.out = input$bins + 1)
             
-            hist(x, breaks = bins, col = "#75AADB", border = "black",
+            hist(x, 
+                 breaks = bins, 
+                 col = "#75AADB", 
+                 border = "black",
                  xlab = "Waiting time to next eruption (in mins)",
                  main = "Histogram of waiting times")
             
@@ -68,6 +99,10 @@ server <- function(input, output) {
 
 # 3) Call to shinyApp: ----------------
 shinyApp(ui = ui, server = server)
+
+
+
+
 
 
 # 4) Run the app --------------
