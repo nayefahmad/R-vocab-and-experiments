@@ -823,7 +823,28 @@ p1 <- ggplot(normal_curves_long, aes(x=x, y=value, group=variable)) +
 # splitting data frames with split( ) :  --------------------------
 split(mtcars, mtcars$cyl)
 
-# example from split( ) help: 
+# > split on more than 1 var: approach 1: ------
+list1.mtcars.split <- split(mtcars, 
+                            list(mtcars$cyl, 
+                                 mtcars$hp))
+list1.mtcars.split  
+# note that this takes all combinations of cyl and hp, even if 
+#     there are no rows that correspond to a particular 
+#     combination (e.g. no cars with 6 cyl and hp=52)
+
+# > split on more than 1 var: approach 2: ------
+mtcars2 <- mutate(mtcars, 
+                  split.var = paste0(cyl, hp)) %>% 
+      mutate(split.var = as.factor(split.var))
+str(mtcars2)
+
+list2.mtcars.split <- split(mtcars2, 
+                            mtcars2$split.var)
+list2.mtcars.split
+# note that here there are no elements of the list that have 9 rows 
+
+#***********************************************
+# > example from split( ) help: ------------ 
 require(stats); require(graphics)
 n <- 10; nn <- 100
 g <- factor(round(n * runif(n * nn)))  # 1000 integer values between 0:10  
