@@ -1279,6 +1279,17 @@ mtcars %>%
       str
 
 
+
+# mutate_if( ) for changing coltypes: -----------
+str(mtcars)
+mtcars2 <- mutate_if(mtcars, 
+                     is.numeric, 
+                     factor)
+
+str(mtcars2)
+
+
+
 #***************************************************
 # DATAPASTA PACKAGE ----
 #***************************************************
