@@ -1,14 +1,21 @@
-##-------------------------------------------------------------------------
+
+#********************************************
+# LME4 PACKAGE TEST DRIVE 
+#********************************************
+
+
 ## ----preliminaries-------------------------------------------------------
 library("lme4")
 library("lattice")
 library("minqa")
+library("ggplot2")
 
-##-------------------------------------------------------------------------
-## 1. Introduction
-## 1.2. Example
+
+## 1. Introduction -----------------------------
+## 1.2. Example -----
 str(sleepstudy)
 
+# xyplot( ) is from lattice package (alternative to ggplot2)
 xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
        layout = c(9, 2), type = c("g", "p", "r"),
        index.cond = function(x, y) coef(lm(y ~ x))[2],
@@ -16,10 +23,49 @@ xyplot(Reaction ~ Days | Subject, sleepstudy, aspect = "xy",
        ylab = "Average reaction time (ms)",
        as.table = TRUE)
 
+# let's do it with ggplot: 
+p1 <- ggplot(sleepstudy, 
+             aes(x=Days, y=Reaction)) + 
+      facet_wrap(~Subject) + 
+      geom_smooth(method = "lm") + 
+      geom_point() + 
+      theme_classic(); p1 
+
+
 fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+# > What is the result of lmer()? ------------------
+summary(fm1)
+# Linear mixed model fit by REML ['lmerMod']
+# Formula: Reaction ~ Days + (Days | Subject)
+# Data: sleepstudy
+# 
+# REML criterion at convergence: 1743.6
+# 
+# Scaled residuals: 
+#       Min      1Q  Median      3Q     Max 
+# -3.9536 -0.4634  0.0231  0.4634  5.1793 
+# 
+# Random effects:
+#       Groups   Name        Variance Std.Dev. Corr
+# Subject  (Intercept) 612.09   24.740       
+# Days         35.07    5.922   0.07
+# Residual             654.94   25.592       
+# Number of obs: 180, groups:  Subject, 18
+# 
+# Fixed effects:
+#       Estimate Std. Error t value
+# (Intercept)  251.405      6.825   36.84
+# Days          10.467      1.546    6.77
+# 
+# Correlation of Fixed Effects:
+#       (Intr)
+# Days -0.138
 
 
-## 1.3. High level modular structure
+# TODO: don't understand any of the rest of this (yet)
+
+
+## 1.3. High level modular structure -------------------
 parsedFormula <- lFormula(formula = Reaction ~ Days + (Days | Subject),
                           data = sleepstudy)
 devianceFunction <- do.call(mkLmerDevfun, parsedFormula)
@@ -29,13 +75,14 @@ mkMerMod(rho = environment(devianceFunction),
          reTrms = parsedFormula$reTrms,
          fr = parsedFormula$fr)
 
-##-------------------------------------------------------------------------
-## 2. Formula module
-## 2.2: Understanding mixed-model formulas
+
+##***************************************************************
+## 2. Formula module -----------------------------------
+## 2.2: Understanding mixed-model formulas -------
 fm2 <- lmer(Reaction ~ Days + (Days || Subject), sleepstudy)
+# todo: looks exactly the same as fm1...? 
 
-
-## 2.3. Algebraic and computational account of mixed-model formulas
+## 2.3. Algebraic and computational account of mixed-model formulas-----
 set.seed(2)
 ## ----factorToSparseMatrix------------------------------------------------
 (f <- gl(3, 2))
