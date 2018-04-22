@@ -45,7 +45,20 @@ seq(1,26, length.out=4)  # generates a sequence of length.out=4 equally spaced v
 seq(along.with=month.abb)  # can abbreviate as e.g. seq(month.abb) or seq(letters); verbose alternative: seq(1, length(month.abb))
 seq(along.with=rnorm(20))# generates sequence 1,2,3... ending with length(month.abb)
 seq(c("apple", "orange", "banana"))
+
+
 seq_along(mtcars$mpg)  # generate whole numbers from 1 to n where n in ths length of the vector inputted (useful for ID numbers, indexes, etc.)
+
+# using seq_along in a for loop: 
+means <- vector("double", ncol(mtcars))  # pre-allocate the vectors, otherwise it'll be really slow
+
+# find mean of each column in mtcars: 
+for (i in seq_along(mtcars)) {
+      means[[i]] <- mean(mtcars[[i]], na.rm = TRUE)
+}
+
+means
+
 
 
 x<-round(rnorm(20), 2); names(x) <- seq(rnorm(20)); x %>% plot(pch=16) 
