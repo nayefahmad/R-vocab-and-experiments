@@ -14,7 +14,10 @@ system.time({
       for (i in 1:length(d$carat)) d$carat[i] <- i
 })
 
+# str(d)
+
 # Modify separate vector in loop, then assign back into data frame
+# Much faster! 
 system.time({
       d <- diamonds
       carat <- d$carat
@@ -24,6 +27,7 @@ system.time({
 })
 
 # Modify separate, growing vector in loop, then assign back into data frame
+# Not too bad
 system.time({
       d <- diamonds
       carat <- numeric()
@@ -41,12 +45,15 @@ system.time({
 
 # Converting data frame to list and doing assignment is much faster
 system.time({
-      d <- as.list(diamonds)
+      d <- as.list(diamonds)  
+      # each col is a separate element of the list
+      
       for (i in 1:length(d$carat)) d$carat[i] <- i
       d <- as.data.frame(d)
 })
 
 # Vectorized assignment
+# SUPERFAST! 
 system.time({
       d <- diamonds
       d$carat <- 1:length(d$carat)
@@ -105,10 +112,20 @@ system.time({
       for (i in 1:1e5) v[[i]] <- i*2
 })
 
-# lapply
+# lapply without pre-allocations: 
+# this is actually slower! 
 system.time({
       v <- lapply(1:1e5, function(x) x*2)
 })
+
+# Modify pre-allocated list in place with lapply 
+# very slightly faster 
+system.time({
+      v <- as.list(numeric(1e5))
+      v <- lapply(1:1e5, function(x) x*2)
+})
+
+
 
 
 # Modify pre-allocated list in place with a for loop
@@ -122,3 +139,4 @@ system.time({
       v <- numeric(1e5)
       for (i in 1:1e5) v[[i]] <- i*2
 })
+
