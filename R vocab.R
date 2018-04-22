@@ -45,6 +45,8 @@ seq(1,26, length.out=4)  # generates a sequence of length.out=4 equally spaced v
 seq(along.with=month.abb)  # can abbreviate as e.g. seq(month.abb) or seq(letters); verbose alternative: seq(1, length(month.abb))
 seq(along.with=rnorm(20))# generates sequence 1,2,3... ending with length(month.abb)
 seq(c("apple", "orange", "banana"))
+seq_along(mtcars$mpg)  # generate whole numbers from 1 to n where n in ths length of the vector inputted (useful for ID numbers, indexes, etc.)
+
 
 x<-round(rnorm(20), 2); names(x) <- seq(rnorm(20)); x %>% plot(pch=16) 
 x<-round(rnorm(2000), 2); names(x) <- seq(rnorm(2000)); x %>% 
