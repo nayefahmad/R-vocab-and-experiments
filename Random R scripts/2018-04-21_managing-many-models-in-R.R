@@ -62,11 +62,12 @@ country_model <- function(df){
 }
 
 
-# create all the models, save in a new column: 
-models <- by_country %>%
+# create all the models, save in a new column, rename by_country: 
+models_by_country <- by_country %>%
       mutate(model = map(data, country_model))
 
-
+models_by_country
+models_by_country$model[[9]]
 
 # > side note: map functions: -------------------
 # map() is almost exactly the same as lapply()/sapply()
@@ -94,3 +95,18 @@ y <- list(1, 2, 3)
 z <- list(5, 50, 500)
 
 pmap(list(x, y, z), sum)
+
+
+# you can even think of functions as data: give a list of fns
+# that you want to apply to each col of a df: 
+funs <- list(mean, median, sd)
+
+funs %>% 
+      map(~ mtcars %>% map_dbl(.x)) 
+# todo: don't really understand this 
+# todo: https://cran.r-project.org/web/packages/lazyeval/vignettes/lazyeval.html 
+
+#*************************************************************
+
+
+
