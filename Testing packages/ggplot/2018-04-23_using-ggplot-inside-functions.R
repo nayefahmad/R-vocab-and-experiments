@@ -46,4 +46,5 @@ plot.fn.with.aes <- function(df, x.axis, y.axis, point.colour = NULL) {
 
 # test the function: 
 plot.fn.with.aes(mtcars, "mpg", "cyl")
+plot.fn.with.aes(mtcars, "cyl", "qsec", "am")
 plot.fn.with.aes(mtcars, "mpg", "cyl", "gear")
