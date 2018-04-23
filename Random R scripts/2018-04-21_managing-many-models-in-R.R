@@ -13,6 +13,7 @@ library("purrr")
 library("dplyr")
 library("magrittr")
 library("broom")
+library("ggplot2")
 
 
 # Notes: --------------------------------
@@ -135,6 +136,10 @@ models_by_country %<>%
       mutate(
             tidy = map(model, broom::tidy), 
             glance = map(model, broom::glance), 
+            
+            # let's specifically extract r squared: 
+            rsq = glance %>% map_dbl("r.squared"),  # purr can be used to extract all objects with a certain name, here "r.squared"
+            
             augment = map(model, broom::augment)
       )
 
@@ -142,6 +147,26 @@ models_by_country
 models_by_country$tidy[[1]]
 models_by_country$glance[[1]]
 models_by_country$augment[[1]]  # new cols have "." in front to prevent conflicts with existing colnames  
+models_by_country$rsq[[10]] 
+models_by_country$rsq %>% hist   # most rsquared are very good 
+
+
+
+# we can now unnest to see details: ---------------------
+unnest(models_by_country, data)  # note new col "rsq" 
+
+# let's plot all the rsquareds using the unnested data: 
+unnest(models_by_country, data) %>%
+      ggplot(aes(rsq, reorder(country, rsq))) +   # todo: reorder( )?? 
+      
+      # stats::reorder(x, X) : 
+      #     x is usually a factor 
+      #     X is a vector of same length as x, whose subset of values
+      #           for each unique level of x determines the eventual order of that level
+      
+      
+      geom_point(aes(colour = continent)) + 
+      theme_classic()
 
 
 
