@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "R Markdown test doc"
 author: "Nayef Ahmad"
 date: "October 4, 2017"
 output: pdf_document
@@ -19,6 +19,37 @@ When you click the **Knit** button a document will be generated that includes bo
 summary(cars)
 ```
 
+
+
+***
+
+# Shortcuts:
+* ctrl + alt + i ==> inserts code chunk 
+* ctrl + shift + k ==> knits the doc 
+
+# Code chunk options 
+{r include = FALSE} will cause code to be run, but no output displayed (useful for loading packages, sourcing other scripts, etc.). 
+
+{r echo = FALSE} will cause code to be run (but not shown) and output displayed. 
+
+```{r include = FALSE}
+
+library("magrittr")
+
+summary(mtcars)
+
+```
+
+
+```{r echo = FALSE}
+rnorm(1000) %>% hist 
+
+```
+
+
+***
+
+
 ## Including Plots
 
 You can also embed plots, for example:
@@ -30,5 +61,6 @@ plot(pressure)
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 
-## This is a header
-### Is this a header? 
+# This is a header
+## Is this a header? 
+### What about this? 
