@@ -12,6 +12,7 @@ library("tidyr")
 library("purrr")
 library("dplyr")
 library("magrittr")
+library("broom")
 
 
 # Notes: --------------------------------
@@ -27,13 +28,14 @@ str(gapminder)
 gapminder %<>%
       mutate(year1950 = year - 1950)
 
-
-# nested data: ------------------------------
+#**************************************************************************
+# 1. Creating nested data using tidyr::nest( ): ------------------------------
+#**************************************************************************
 
 # use group by, then nest: 
 by_country <- gapminder %>%
       group_by(country) %>% 
-      nest()  # nest is from tidyr
+      nest()  # nest is from tidyr package 
 
 by_country  
 # 1 row for each country. All other cols of gapminder have been 
@@ -51,8 +53,9 @@ by_country$data[[5]]
 
 
 
-
-# fitting models for each country: ------------------------
+#**************************************************************************
+# 2. Fitting models for each country using purrr::map( ) : ------------------------
+#**************************************************************************
 # fit lifexp ~ years.since.1950
 # this will remove linear trend from the data 
 
@@ -62,9 +65,9 @@ country_model <- function(df){
 }
 
 
-# create all the models, save in a new column, rename by_country: 
+# create all the models, save in a new column, rename "by_country" to "models_by_country" : 
 models_by_country <- by_country %>%
-      mutate(model = map(data, country_model))
+      mutate(model = map(data, country_model))  # data is the list-column in by_country. Each element is a df
 
 models_by_country
 models_by_country$model[[9]]
@@ -107,6 +110,39 @@ funs %>%
 # todo: https://cran.r-project.org/web/packages/lazyeval/vignettes/lazyeval.html 
 
 #*************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+#**************************************************************************
+# 3. Using broom package to convert models to tidy data: --------------------
+#**************************************************************************
+
+# broom::glance( )      ==> gives high level summary of model e.g. R.squared; 1 row per model
+# broom::tidy( )        ==> gives model estimates e.g. coefficients in regression; 1 row per estimate
+# broom::augment( )     ==> gives 1 row per observation for residuals, predicted values, etc. 
+
+models_by_country %<>% 
+      mutate(
+            tidy = map(model, broom::tidy), 
+            glance = map(model, broom::glance), 
+            augment = map(model, broom::augment)
+      )
+
+models_by_country
+models_by_country$tidy[[1]]
+models_by_country$glance[[1]]
+models_by_country$augment[[1]]  # new cols have "." in front to prevent conflicts with existing colnames  
+
 
 
 
