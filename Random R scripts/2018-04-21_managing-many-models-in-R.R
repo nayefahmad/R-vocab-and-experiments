@@ -152,10 +152,24 @@ models_by_country$rsq %>% hist   # most rsquared are very good
 
 
 
-# we can now unnest to see details: ---------------------
-unnest(models_by_country, data)  # note new col "rsq" 
+# 4. Unnest to see details and plot: ---------------------
+unnest(models_by_country, data)  # Recover initial data; note new col "rsq" 
+unnest(models_by_country, model) # doesn't work
+unnest(models_by_country, tidy)  # expand the "tidy" column
 
-# let's plot all the rsquareds using the unnested data: 
+# > how many positive slopes vs negative: almost all positive: ------
+unnest(models_by_country, tidy) %>% 
+      filter(term == "year1950") %>% 
+      select(estimate) %>% 
+      ggplot(aes(x = estimate)) +
+            geom_histogram() + 
+            labs(title = "Histogram of slopes - change in lifeExp per year") + 
+            theme_classic()
+      
+unnest(models_by_country, glance) %>% View  # view all high-level model summary stats 
+
+
+# > let's plot all the rsquareds using the unnested data: -----
 unnest(models_by_country, data) %>%
       ggplot(aes(rsq, reorder(country, rsq))) +   # todo: reorder( )?? 
       
@@ -168,6 +182,27 @@ unnest(models_by_country, data) %>%
       geom_point(aes(colour = continent)) + 
       theme_classic()
 
+
+# > plotting slope vs intercept for all countries: ----------
+models_by_country %>% 
+      unnest(tidy) %>% 
+      select(country, 
+             term, 
+             estimate, 
+             rsq) %>% 
+      
+      # use tidyr::spread( ) to "spread a key-value pair across multiple columns" 
+      # both Intercept and year1950 appear in the "term" col ==> we want 2 
+      #     seperate cols for "Intercept" and "year1950" 
+      # this is an alternative to reshape2::melt and dcast
+      spread(term, estimate) %>%   # todo: this is an alternative to reshape??    
+      ggplot(aes(x = `(Intercept)`, 
+                 y = year1950)) +
+      geom_point(aes(colour = rsq)) + 
+      theme_classic()
+      
+      
+      
 
 
 
