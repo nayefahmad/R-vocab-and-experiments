@@ -15,6 +15,7 @@ library("magrittr")
 library("broom")
 library("ggplot2")
 
+# rm(list = ls())
 
 # Notes: --------------------------------
 # 1. tidyr is for nested data (dataframes within dataframes)
@@ -40,7 +41,7 @@ by_country <- gapminder %>%
 
 by_country  
 # 1 row for each country. All other cols of gapminder have been 
-#     collapsed in to the data column of by_country. 
+#     collapsed in to the "data" column of by_country. 
 # Each row of by_country is for a single country
 # Each entry of by_coutnry$data is a dataframe, which is nested 
 #     within the by_country dataframe! 
@@ -73,14 +74,14 @@ models_by_country <- by_country %>%
 models_by_country
 models_by_country$model[[9]]
 
-# > side note: map functions: -------------------
+# > Side note: map functions: -------------------
 # map() is almost exactly the same as lapply()/sapply()
 # take each element of data, and apply function country_model() to it
 
 # map_lgl(), map_int(), map_dbl() and map_chr() return vectors of the corresponding type (or die trying).
 
 # map2() takes 2 input vectors, applies a fn to take ith element 
-# oth each of 2 inputs each time: 
+# of each of 2 inputs each time: 
 output_length <- seq(10)
 mu <- rnorm(10,20)
 
@@ -110,6 +111,57 @@ funs %>%
 # todo: don't really understand this 
 # todo: https://cran.r-project.org/web/packages/lazyeval/vignettes/lazyeval.html 
 
+
+
+# > Using formulas/character vectors as 2nd arg to map( ): ---------------------
+?map
+
+# fit individual model mpg ~ wt for each value of cyl: 
+mtcars %>%
+      split(.$cyl) %>%
+      map(~ lm(mpg ~ wt, data = .x)) %>%
+      # SEE NOTE BELOW ON FORMULAS 
+      # ?map: map(.x, .f, ...)
+      # if ".f" arg to map is a formula, it is converted to a function
+      # Therefore the above is a way of creating the function anonymously "in-line", 
+      #     instead of first creating a fn such as: 
+      #     regress_fn <- function(df){lm(mpg ~ wt, data = df)}
+      
+      map(summary) %>%
+      map_dbl("r.squared")  # you could also use map( ), but that would return a list instead of dbl vector
+      # # map(.x, .f, ...)
+      # If .f is a character vector, numeric vector, or list, it is converted 
+      #     to an extractor function.
+      # Character vectors index by name and numeric vectors index by position; use a 
+      #      list to index by position and name at different levels.
+
+
+
+# >> Note on formulas -------
+# https://cran.r-project.org/web/packages/lazyeval/vignettes/lazyeval.html 
+# ~ is a single character that allows you to say: “I want to capture the meaning 
+# of this code, without evaluating it right away”. For that reason, 
+# the formula can be thought of as a “quoting” operator.
+
+# A formula captures two things:
+# 1) An unevaluated expression. 
+# 2) The context (environment) in which the expression was created.
+
+# One-sided formulas have length two. First element is "~", second is the RHS 
+# Two-sided formulas have length three: "~", "LHS", "RHS" 
+g <- y ~ x + z
+class(g)
+length(g)
+g[[1]]
+g[[2]]
+g[[3]]
+
+# package lazyeval helps to work with functions: 
+library("lazyeval")
+f_rhs(g)
+f_lhs(g)
+f_env(g)
+
 #*************************************************************
 
 
@@ -138,7 +190,8 @@ models_by_country %<>%
             glance = map(model, broom::glance), 
             
             # let's specifically extract r squared: 
-            rsq = glance %>% map_dbl("r.squared"),  # purr can be used to extract all objects with a certain name, here "r.squared"
+            rsq = glance %>% map_dbl("r.squared"),  
+            # purr can be used to extract all objects with a certain name, here "r.squared"
             
             augment = map(model, broom::augment)
       )
@@ -193,7 +246,7 @@ models_by_country %>%
       
       # use tidyr::spread( ) to "spread a key-value pair across multiple columns" 
       # both Intercept and year1950 appear in the "term" col ==> we want 2 
-      #     seperate cols for "Intercept" and "year1950" 
+      #     seperate cols for "Intercept" and "year1950" , each of which has values of "estimate"
       # this is an alternative to reshape2::melt and dcast
       spread(term, estimate) %>%   # todo: this is an alternative to reshape??    
       ggplot(aes(x = `(Intercept)`, 
