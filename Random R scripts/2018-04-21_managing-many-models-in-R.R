@@ -180,7 +180,7 @@ f_env(g)
 # 3. Using broom package to convert models to tidy data: --------------------
 #**************************************************************************
 
-# broom::glance( )      ==> gives high level summary of model e.g. R.squared; 1 row per model
+# broom::glance( )      ==> gives high level summary of model e.g. R.squared; 1 row per model, 1 col per summary stat
 # broom::tidy( )        ==> gives model estimates e.g. coefficients in regression; 1 row per estimate
 # broom::augment( )     ==> gives 1 row per observation for residuals, predicted values, etc. 
 
@@ -191,7 +191,7 @@ models_by_country %<>%
             
             # let's specifically extract r squared: 
             rsq = glance %>% map_dbl("r.squared"),  
-            # purr can be used to extract all objects with a certain name, here "r.squared"
+            # map( ) can be used to extract all objects with a certain name, here "r.squared"
             
             augment = map(model, broom::augment)
       )
@@ -224,7 +224,7 @@ unnest(models_by_country, glance) %>% View  # view all high-level model summary 
 
 # > let's plot all the rsquareds using the unnested data: -----
 unnest(models_by_country, data) %>%
-      ggplot(aes(rsq, reorder(country, rsq))) +   # todo: reorder( )?? 
+      ggplot(aes(x=rsq, y=reorder(country, rsq))) +   # todo: reorder( )?? 
       
       # stats::reorder(x, X) : 
       #     x is usually a factor 
