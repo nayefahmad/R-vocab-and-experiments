@@ -34,10 +34,14 @@ incidence.matrix <- function(dataframe, scale.max){
       matrix <- dataframe %>% 
             group_by(alice, bob) %>% 
             summarise(num = n()) %>% 
+            
+            # ensure no missing rows: 
             full_join(combos, 
                       by = c("alice" = "alice", 
                              "bob" = "bob")) %>% 
             arrange(alice, bob) %>% 
+            
+            # convert to matrix
             dcast(alice ~ bob) 
       
       # remove NAs: 
