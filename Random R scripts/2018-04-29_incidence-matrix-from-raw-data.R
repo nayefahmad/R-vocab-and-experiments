@@ -11,10 +11,13 @@ library("reshape2")
 data <- data.frame(question = seq(20), 
                    alice = sample(1:10, 20, replace = TRUE), 
                    bob = sample(1:10, 20, replace = TRUE))
-data
+print(data)
 
-data %>% group_by(alice, bob) %>% 
+matrix <- data %>% 
+      group_by(alice, bob) %>% 
       summarise(num = n()) %>% 
-      melt(id.vars = c("alice", "bob")) %>% 
-      dcast(alice ~ bob)
+      dcast(alice ~ bob) %>% as.matrix
 
+matrix[is.na(matrix)] <- 0 
+
+print(matrix)
