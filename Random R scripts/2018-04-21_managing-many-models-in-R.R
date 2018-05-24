@@ -46,7 +46,7 @@ by_country
 # Each entry of by_coutnry$data is a dataframe, which is nested 
 #     within the by_country dataframe! 
 # The "data" column is called a "list-column". Remember, a list 
-#     can contain anything in R 
+#     can contain anything in R (including a set of dataframes!)
 
 # str(by_country)  # str not helpful here 
 by_country[1]  # not helpful 
@@ -108,10 +108,8 @@ funs <- list(mean, median, sd)
 
 funs %>% 
       map(~ mtcars %>% map_dbl(.x)) 
-# todo: don't really understand this 
-# todo: https://cran.r-project.org/web/packages/lazyeval/vignettes/lazyeval.html 
-
-
+# todo: how does the .x work here? 
+# see note below on formulas in R 
 
 # > Using formulas/character vectors as 2nd arg to map( ): ---------------------
 ?map
@@ -139,9 +137,9 @@ mtcars %>%
 
 # >> Note on formulas -------
 # https://cran.r-project.org/web/packages/lazyeval/vignettes/lazyeval.html 
-# ~ is a single character that allows you to say: “I want to capture the meaning 
-# of this code, without evaluating it right away”. For that reason, 
-# the formula can be thought of as a “quoting” operator.
+# ~ is a single character that allows you to say: "I want to capture the meaning 
+# of this code, without evaluating it right away". For that reason, 
+# the formula can be thought of as a "quoting" operator.
 
 # A formula captures two things:
 # 1) An unevaluated expression. 
@@ -163,6 +161,57 @@ f_lhs(g)
 f_env(g)
 
 #*************************************************************
+# >>> delayed evaluation using formualas: --------
+# A formula captures delays the evaluation of an expression so you can later evaluate it with f_eval():
+f <-  ~ 1 + 2
+f
+
+f_eval(f)
+
+# This allows you to use a formula as a robust way of delaying evaluation, cleanly separating the 
+# creation of the formula from its evaluation: 
+
+x <- 1
+add_1000 <- function(x) {
+  # this fn returns a formula without evaluation 
+  ~ 1000 + x 
+}
+
+add_1000(3)
+f_eval(add_1000(3))
+# note that we get 1003, not 1001, even though we originally defined x <- 1. 
+# this is because the formula returned by add_1000 knows to look for value of x 
+# in the arguments of add_1000, and not in the global environment. 
+
+# Why would you want to delay evaluation of a formulay? E.g. first you define a formula, 
+#      then use purrr::map() to iterate and pass several arguments to the formula (see above)
+
+
+
+# >>> Nonstandard scoping using formulas: ------
+# Non-standard scoping looks for objects in places other than the current environment.
+# For example, base R has with(), subset(), and transform() that look for objects in 
+#     a data frame (or list) before the current environment:
+
+x <- 20 
+df <- data.frame(x = c(1, 5, 4, 2, 3), y = c(2, 1, 5, 4, 3))
+with(df, mean(x))
+
+# it's not obvious where to look for the value of variable x. with( ) allows us to ignore
+# current environment and just look for the value inside a particular dataframe. 
+
+
+# f_eval() has an optional second argument: a named list (or data frame) that overrides 
+# values found in the formula's environment: 
+y <- 100
+f_eval(~y)  # y is found in the global environment 
+f_eval(~y, data = list(y=20))  
+# we force y to be bound to a value that does not come
+#     from its immediate environment, but is supplied by us instead. 
+
+# Example: 
+f_eval(~ mean(hp)/sd(hp))  # doesn't work 
+f_eval(~ mean(hp)/sd(hp), data = mtcars)  # works! 
 
 
 
