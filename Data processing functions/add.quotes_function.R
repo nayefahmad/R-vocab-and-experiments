@@ -9,6 +9,8 @@
 
 # define fun: 
 add.quotes <- function(input.number, isInsertedIntoSqltable){
+      require("magrittr")
+      
       if (isInsertedIntoSqltable == FALSE) {
             paste0("'", input.number, "', ")
       } else {
