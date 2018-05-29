@@ -36,7 +36,7 @@ gapminder %<>%
 
 # use group by, then nest: 
 by_country <- gapminder %>%
-      group_by(country) %>% 
+      group_by(country, continent) %>% 
       nest()  # nest is from tidyr package 
 
 by_country  
@@ -63,7 +63,7 @@ by_country$data[[5]]
 
 # function for fitting regression: 
 country_model <- function(df){
-      lm(lifeExp ~ year1950, data =df) 
+      lm(lifeExp ~ year1950, data = df) 
 }
 
 
@@ -246,7 +246,7 @@ models_by_country %<>%
       )
 
 models_by_country
-models_by_country$tidy[[1]]
+models_by_country$tidy[[2]]
 models_by_country$glance[[1]]
 models_by_country$augment[[1]]  # new cols have "." in front to prevent conflicts with existing colnames  
 models_by_country$rsq[[10]] 
@@ -259,7 +259,7 @@ unnest(models_by_country, data)  # Recover initial data; note new col "rsq"
 unnest(models_by_country, model) # doesn't work
 unnest(models_by_country, tidy)  # expand the "tidy" column
 
-# > how many positive slopes vs negative: almost all positive: ------
+# > how many positive slopes vs negative: Ans: almost all positive: ------
 unnest(models_by_country, tidy) %>% 
       filter(term == "year1950") %>% 
       select(estimate) %>% 
@@ -268,7 +268,7 @@ unnest(models_by_country, tidy) %>%
             labs(title = "Histogram of slopes - change in lifeExp per year") + 
             theme_classic()
       
-unnest(models_by_country, glance) %>% View  # view all high-level model summary stats 
+# unnest(models_by_country, glance) %>% View  # view all high-level model summary stats 
 
 
 # > let's plot all the rsquareds using the unnested data: -----
@@ -289,19 +289,85 @@ unnest(models_by_country, data) %>%
 models_by_country %>% 
       unnest(tidy) %>% 
       select(country, 
+             continent, 
              term, 
              estimate, 
              rsq) %>% 
       
       # use tidyr::spread( ) to "spread a key-value pair across multiple columns" 
       # both Intercept and year1950 appear in the "term" col ==> we want 2 
-      #     seperate cols for "Intercept" and "year1950" , each of which has values of "estimate"
+      #     seperate cols for "Intercept" and "year1950" , each of which has values 
+      #     of "estimate"
       # this is an alternative to reshape2::melt and dcast
-      spread(term, estimate) %>%   # todo: this is an alternative to reshape??    
+      spread(term, estimate) %>%  
+      
       ggplot(aes(x = `(Intercept)`, 
                  y = year1950)) +
-      geom_point(aes(colour = rsq)) + 
-      theme_classic()
+      geom_point(aes(size = rsq, 
+                     colour = continent)) + 
+      geom_smooth(se = FALSE) + 
+      
+      labs(x = "Intercept = life exp in year 1950", 
+           y = "Yearly improvement (from linear model)") + 
+      
+      theme_classic(base_size = 14)
+
+# note: no real point trying to interpret points with poor R-squared on this 
+#     graph. We know that the linear model doesn't fit well for those points. 
+
+# Countries that were worst in 1950 are the ones where most improvement has happened 
+
+
+
+# plot residuals by country, grouped by continent: -------------------------------
+models_by_country %>% 
+      unnest(augment) %>% 
+      
+      ggplot(aes(x = year1950, 
+                 y = .resid)) + 
+      geom_line(aes(group = country), alpha = 1/3) + 
+      geom_hline(yintercept = 0, colour = "white") + 
+      geom_smooth(se = FALSE) + 
+      facet_wrap(~continent) + 
+      
+      labs(title = "Model diagnostics",
+           subtitle = "(Resids vs. predictor plots)", 
+           x = "Years (starting 1950)") + 
+      theme_classic(base_size = 14)
+
+# this plot lets's us identify years when the linear model (lifexp ~ yearsFrom1950)
+#     is performing poorly. Large deviations from the horizontal line 
+#     indicate poor performance. 
+
+# what are the countries with the large negative residuals? 
+models_by_country %>% 
+      unnest(augment) %>% 
+      filter(.resid < (-10)) %>% 
+      View
+
+
+# we can also do a resids vs fitted values plot: 
+models_by_country %>% 
+      unnest(augment) %>% 
+      
+      ggplot(aes(x = .fitted, 
+                 y = .resid)) + 
+      geom_point(aes(group = country), alpha = 1/3) + 
+      # each point is a single country-year combination? 
+      
+      geom_hline(yintercept = 0, colour = "white") + 
+      geom_smooth(se = FALSE) + 
+      facet_wrap(~continent) + 
+      
+      labs(title = "Model diagnostics",
+           subtitle = "(Resids vs. fitted values plots)", 
+           x = "Fitted values (LifExp)", 
+           y = "Residuals") + 
+      theme_classic(base_size = 14)
+
+
+
+
       
       
       
