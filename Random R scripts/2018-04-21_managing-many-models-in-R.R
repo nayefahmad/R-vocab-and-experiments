@@ -22,20 +22,30 @@ library("ggplot2")
 # 2. purrr is for functional programming (emphasize acions, not objects)
 # 3. broom is for converting models to tidy data 
 
-# Overview: -----------------------------
+
+# Overview: -------------------------------------------------------------------
 # Instead of using a single visualization of lifExp vs time for all countries 
 #     in the gapminder data (which is messy and hard to interpret), we can 
 #     enhance our understanding by fitting a simple model by country, and 
 #     then visualizing the outputs/performance of the model. 
 # Modelling and visualization go hand-in-hand in an iterative process. 
 
-# Here are the final plots: 
-# p1.histogram
+# Here are the final plots and some insights: 
+# p1.histogram  
+# growth of 0.2-0.5 years of lifexp per year is normal. Almost no countries saw an average decreace in Lifexp
+
 # p2.rsq.by.country
+# simple linear model explains very high proportion of variation in lifexp for most countries 
+
 # p3.slope.intercept
+# Catch-up: countries that started with lowest lifexp saw fastest growth (exception: Africa)
+
 # p4.resids.time
+# Allows us to identify particular deviations in the model: Cambodia Khmer Rouge, Rwandan Genocide, etc. 
+
 # p5.resids.fitted
 
+#******************************************************************************
 
 gapminder
 str(gapminder)
