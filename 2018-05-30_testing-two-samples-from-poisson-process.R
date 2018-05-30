@@ -9,7 +9,7 @@ library("magrittr")
 # Reference: https://stats.stackexchange.com/questions/9561/checking-if-two-poisson-samples-have-the-same-mean
 
 # pre-requirement: check that inter-arrival times are roughly exponentially distriubted.
-#     (or even better, do a Kolmogorov-Smirnov test)
+#     (or even better, do a Kolmogorov-Smirnov test for Poisson distribution)
 
 # sample 1: 7 events in 20 days 
 # sample 2: 17 events in 33 days 
@@ -37,7 +37,7 @@ replicate(10000, sum(rpois(t2, lambda))) %>% hist
 abline(v = n2, col = "blue", lwd = 2)
 
 
-# ECDFs: -------------------------------------------------
+# Empirical CDFs: -------------------------------------------------
 par(mfrow =c(2,1))
 replicate(10000, sum(rpois(t1, lambda))) %>% ecdf %>% plot 
 abline(v = n1, col = "blue", lwd = 2)
