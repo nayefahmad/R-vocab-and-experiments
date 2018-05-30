@@ -22,6 +22,20 @@ library("ggplot2")
 # 2. purrr is for functional programming (emphasize acions, not objects)
 # 3. broom is for converting models to tidy data 
 
+# Overview: -----------------------------
+# Instead of using a single visualization of lifExp vs time for all countries 
+#     in the gapminder data (which is messy and hard to interpret), we can 
+#     enhance our understanding by fitting a simple model by country, and 
+#     then visualizing the outputs/performance of the model. 
+# Modelling and visualization go hand-in-hand in an iterative process. 
+
+# Here are the final plots: 
+# p1.histogram
+# p2.rsq.by.country
+# p3.slope.intercept
+# p4.resids.time
+# p5.resids.fitted
+
 
 gapminder
 str(gapminder)
@@ -229,9 +243,9 @@ f_eval(~ mean(hp)/sd(hp), data = mtcars)  # works!
 # 3. Using broom package to convert models to tidy data: --------------------
 #**************************************************************************
 
-# broom::glance( )      ==> gives high level summary of model e.g. R.squared; 1 row per model, 1 col per summary stat
-# broom::tidy( )        ==> gives model estimates e.g. coefficients in regression; 1 row per estimate
-# broom::augment( )     ==> gives 1 row per observation for residuals, predicted values, etc. 
+# broom::glance( )  ==> gives high level summary of model e.g. R.squared; 1 row per model, 1 col per summary stat
+# broom::tidy( )    ==> gives model estimates e.g. coefficients in regression; 1 row per estimate
+# broom::augment( ) ==> gives 1 row per observation for residuals, predicted values, etc. 
 
 models_by_country %<>% 
       mutate(
@@ -257,22 +271,25 @@ models_by_country$rsq %>% hist   # most rsquared are very good
 # 4. Unnest to see details and plot: ---------------------
 unnest(models_by_country, data)  # Recover initial data; note new col "rsq" 
 unnest(models_by_country, model) # doesn't work
-unnest(models_by_country, tidy)  # expand the "tidy" column
+unnest(models_by_country, tidy)  # expand the "tidy" column to find coefficients (intercept and slope)
+unnest(models_by_country, glance)  # find rsquared, adj.rsq, AIC, BIC, etc. for each country's model 
 
 # > how many positive slopes vs negative: Ans: almost all positive: ------
-unnest(models_by_country, tidy) %>% 
+p1.histogram <- 
+      unnest(models_by_country, tidy) %>% 
       filter(term == "year1950") %>% 
       select(estimate) %>% 
       ggplot(aes(x = estimate)) +
             geom_histogram() + 
             labs(title = "Histogram of slopes - change in lifeExp per year") + 
-            theme_classic()
+            theme_classic(); p1.histogram
       
 # unnest(models_by_country, glance) %>% View  # view all high-level model summary stats 
 
 
 # > let's plot all the rsquareds using the unnested data: -----
-unnest(models_by_country, data) %>%
+p2.rsq.by.country <- 
+      unnest(models_by_country, data) %>%
       ggplot(aes(x=rsq, y=reorder(country, rsq))) +   # todo: reorder( )?? 
       
       # stats::reorder(x, X) : 
@@ -282,11 +299,12 @@ unnest(models_by_country, data) %>%
       
       
       geom_point(aes(colour = continent)) + 
-      theme_classic()
+      theme_classic(); p2.rsq.by.country
 
 
 # > plotting slope vs intercept for all countries: ----------
-models_by_country %>% 
+p3.slope.intercept <- 
+      models_by_country %>% 
       unnest(tidy) %>% 
       select(country, 
              continent, 
@@ -310,7 +328,7 @@ models_by_country %>%
       labs(x = "Intercept = life exp in year 1950", 
            y = "Yearly improvement (from linear model)") + 
       
-      theme_classic(base_size = 14)
+      theme_classic(base_size = 14); p3.slope.intercept
 
 # note: no real point trying to interpret points with poor R-squared on this 
 #     graph. We know that the linear model doesn't fit well for those points. 
@@ -320,7 +338,8 @@ models_by_country %>%
 
 
 # plot residuals by country, grouped by continent: -------------------------------
-models_by_country %>% 
+p4.resids.time <- 
+      models_by_country %>% 
       unnest(augment) %>% 
       
       ggplot(aes(x = year1950, 
@@ -333,21 +352,22 @@ models_by_country %>%
       labs(title = "Model diagnostics",
            subtitle = "(Resids vs. predictor plots)", 
            x = "Years (starting 1950)") + 
-      theme_classic(base_size = 14)
+      theme_classic(base_size = 14); p4.resids.time
 
 # this plot lets's us identify years when the linear model (lifexp ~ yearsFrom1950)
 #     is performing poorly. Large deviations from the horizontal line 
 #     indicate poor performance. 
 
 # what are the countries with the large negative residuals? 
-models_by_country %>% 
-      unnest(augment) %>% 
-      filter(.resid < (-10)) %>% 
-      View
+# models_by_country %>% 
+#       unnest(augment) %>% 
+#       filter(.resid < (-10)) %>% 
+#       View
 
 
 # we can also do a resids vs fitted values plot: 
-models_by_country %>% 
+p5.resids.fitted <- 
+      models_by_country %>% 
       unnest(augment) %>% 
       
       ggplot(aes(x = .fitted, 
@@ -363,7 +383,7 @@ models_by_country %>%
            subtitle = "(Resids vs. fitted values plots)", 
            x = "Fitted values (LifExp)", 
            y = "Residuals") + 
-      theme_classic(base_size = 14)
+      theme_classic(base_size = 14); p5.resids.fitted
 
 
 
