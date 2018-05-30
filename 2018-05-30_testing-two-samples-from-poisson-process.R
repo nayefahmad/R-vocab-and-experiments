@@ -22,10 +22,10 @@ t2 <- 33
 
 
 #***********************************************************************
-# 1. APPROACH 1: VISUAL COMPARISONS FROM POISSON DISTRIBUTIONS: -------------
+# APPROACH 1: VISUAL COMPARISONS FROM POISSON DISTRIBUTIONS: -------------
 #***********************************************************************
 
-# estimated join mean: 
+# estimated joint mean: 
 lambda <- (n1+n2)/(t1+t2)
 
 # histograms ---------------------------------------------
@@ -56,7 +56,7 @@ abline(v = n2, col = "blue", lwd = 2)
 
 
 #***********************************************************************
-# 2. APPROACH 2: USING EXACT POISSON TEST 
+# APPROACH 2: USING EXACT POISSON TEST ------------------
 #***********************************************************************
 ?poisson.test
 
