@@ -6,6 +6,7 @@
 
 library("tidyverse")
 library("grDevices")
+library("RColorBrewer")
 
 # reference: 
 
@@ -65,3 +66,30 @@ mtcars %>%
                  size = 5) +
       scale_colour_manual(values = pal(3)) + 
       theme_classic()
+
+
+
+# using RColorBrewer: -------------------
+# the only real fn to learn is brewer.pal(numColors, "theme name") 
+
+display.brewer.all()
+# 3 categories of palettes: sequential, diverging, qualitative 
+
+
+# let's use 3 cols from the "Set1" palette: 
+brewer.pal(3, "Set1")
+
+# if I want I can pass this to colorRampPalette to interpolate
+#     between the 3 values chosen 
+
+
+# testing with ggplot again: -----------------
+mtcars %>% 
+      ggplot(aes(x = hp,
+                 y = mpg)) + 
+      geom_point(aes(col = as.factor(cyl)), 
+                 size = 5) +
+      scale_colour_manual(values = brewer.pal(3, "Set1")) + 
+      theme_classic()
+
+
