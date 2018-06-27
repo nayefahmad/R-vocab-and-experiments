@@ -18,9 +18,11 @@ library("grDevices")
 # function that takes integer arguments and returns a vector of 
 # colors interpolating the palette (like heat.colors() or topo.colors())
 
-
-# interpolate colors between red and blue: ------
+# colorRamp():----------------------
+# interpolate colors between red and blue: 
 palette <- colorRamp(c("red", "blue"))
+
+# palette is a fn that takes a number between 0 and 1 
 palette(0)  # this gives the colour red in RGB
 
 # you can pass any number from 0 to 1 to palette( ) 
@@ -35,3 +37,31 @@ palette(seq(0, 1, len = 10))
 pal <- colorRamp(c("red", "green", "blue"))
 pal(0)
 pal(.4)
+
+
+
+# colourRampPalette( ): --------------------
+pal <- colorRampPalette(c("red", "yellow"))
+
+# pal is a fn that takes an integer arg specifying num of 
+# interpolated cols to return: 
+
+pal(2)  # just gives red and yellow 
+#FFFF00 ==> in this format, first 2 characters specify red 
+# value, then next 2 specify green, then blue (in hex format)
+
+
+# return 10 cols between red and yellow: 
+pal(10)
+
+
+
+
+# testing with ggplot: --------
+mtcars %>% 
+      ggplot(aes(x = hp,
+                 y = mpg)) + 
+      geom_point(aes(col = as.factor(cyl)), 
+                 size = 5) +
+      scale_colour_manual(values = pal(3)) + 
+      theme_classic()
