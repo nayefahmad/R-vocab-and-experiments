@@ -1304,6 +1304,28 @@ mtcars2 <- mutate_if(mtcars,
 str(mtcars2)
 
 
+# case_when() for multiple "if" conditions 
+# case_when is a general vectorized if 
+
+mtcars %>% 
+      mutate(type = case_when(
+            hp < 100 ~ "slow",  # this is a 2-sided formula, with "hp<100" on Lhs. Here, LGH must evaluate to logical
+            hp < 120 ~ "ok",
+            hp >= 120 ~ "fast"
+            )) %>% 
+      select(hp, type)
+
+
+# fizzbuzz using case_when: 
+x <- 1:100
+case_when(
+      x %% 15 == 0 ~ "fizzbuzz", 
+      x %% 3 == 0 ~ "fizz", 
+      x %% 5 == 0 ~ "buzz", 
+      TRUE ~ as.character(x)  # all RHSs must evaluate to same type, character here. 
+)
+
+
 
 #***************************************************
 # DATAPASTA PACKAGE ----
