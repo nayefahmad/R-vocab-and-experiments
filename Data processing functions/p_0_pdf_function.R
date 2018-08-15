@@ -38,4 +38,4 @@ p_0.prob <- function(lambda,  # arrival rate
 
 
 # test function: 
-p_0.pdf(10, 6, 2)  # 0.09090909; matches with ex. on p7 https://nptel.ac.in/courses/110106046/Module%209/Lecture%204.pdf 
+p_0.prob(10, 6, 2)  # 0.09090909; matches with ex. on p7 https://nptel.ac.in/courses/110106046/Module%209/Lecture%204.pdf 
