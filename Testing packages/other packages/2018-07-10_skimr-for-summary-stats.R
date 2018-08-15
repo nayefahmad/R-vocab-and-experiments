@@ -10,10 +10,14 @@ library("ggplot2")
 library("magrittr")
 
 
+help(package = "skimr")
+
 skim(mtcars)
 skim(iris)
 skim(Boston)
 skim(diamonds)
+skim(InsectSprays)
+skim(Titanic)  # doesn't work with table
 
 # well this is pretty cool :) 
 
