@@ -50,6 +50,8 @@ avg.tis_mmc(267, 4.08, 143) * 24  # 5.882353 hours
 # data from cube: 5.89 hours. 
 # This is effectively equal! <1 minute difference!
 
+# note: c*mu = 4.08*143 = 583.44; if lambda reaches this value, system breaks down!!
+
 
 # Example: RHS, calendar 2017   
 avg.tis_mmc(156, 4.25, 67) * 24  # 5.64706 hours 
