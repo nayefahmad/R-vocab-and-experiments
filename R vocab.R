@@ -1226,7 +1226,7 @@ p1
 
 # DPLYR PACKAGE: -------------------------------------
 
-# group_by( ): --------------
+# > group_by( ): --------------
 # converts df to tbl, with meta-instruction to do all subsequent operations in terms of groups. Note that on its own, group_by does not do any operation; it is usually used in conjunction with summarize()
 
 mtcars
@@ -1234,7 +1234,7 @@ group_by(mtcars, cyl)  # a tibble, with instructions to do subsequent operations
 group_by(mtcars, cyl) %>% as.data.frame  # identical to initial df 
 
 
-# ...comparing summarize() on grouped versus original df: ----------
+# > comparing summarize() on grouped versus original df: ----------
 grouped <- group_by(mtcars, cyl)
 
 summarize(grouped, mean(hp)) %>% as.data.frame # compare with following: 
@@ -1246,7 +1246,7 @@ summarize(grouped, mean(hp), sd(hp), mean(disp), sd(disp)) %>%
 summarize(mtcars, mean(hp), sd(hp), mean(disp), sd(disp))
 
 
-# ...try alternative groupings: --------------------------
+# > try alternative groupings: --------------------------
 (grouped_by_cyl <- group_by(mtcars, cyl) %>% 
        summarize(mean(hp), sd(hp))) %>% as.data.frame
 (grouped_by_gear <- group_by(mtcars, gear) %>% 
@@ -1268,7 +1268,7 @@ count(mtcars, cyl, gear)
 # another option to count rows: 
 mtcars %>% group_by(cyl, gear) %>% summarise(n= n() ) 
 
-#replace() ----
+# > replace() ----
 head(mtcars); str(mtcars)
 cyl_order <- order(mtcars$cyl)
 mtcars2 <- mtcars[cyl_order,]
@@ -1285,7 +1285,7 @@ mtcars2 %>%
       select(12,1:11) %>% 
       as.data.frame %>% print 
 
-# reorder cols to bring specified cols to the front: --------
+# > reorder cols to bring specified cols to the front: --------
 str(mtcars)
 
 # let's say you want disp and qsec at the front: 
@@ -1295,7 +1295,7 @@ mtcars %>%
 
 
 
-# mutate_if( ) for changing coltypes: -----------
+# > mutate_if( ) for changing coltypes: -----------
 str(mtcars)
 mtcars2 <- mutate_if(mtcars, 
                      is.numeric, 
@@ -1327,12 +1327,27 @@ case_when(
 
 
 
+# > purrr::set_names(): ----------
+# set all colnames to lower/upper case: 
+mtcars %>%
+      set_names(toupper(names(.))) %>% 
+      head
+
+
+# use a separate vector as colnames: 
+cols <- paste0("col", 1:11)
+
+mtcars %>% 
+      set_names(cols) %>% 
+      head
+
+
 #***************************************************
 # DATAPASTA PACKAGE ----
 #***************************************************
 # help(package="datapasta")
 
-# to paste data as tibble into R from clipboard: -----
+# > to paste data as tibble into R from clipboard: -----
 # 1. copy the data
 # 2. in your R script (not console?) use the addin "paste as tribble" 
 #           > tools>>addins OR 
@@ -1363,7 +1378,7 @@ df2 <- tibble::tribble(
              )  # %>% as.data.frame 
 
 
-# paste as data frame from Excel: ------
+# > paste as data frame from Excel: ------
 # > shortcut: ctrl + shift + d 
 df3 <- data.frame(
               CTAS.Code = c(1L, 2L, 3L),
@@ -1371,7 +1386,7 @@ df3 <- data.frame(
        )
 
 
-# try pasting as vector from excel: --------
+# > try pasting as vector from excel: --------
 # > shortcut: ctrl + shift + v 
 months <- c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct")
 
@@ -1391,7 +1406,7 @@ months.v <- c("jan",
 
 
 
-# copy to clipboard from R: -------
+# > copy to clipboard from R: -------
 mtcars$cyl %>% dmdclip()  # doesn't actually seem that useful 
 
 
