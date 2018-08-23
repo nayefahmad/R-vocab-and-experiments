@@ -83,7 +83,8 @@ server <- function(input, output) {
       output$distPlot <- renderPlot({
             
             x    <- faithful$waiting
-            bins <- seq(min(x), max(x), length.out = input$bins + 1)
+            bins <- seq(min(x), max(x), 
+                        length.out = input$bins + 1)  # this is where we reference the input that the user chooses using the slider 
             
             hist(x, 
                  breaks = bins, 
