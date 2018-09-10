@@ -16,8 +16,27 @@ neighbours <- function(A, i, j, n) {
       # calculate number of neighbours of A[i,j]
       
       # case when A[i, j] is not on the perimeter: 
-      
-      
+      if (i > 1 && j > 1 && i < n && j < n){
+            lower.row <- i - 1 
+            upper.row <- i + 1 
+            
+            lower.col <- j - 1
+            upper.col <- j + 1 
+            
+            sum <- A[lower.row, j] +  # top 
+                  A[lower.row, lower.col] +  # top left 
+                  A[lower.row, upper.col] + # top right 
+                  A[i, lower.col] +  # left centre
+                  A[i, upper.col] + # right centre
+                  A[upper.row, j] +  # bottom 
+                  A[upper.row, lower.col] + # bottom left 
+                  A[upper.row, upper.col]  # bottom right 
+            
+            return(sum)
+            
+      } else {
+            return(0)
+      }
       
       
 }
@@ -28,7 +47,11 @@ neighbours <- function(A, i, j, n) {
 n <- 50
 
 # initialise lattice
-A <- matrix(round(runif(n^2)), n, n)
+A <- matrix(rep(0, n^2), n, n)
+A[10, 10] <- 1
+A[10, 11] <- 1
+A[10, 12] <- 1
+
 
 finished <- FALSE
 while (!finished) {
@@ -63,7 +86,8 @@ for (i in 1:n) {
       }
 }
 A <- B
+
 ## continue?
-#input <- readline("stop? ")
-#if (input == "y") finished <- TRUE
+input <- readline("stop? ")
+if (input == "y") finished <- TRUE
 }
