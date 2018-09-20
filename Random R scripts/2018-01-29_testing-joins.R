@@ -13,8 +13,9 @@ df1 <- data.frame(lha=c("ubc",
                         "uptwn", 
                         "uptwn"), 
                   gender= rep(c("m", "f"), times=6), 
-                  ctas=sample(5, 12, replace = TRUE), 
-                  visits = rpois(nrow(df1), 500))  %>% print 
+                  ctas=sample(5, 12, replace = TRUE))
+
+df1 %<>% mutate(visits = rpois(nrow(df1), 500)) # %>% print 
 
 df2 <- data.frame(lha=c("ubc", "downt", "uptwn"), 
                   population=rpois(3, 20)) %>% print 
@@ -46,3 +47,9 @@ inner_join(df1, df2) %>%
 
 # Note: difference between util and util2 is because variable visits 
 #     is excluded from the group by statement
+
+
+
+# left join a smaller df on a larger one: ----------
+df2; df1
+left_join(df2, df1)
