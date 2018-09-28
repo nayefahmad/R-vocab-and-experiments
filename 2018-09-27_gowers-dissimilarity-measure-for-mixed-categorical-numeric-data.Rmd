@@ -240,6 +240,15 @@ df4.auto.new <- df1.auto %>%
                                         "yes", 
                                         "no")))
 
+
+
+
+
+
+```
+
+
+```{r}
 # add rownames for convenience: 
 rownames(df4.auto.new) <- df4.auto.new %>%
     pull(name) %>% 
@@ -253,8 +262,8 @@ m3.gower.newdata <- daisy(df4.auto.new,
 m3.gower.newdata
 
 
-
 ```
+
 
 \  
 \  
