@@ -1,0 +1,228 @@
+---
+title: "Gower's dissimilarity measure for mixed numeric/categorical data"
+author: "Nayef Ahmad"
+date: "September 27, 2018"
+output: 
+    html_document: 
+        code_folding: hide 
+        toc: yes
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+options(knitr.table.format = "html")
+
+
+library("kableExtra")
+library("cluster")
+library("ISLR")
+library("dplyr")
+
+# shortcuts: 
+# > ctrl + alt + i ==> new code chunk
+# > ctrl + shift + k ==> knit doc 
+# \  ==> line break (include 2 spaces after)
+```
+
+
+## Gower's dissimilarity measure
+K-means clustering only works when all variables are numeric. However, we often want to cluster observations on both numeric and categorical variables. For relatively small datasets, this can be done with hierarchical clustering methods using Gower's similarity coefficient. For larger datasets, the computational costs of hierarchical clustering are too large, and an alternative clustering method such as k-prototypes should be considered.^[Huang, Zhexue. Extensions to the k-Means algorithm for clustering large datasets with categorical values. 1998.] 
+
+
+
+### Numeric-only data 
+Let's examine the Auto dataset from the package ISLR. 
+
+```{r message = FALSE}
+df1.auto <- ISLR::Auto %>% 
+    
+    # recode origin as a factor 
+    mutate(origin = case_when(
+        origin == 1 ~ "American",
+        origin == 2 ~ "European",
+        origin == 3 ~ "Japanese"
+    ) %>% as.factor())
+
+
+str(df1.auto)
+summary(df1.auto)
+head(df1.auto) %>% 
+    kable() %>% 
+    kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+
+```
+
+
+\  
+\  
+\  
+
+For simplicity, let's focus on a small subset of the data: 
+
+```{r}
+set.seed(3)
+
+df2.auto.subset <- df1.auto %>% 
+    select(name,
+           mpg, 
+           cylinders, 
+           displacement) %>%  
+    sample_n(3)
+
+# print: 
+df2.auto.subset %>% 
+    kable() %>% 
+    kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+
+```
+
+\  
+\  
+\  
+
+Now we'll compare Gower's dissimilarity measure with Euclidean distances: 
+
+```{r}
+# create matrix object for convenience: 
+m1.auto.numeric <- select(df2.auto.subset, 
+                              -name) %>% 
+    as.matrix()
+
+rownames(m1.auto.numeric) <- df2.auto.subset %>% pull(name)
+
+m1.euclid.dis <- dist(m1.auto.numeric,
+                       method = "euclidean")
+
+m1.euclid.dis
+# str(m1.euclid.dis)
+
+```
+
+So, in terms of similarity: 
+
+* the plymouth valiant and amc ambassador are most similar
+* the audi is more similar to the plymouth than the amc 
+
+Let's compare this with the results from Gower's dissimilarity: 
+
+```{r}
+library("cluster")
+m1.gower.dis <- daisy(m1.auto.numeric, 
+                      metric = "gower")
+
+m1.gower.dis
+
+```
+
+Same conclusion: 
+
+* the plymouth valiant and amc ambassador are most similar
+* the audi is more similar to the plymouth than the amc
+
+\  
+\  
+\  
+
+### Mixed numeric/categorical data
+
+```{r}
+set.seed(1)
+df3.auto.subset.cat <- df1.auto %>% 
+    select(name,
+           mpg, 
+           cylinders, 
+           displacement, 
+           origin) %>%  
+    sample_n(3)
+
+# print: 
+df3.auto.subset.cat %>% 
+    kable() %>% 
+    kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+
+
+```
+
+
+\  
+\  
+\  
+
+Now we'll use Gower distances on mixed data: 
+
+```{r}
+# for convenience, add rownames: 
+rownames(df3.auto.subset.cat) <- df3.auto.subset.cat %>%
+    pull(name) %>% 
+    substr(1,10)
+
+
+
+m2.gower.dis <- daisy(df3.auto.subset.cat, 
+                      metric = "gower")
+
+m2.gower.dis
+
+
+```
+
+
+\  
+\  
+\  
+
+Let's mess with the data a bit. We'll add a lot of categorical fields that make the fiat and the plymouth similar. Then we'll calculate Gower's dissimilarity again. 
+
+```{r}
+set.seed(1)
+df4.auto.new <- df1.auto %>% 
+    select(name,
+           mpg, 
+           cylinders, 
+           displacement, 
+           origin) %>%  
+    sample_n(3) %>% 
+    mutate(category.var.1 = as.factor(c("yes", 
+                                        "yes", 
+                                        "no")), 
+           category.var.2 = as.factor(c("yes", 
+                                        "yes", 
+                                        "no")), 
+           category.var.3 = as.factor(c("yes", 
+                                        "yes", 
+                                        "no")), 
+           category.var.4 = as.factor(c("yes", 
+                                        "yes", 
+                                        "no")), 
+           category.var.5 = as.factor(c("yes", 
+                                        "yes", 
+                                        "no")))
+
+# add rownames for convenience: 
+rownames(df4.auto.new) <- df4.auto.new %>%
+    pull(name) %>% 
+    substr(1,10)
+
+
+# Calculate Gower's similarity indexes: 
+m3.gower.newdata <- daisy(df4.auto.new, 
+                          metric = "gower")
+
+m3.gower.newdata
+
+
+
+```
