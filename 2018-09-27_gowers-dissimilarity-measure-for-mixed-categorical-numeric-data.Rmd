@@ -18,6 +18,7 @@ library("kableExtra")
 library("cluster")
 library("ISLR")
 library("dplyr")
+library("broom")
 
 # shortcuts: 
 # > ctrl + alt + i ==> new code chunk
@@ -26,12 +27,17 @@ library("dplyr")
 ```
 
 
-## Gower's dissimilarity measure
-K-means clustering only works when all variables are numeric. However, we often want to cluster observations on both numeric and categorical variables. For relatively small datasets, this can be done with hierarchical clustering methods using Gower's similarity coefficient. For larger datasets, the computational costs of hierarchical clustering are too large, and an alternative clustering method such as k-prototypes should be considered.^[Huang, Zhexue. Extensions to the k-Means algorithm for clustering large datasets with categorical values. 1998.] 
+## Motivation for Gower's dissimilarity measure
+A basic task in data analysis is to compare different entities using a set of measurements on several variables: for example, patients in a hospital can be compared based on their length of stay in the hospital, their diagnoses, the number of medications they are taking, etc. 
+
+I was recently looking into a problem that called for clustering patients into groups. **K-means clustering** - possibly the most widely-known clustering algorithm - only works when all variables are numeric. However, we often want to cluster observations on both numeric and categorical variables. For relatively small datasets, this can be done with **hierarchical clustering** methods using Gower's similarity coefficient. For larger datasets, the computational costs of hierarchical clustering are too large, and an alternative clustering method such as **k-prototypes** should be considered.^[Huang, Zhexue. Extensions to the k-Means algorithm for clustering large datasets with categorical values. *Data Mining and Knowledge Discovery*, 1998.] 
+
+For details on the mechanics of Gower's measure, please see Gower, 1971.^[Gower, J.C. A general coefficient of similarity and some of its properties. *Biometrics*, 1971.]
 
 
 
-### Numeric-only data 
+
+## Numeric-only data: Comparing Gower's measure with Euclidean distances
 Let's examine the Auto dataset from the package ISLR. 
 
 ```{r message = FALSE}
@@ -132,7 +138,7 @@ Same conclusion:
 \  
 \  
 
-### Mixed numeric/categorical data
+## Gower's measure: Mixed numeric/categorical data
 
 ```{r}
 set.seed(1)
@@ -161,6 +167,7 @@ df3.auto.subset.cat %>%
 \  
 \  
 
+
 Now we'll use Gower distances on mixed data: 
 
 ```{r}
@@ -184,6 +191,7 @@ m2.gower.dis
 \  
 \  
 
+### Changing the data to examine the effect on Gower's measure
 Let's mess with the data a bit. We'll add a lot of categorical fields that make the fiat and the plymouth similar. Then we'll calculate Gower's dissimilarity again. 
 
 ```{r}
@@ -226,3 +234,14 @@ m3.gower.newdata
 
 
 ```
+
+\  
+\  
+\  
+
+As expected, we have managed to make the fiat and the plymouth the most similar. 
+
+\  
+\  
+\  
+
