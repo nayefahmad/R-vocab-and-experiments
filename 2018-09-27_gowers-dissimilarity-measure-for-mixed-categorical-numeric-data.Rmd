@@ -503,27 +503,28 @@ Finally, just for fun, let's look at the breakdown into 5 clusters.
 
 ### Examining split into 5 clusters 
 ```{r}
-groups.4 <- cutree(c1.auto.cluster, 4)
+groups.5 <- cutree(c1.auto.cluster, 5)
 
 # str(groups.4) 
 # this is just a numeric vector: each entry is the cluster number that the corresponding element should be assigned to.
 
-list3.4clusters <- sapply(unique(groups.4), 
-                          function(x){df1.auto$name[groups.4 == x]})
+list4.5clusters <- sapply(unique(groups.5), 
+                          function(x){df1.auto$name[groups.5 == x]})
 
 
-df8.4cl.summary <- table(groups.4, 
+df9.5cl.summary <- table(groups.5, 
                          df1.auto$origin) %>% 
       as.data.frame.matrix() %>% 
       mutate(cluster = c("cluster1", 
                          "cluster2", 
                          "cluster3", 
-                         "cluster4")) %>% 
+                         "cluster4", 
+                         "cluster5")) %>% 
       select(cluster, 
              everything())
 
 # print: 
-df8.4cl.summary %>% 
+df9.5cl.summary %>% 
       kable() %>% 
       kable_styling(bootstrap_options = c("striped",
                                         "condensed", 
@@ -533,7 +534,7 @@ df8.4cl.summary %>%
       
 # Let's examine numeric variables by cluster: 
 aggregate(df6.auto.numeric, 
-          list(groups.4), 
+          list(groups.5), 
           median) %>% 
       
       rename(cluster.num = Group.1) %>% 
