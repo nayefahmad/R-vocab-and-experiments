@@ -131,7 +131,7 @@ m1.euclid.dis
 So, in terms of similarity: 
 
 * the plymouth valiant and amc ambassador are most similar
-* the audi is more similar to the plymouth than the amc 
+* the audi is more similar to the plymouth than to the amc 
 
 Let's compare this with the results from Gower's dissimilarity: 
 
@@ -152,7 +152,7 @@ m1.gower.dis
 Same conclusion: 
 
 * the plymouth valiant and amc ambassador are most similar
-* the audi is more similar to the plymouth than the amc
+* the audi is more similar to the plymouth than to the amc
 
 \  
 \  
@@ -207,7 +207,7 @@ m2.gower.dis
 
 ```
 
-As expected, this hasn't changed the similarity scores between the cars. 
+As expected, this hasn't changed the similarity scores between the cars by much. 
 
 \  
 \  
@@ -277,6 +277,9 @@ As expected, we have managed to make the audi and the amc the most similar. This
 \  
 
 ## Clustering on mixed data 
+### Visualizing clusters
+There are too many rows to visualize all car names in a single tree, but it's still useful to see the vertical distances between clusters.^[See http://www.sthda.com/english/wiki/beautiful-dendrogram-visualizations-in-r-5-must-known-methods-unsupervised-machine-learning#plot.hclust-r-base-function] 
+
 ```{r}
 # assign rownames for convenience: 
 rownames.start <- df1.auto %>%
@@ -298,29 +301,39 @@ m4.auto.gower.dist <- daisy(df1.auto,
 c1.auto.cluster <- hclust(m4.auto.gower.dist)
 
 # plot dendrogram: 
-plot(c1.auto.cluster, 
-     hang = -1,
-     cex = 0.6,
-     cex.lab = 0.1)
+# Far too many rows to visualize in one tree
+# plot(c1.auto.cluster, 
+#      hang = -1,
+#      cex = 0.6,
+#      cex.lab = 0.1)
 
+# That's not easy to interpret. Let's try an alternative plotting method: 
 
-```
-
-Well, that's not easy to interpret. Let's try an alternative plotting method: 
-
-```{r}
 d1.auto.dendrogram <- as.dendrogram(c1.auto.cluster)
 
-plot(d1.auto.dendrogram, 
-     horiz = TRUE)
+# Far too many rows to visualize in one tree
+plot(d1.auto.dendrogram,
+     horiz = FALSE, 
+     leaflab = "none")
+
 
 ```
 
-Still not helping a lot. Well, let's take a look at the list of cars at different levels of the dendrogram: 
+\  
+\  
+\  
+
+### Examining split into 2 clusters
+
+Now let's take a look at the list of cars at different levels of the dendrogram.^[See https://www.stat.berkeley.edu/~spector/s133/Clus.html] 
+
+Given the vertical distances in the dendrogram, it looks like 2 to 4 clusters is probably most meaningful. Let's start by looking at 2 clusters. 
 
 ```{r}
 groups.2 <- cutree(c1.auto.cluster, 2)
-str(groups.2)
+
+# str(groups.2) 
+# this is just a numeric vector: each entry is the cluster number that the corresponding element should be assigned to. 
 
 list1.2clusters <- sapply(unique(groups.2), 
                           function(x){df1.auto$name[groups.2 == x]})
@@ -356,7 +369,182 @@ df6.auto.numeric <- df1.auto %>%
 
 aggregate(df6.auto.numeric, 
           list(groups.2), 
-          median)
+          median) %>% 
+      
+      rename(cluster.num = Group.1) %>% 
+      
+      kable() %>% 
+      kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+      
+
+
+```
+
+It's fairly clear that Cluster 1 is large, fuel-inefficient cars (all American), whereas Cluster 2 is all other cars. 
+
+\  
+\  
+\  
+
+### Examining split into 3 clusters 
+```{r}
+groups.3 <- cutree(c1.auto.cluster, 3)
+
+# str(groups.3) 
+# this is just a numeric vector: each entry is the cluster number that the corresponding element should be assigned to.
+
+list2.3clusters <- sapply(unique(groups.3), 
+                          function(x){df1.auto$name[groups.3 == x]})
+
+
+df7.3cl.summary <- table(groups.3, 
+                         df1.auto$origin) %>% 
+      as.data.frame.matrix() %>% 
+      mutate(cluster = c("cluster1", 
+                         "cluster2", 
+                         "cluster3")) %>% 
+      select(cluster, 
+             everything())
+
+# print: 
+df7.3cl.summary %>% 
+      kable() %>% 
+      kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+      
+# Let's examine numeric variables by cluster: 
+aggregate(df6.auto.numeric, 
+          list(groups.3), 
+          median) %>% 
+      
+      rename(cluster.num = Group.1) %>% 
+      
+      kable() %>% 
+      kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+
+
+
+```
+
+Very interesting. Cluster 1 is the large American cars, Cluster 3 is European Cars, and Cluster 2 is Japanese cars and Japanese-like American cars. 
+
+Additionally, note that Clusters 2 and 3 are very similar, but Cluster 3 seems to have slightly smaller, more fuel-efficient cars. 
+
+\  
+\  
+\  
+
+### Examining split into 4 clusters 
+```{r}
+groups.4 <- cutree(c1.auto.cluster, 4)
+
+# str(groups.4) 
+# this is just a numeric vector: each entry is the cluster number that the corresponding element should be assigned to.
+
+list3.4clusters <- sapply(unique(groups.4), 
+                          function(x){df1.auto$name[groups.4 == x]})
+
+
+df8.4cl.summary <- table(groups.4, 
+                         df1.auto$origin) %>% 
+      as.data.frame.matrix() %>% 
+      mutate(cluster = c("cluster1", 
+                         "cluster2", 
+                         "cluster3", 
+                         "cluster4")) %>% 
+      select(cluster, 
+             everything())
+
+# print: 
+df8.4cl.summary %>% 
+      kable() %>% 
+      kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+      
+# Let's examine numeric variables by cluster: 
+aggregate(df6.auto.numeric, 
+          list(groups.4), 
+          median) %>% 
+      
+      rename(cluster.num = Group.1) %>% 
+      
+      kable() %>% 
+      kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+
+
+
+```
+
+At this point, we've managed to split apart the Japanese cars from the Japanese-like American cars. 
+
+Finally, just for fun, let's look at the breakdown into 5 clusters. 
+
+\  
+\  
+\  
+
+### Examining split into 5 clusters 
+```{r}
+groups.4 <- cutree(c1.auto.cluster, 4)
+
+# str(groups.4) 
+# this is just a numeric vector: each entry is the cluster number that the corresponding element should be assigned to.
+
+list3.4clusters <- sapply(unique(groups.4), 
+                          function(x){df1.auto$name[groups.4 == x]})
+
+
+df8.4cl.summary <- table(groups.4, 
+                         df1.auto$origin) %>% 
+      as.data.frame.matrix() %>% 
+      mutate(cluster = c("cluster1", 
+                         "cluster2", 
+                         "cluster3", 
+                         "cluster4")) %>% 
+      select(cluster, 
+             everything())
+
+# print: 
+df8.4cl.summary %>% 
+      kable() %>% 
+      kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+      
+# Let's examine numeric variables by cluster: 
+aggregate(df6.auto.numeric, 
+          list(groups.4), 
+          median) %>% 
+      
+      rename(cluster.num = Group.1) %>% 
+      
+      kable() %>% 
+      kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+
 
 
 ```
