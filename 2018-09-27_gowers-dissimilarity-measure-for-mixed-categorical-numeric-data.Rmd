@@ -19,6 +19,7 @@ library("cluster")
 library("ISLR")
 library("dplyr")
 library("cluster")
+library("stringr")
 
 
 # shortcuts: 
@@ -29,7 +30,7 @@ library("cluster")
 
 
 ## Motivation for Gower's dissimilarity measure
-A basic task in data analysis is to compare different entities using a set of measurements on several variables. For example, patients in a hospital can be compared based on their length of stay in the hospital, their diagnoses, the number of medications they are taking, etc. 
+Quite often, data analysis involves comparing different entities using a set of measurements on several variables. For example, patients in a hospital can be compared based on their length of stay in the hospital, their diagnoses, the number of medications they are taking, etc. 
 
 I was recently looking into a problem that called for clustering patients into groups. **K-means clustering** - possibly the most widely-known clustering algorithm - only works when all variables are numeric. However, we often want to cluster observations on both numeric and categorical variables. For relatively small datasets, this can be done with **hierarchical clustering** methods using Gower's similarity coefficient. For larger datasets, the computational costs of hierarchical clustering are too large, and an alternative clustering method such as **k-prototypes** should be considered.^[Huang, Zhexue. Extensions to the k-Means algorithm for clustering large datasets with categorical values. *Data Mining and Knowledge Discovery*, 1998.] 
 
@@ -270,6 +271,97 @@ m3.gower.newdata
 \  
 
 As expected, we have managed to make the audi and the amc the most similar. This means that Gower's measure is behaving how we would intuitively expect it to. 
+
+\  
+\  
+\  
+
+## Clustering on mixed data 
+```{r}
+# assign rownames for convenience: 
+rownames.start <- df1.auto %>%
+    pull(name) %>% 
+    substr(1,6)
+
+rownames <- paste(rownames.start, 
+                  1:nrow(df1.auto), 
+                  sep = "-")
+
+rownames(df1.auto) <- rownames
+
+# find distance matrix: 
+m4.auto.gower.dist <- daisy(df1.auto, 
+                            metric = "gower")
+
+
+# now use hclust: 
+c1.auto.cluster <- hclust(m4.auto.gower.dist)
+
+# plot dendrogram: 
+plot(c1.auto.cluster, 
+     hang = -1,
+     cex = 0.6,
+     cex.lab = 0.1)
+
+
+```
+
+Well, that's not easy to interpret. Let's try an alternative plotting method: 
+
+```{r}
+d1.auto.dendrogram <- as.dendrogram(c1.auto.cluster)
+
+plot(d1.auto.dendrogram, 
+     horiz = TRUE)
+
+```
+
+Still not helping a lot. Well, let's take a look at the list of cars at different levels of the dendrogram: 
+
+```{r}
+groups.2 <- cutree(c1.auto.cluster, 2)
+str(groups.2)
+
+list1.2clusters <- sapply(unique(groups.2), 
+                          function(x){df1.auto$name[groups.2 == x]})
+
+# list1.2clusters[[1]]
+# list1.2clusters[[2]]
+
+df5.2cl.summary <- table(groups.2, 
+                         df1.auto$origin) %>% 
+      as.data.frame.matrix() %>% 
+      mutate(cluster = c("cluster1", 
+                         "cluster2")) %>% 
+      select(cluster, 
+             everything())
+
+# print: 
+df5.2cl.summary %>% 
+      kable() %>% 
+      kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+      
+
+```
+
+So all the cars in Cluster 1 are American, while those in Cluster 2 are a mix of American, European and Japanese. How do these clusters differ in terms of the other variables? 
+
+```{r}
+df6.auto.numeric <- df1.auto %>% 
+      select(mpg:acceleration)
+
+aggregate(df6.auto.numeric, 
+          list(groups.2), 
+          median)
+
+
+```
+
+
 
 \  
 \  
