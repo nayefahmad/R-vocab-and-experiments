@@ -12,6 +12,7 @@ library(magrittr)
 
 set.seed(1234)
 
+# FAKE DATA: -----------
 # create fake data on gambling. Does prob win depend on bid size? 
 mydat <- data.frame(
       won=as.factor(sample(c(0, 1), 250, replace=TRUE)), 
@@ -49,3 +50,57 @@ preddat %>% ggplot(aes(x = bid,
       scale_y_continuous(limits = c(0,1))
 
 
+
+
+# LET'S TRY WITH ANOTHER DATASET: ---------
+df1.default <- ISLR::Default
+
+# fit model: 
+m2 <- glm(default ~ student + balance + income, 
+          data = df1.default,
+          family = binomial(link = "logit"))
+
+# let's examine relationship between default for students and non-students, 
+# holding income at it's median values: 
+
+df2.medians <- df1.default %>% 
+      group_by(student) %>% 
+      summarise(median.inc = median(income), 
+                max.inc = max(income), 
+                max.bal = max(balance)) %>% print
+
+# dataset for students: 
+df3.student.newdata <- data.frame(default = rep(NA, df2.medians$max.bal[2]) %>% 
+                                        factor(levels = c("No", "Yes")), 
+                                  student = rep("No", df2.medians$max.bal[2]) %>% 
+                                        factor(levels = c("No", "Yes")), 
+                                  balance = 1:df2.medians$max.bal[2], 
+                                  income = rep(df2.medians$median.inc[2], 
+                                               df2.medians$max.bal[2]))
+
+# predictions for students: 
+df4.student.preddat <- predict(m2,
+                   type = "link",
+                   newdata=df3.student.newdata,
+                   se.fit=TRUE) %>% 
+      as.data.frame() %>% 
+      mutate(balance = 1:df2.medians$max.bal[2],
+            
+             # model object mod1 has a component called linkinv that 
+             # is a function that inverts the link function of the GLM:
+             lower = m2$family$linkinv(fit - 1.96*se.fit), 
+             point.estimate = m2$family$linkinv(fit), 
+             upper = m2$family$linkinv(fit + 1.96*se.fit)) 
+
+tail(df4.student.preddat)
+
+
+# plotting with ggplot: 
+p1.students <- df4.student.preddat %>% 
+      ggplot(aes(x = balance, 
+                 y = point.estimate)) + 
+      geom_line(colour = "blue") + 
+      geom_ribbon(aes(ymin = lower,
+                      ymax = upper), 
+                  alpha = 0.5) + 
+      scale_y_continuous(limits = c(0,1)); p1.students
