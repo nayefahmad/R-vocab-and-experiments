@@ -8,12 +8,16 @@ library(gtrendsR)
 library(tidyverse)
 library(anomalize)
 
+# reference: 
+# https://business-science.github.io/anomalize/articles/anomalize_methods.html
+# https://business-science.github.io/anomalize/index.html
+
 
 # Example data: create df with google trends data
 google_trends_df <-  gtrends(
   c("Fentanyl"), #keywords -- start with one
   gprop = "web", #choose: web, news, images, froogle, youtube
-  geo = c("US"), #only pull results for BC, Canada 
+  geo = c("CA-BC"), #only pull results for BC, Canada 
   time = "2004-01-01 2018-11-08")[[1]] #timeframe
 
 
@@ -31,14 +35,15 @@ ggplot(data=google_trends_df,
 
 
 
-#prepare data
+#prepare data for use in anomalize functions
 google_trends_df_tbl <- google_trends_df %>%
   # mutate(date=lubridate::ymd(date)) %>%
   tbl_df()
 
 
 
-# Next: anomalize! explore different methods for decomposition and anomaly detection
+# Next: Anomalize! 
+# explore different methods for decomposition and anomaly detection
 # choose the method that is best suited for the data you're analyzing
 
 # twitter + gesd is generally better for highly seasonal data
