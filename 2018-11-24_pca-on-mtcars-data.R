@@ -141,24 +141,36 @@ new.car.projected <-
 # the new basis vectors of the space. 
 
 
-# plot PC1 with the new car added: 
+# plot PC1 with the new car added: -------
+# first create dataframe with all vars of new car
+# included with previous cars: 
+df3.mtcars.with.newcar <- 
+      df1.mtcars.subset %>% 
+      rbind(new.car)
 
-
-
+# now plot with new car: 
 p3.mtcars.pca.with.newcar <- 
       mtcars.pca$x %>% 
-      rbind(new.car.projected) %>% 
+      rbind(new.car.projected) %>%  # include coordinates of new car 
+      
       as.data.frame %>% 
       mutate(car = rownames(.)) %>% 
       mutate(car = ifelse(car == "1",
                           "NEWCAR", 
                           car)) %>% 
       
+      # add back other variables: 
+      bind_cols(df3.mtcars.with.newcar) %>% 
+      mutate(cyl = as.factor(cyl)) %>% 
+      
       # now plot it: 
       ggplot(aes(x = PC1, 
                  y = rep(1, 33), 
-                 label = car)) +
-      geom_point(); p3.mtcars.pca.with.newcar
+                 label = car, 
+                 col = cyl, 
+                 size = hp)) +
+      geom_point() + 
+      theme_light(); p3.mtcars.pca.with.newcar
       
       
 
@@ -170,3 +182,13 @@ p3.mtcars.pca.with.newcar <-
 ggsave(here("2018-11-24_mtcars-first-PC.pdf"), 
        p1.mtcars.pc1,
        width = 10)
+
+ggsave(here("2018-11-24_mtcars-PC1-and-PC2.pdf"), 
+       p2.mtcars.2components,
+       width = 10)
+
+ggsave(here("2018-11-24_mtcars-with-new-car.pdf"), 
+       p3.mtcars.pca.with.newcar,
+       width = 10)
+
+
