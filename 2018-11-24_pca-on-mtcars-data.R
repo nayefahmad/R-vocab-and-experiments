@@ -8,6 +8,7 @@
 library(tidyverse)
 library(broom)
 library(ggrepel)
+library(here)
 
 # reference: https://www.datacamp.com/community/tutorials/pca-analysis-r 
 
@@ -16,7 +17,8 @@ library(ggrepel)
 # PCA works best with numeric data
 df1.mtcars.subset <- 
       mtcars %>% 
-      select(-c(vs, am))
+      select(-c(vs, am)) %>% 
+      bind_cols(car = rownames(mtcars))
 
 
 # PCA with prcomp( ) function: ------
@@ -33,7 +35,10 @@ mtcars.pca <- prcomp(df1.mtcars.subset,
 
 
 # Examining the PCA object: --------
-str(mtcars.pca)
+# str(mtcars.pca)  # not useful 
+
+summary(mtcars.pca)
+# first PC explains 62% of variance
 
 print(mtcars.pca)
 
@@ -48,16 +53,32 @@ tidy(mtcars.pca)  # %>% View("tidy(PCA)")
 
 
 # let's plot the cars on PC1: 
-tidy(mtcars.pca) %>% 
+p1.mtcars.pc1 <- 
+      tidy(mtcars.pca) %>% 
       filter(PC == 1) %>% 
-      mutate(y = rep(1, 32)) %>% 
       left_join(df1.mtcars.subset, 
-                by = c("row" = ))
+                by = c("row" = "car")) %>% 
+      mutate(y = rep(1, 32), 
+             cyl = as.factor(cyl)) %>%
       
       ggplot(aes(x = value, 
                  y = y, 
+                 col = cyl, 
+                 size = hp, 
                  label = row)) + 
       geom_point() + 
-      geom_text_repel(force = 50)  
+      geom_text_repel(force = 50, 
+                      size = 4) + 
       
-      theme(lab)
+      theme_light(); p1.mtcars.pc1
+
+
+
+
+
+
+
+# save outputs 
+ggsave(here("2018-11-24_mtcars-first-PC.pdf"), 
+       p1.mtcars.pc1,
+       width = 10)
