@@ -1423,3 +1423,9 @@ here()  # gives current working directory; should be the project root
 here("docs")
 
 
+
+
+# View( ) function :----
+# you can specify a name for the view: 
+mtcars %>% filter(cyl == 6) %>% View("mtcars 6 cyl")
+
