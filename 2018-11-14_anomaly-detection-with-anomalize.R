@@ -9,6 +9,7 @@ library(tidyverse)
 library(anomalize)
 
 # reference: 
+# https://github.com/cattystats/Anomaly_Detection
 # https://business-science.github.io/anomalize/articles/anomalize_methods.html
 # https://business-science.github.io/anomalize/index.html
 
@@ -79,7 +80,7 @@ google_trends_df_tbl %>%
   ) %>%
   anomalize(remainder, method = "iqr") %>%
   time_recompose() %>%
-  
+      
   # Anomaly Visualization
   plot_anomalies(time_recomposed = TRUE) +
   labs(title = "Google Trends Data - Twitter + IQR Method",
