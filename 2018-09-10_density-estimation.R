@@ -49,3 +49,44 @@ sample(x.dens.2$x,
        replace = TRUE) %>% hist(xlim =c(-10, 20))
 
 
+
+
+#*****************************************
+# small sample from a known normal dist -------
+#*****************************************
+
+rnorm(20, 100) %>% hist
+
+
+
+# get 10 replications at once, save in a df
+?replicate
+
+p1.normal.samples <- 
+      replicate(3, rnorm(20,100, 15)) %>% 
+      as.tibble() %>% 
+      bind_cols(data.frame(obs = 1:20)) %>% 
+      select(obs, 
+             everything()) %>% 
+
+      # gather into single col to plot:       
+      gather(key = "sample_number", 
+             value = "value", 
+             -obs) %>% 
+      
+      # draw plot:       
+      ggplot(aes(x = value,
+                 col = sample_number,
+                 group = sample_number)) + 
+      geom_density() + 
+      coord_cartesian(xlim = c(50,150)) + 
+      
+      theme_classic() + 
+      
+      # removes legend but doesn't rescale plot: 
+      # guides(fill = "false") + 
+      
+      theme(legend.position = "none"); p1.normal.samples
+
+
+
