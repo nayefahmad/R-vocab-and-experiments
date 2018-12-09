@@ -66,4 +66,16 @@ df1.normals
 
 
 
+# reshape input for plotting: --------
+df2.reshaped <- 
+    df1.normals %>% 
+    gather(key = "key", 
+           value = "value", 
+           -c(mean, var)) %>% print()
+
+
+
+
+
+
 
