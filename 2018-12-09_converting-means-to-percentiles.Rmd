@@ -1,5 +1,5 @@
 ---
-title: "Calculating percentiles from observed averages"
+title: "ED Service times: Calculating percentiles from observed averages"
 author: "Nayef Ahmad - VCH Decision Support"
 date: "December 9, 2018"
 output: 
@@ -29,21 +29,29 @@ library(here)
 ```
 
 ## Intro: Service times in Emergency Departments  
-I came across the plot below in a paper on modeling wait times in Emergency Departments (EDs) in the UK (mayhew and Smith, 2007).^[Mayhew and Smith. Using queueing theory to analyse the Government's 4-hour completion time target in Accident and Emergency departments. *Health Care Management Science*. 2007.] 
+I came across the plot below in a paper on modeling wait times in Emergency Departments (EDs) in the UK (Mayhew and Smith, 2007).^[Mayhew and Smith. Using queueing theory to analyse the Government's 4-hour completion time target in Accident and Emergency departments. *Health Care Management Science*. 2007.] 
 
 ![](data/2018-12-09_ready-reckoner.jpeg)
 
+\  
+\  
+\  
 
-
-Apparently this is called a "ready-reckoner"?^[I suspect that's a weird Britishism that no one else uses.] Here's how the authors' describe it: 
+Apparently this is called a "ready-reckoner"?^[I suspect that's a weird Britishism that no one else uses.] Here's how the authors describe it: 
 
 > We needed a convenient method of moving between average completion times and the inferred probability distributions [of Emergency Department service times]. This can be done using ready-reckoners which plot various percentiles calculated using different average completion times. 
+
+\  
 
 This is an interesting idea, because if you're measuring service standards in an Emergency Department (ED), one of the simplest metrics you could use is the average service time. It's easy to understand, and it's easy to calculate on an ongoing basis. 
 
 However, you know that there can be large deviations from the average, and you're concerned about the patients who have the longest service times - say, 90th percentile and upwards. Is there any simple way to understand how changes in the average will impact the service times of these patients? 
 
 Yes, that's exactly what the plot above is supposed to show. Let's try to recreate it with simulated data. 
+
+\  
+\  
+\  
 
 ## Input data
 We'll create a set of exponential distributions with different rates/means. 
@@ -74,6 +82,9 @@ perc_function <- function(rate, quantile.param = 0.5){
 
 ```
 
+\  
+\  
+\  
 
 Next, map the function across the rows: 
 
@@ -105,6 +116,10 @@ df1.exponentials %<>%
 
 ```
 
+\  
+\  
+\  
+
 Here's what the input data looks like in the end: 
 
 ```{r}
@@ -119,7 +134,92 @@ df1.exponentials %>%
     
 ```
 
+\  
+\  
+\  
 
+## Reshape the data for plotting
+Although it was convenient to generate the data in "wide" form, it will be easier to plot it if it's in "long" form.^[Update from future me: this may have been stupid; I probably could have just generated the data in long form by adding a column with the percentiles and using ```purrr::map2```] 
+
+```{r}
+df2.reshaped <- 
+    df1.exponentials %>% 
+    gather(key = "key", 
+           value = "value", 
+           -c(rate, mean)) %>% 
+    
+    # set factor levels: 
+    mutate(key = factor(key, 
+                        levels = c("5th percentile", 
+                                   "25th percentile",
+                                   "50th percentile",
+                                   "75th percentile",
+                                   "95th percentile")))
+
+
+```
+
+\  
+\  
+\  
+
+Here's what it looks like now: 
+
+```{r}
+df2.reshaped %>% 
+    head(5) %>%
+    kable() %>% 
+    kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+    
+    
+```
+
+\  
+\  
+\  
+
+## Final plot to find percentiles
+Note that for any given decrease in the mean service time, there is a larger decrease in the service times of patients at the 95th percentile. For example, decreasing the mean from 80 min to 70 min will cause the 95th percentile of wait times to fall from 248 min to 213 min.
+
+
+```{r}
+# create plot: --------
+p1.ready.reckoner <- 
+    df2.reshaped %>% 
+    
+    ggplot(aes(x = value, 
+               y = mean, 
+               group = key, 
+               colour = key)) + 
+    
+    geom_line() + 
+    gghighlight(label_params = list(segment.colour = "grey60",
+                                    segment.size = .1)) + 
+    
+    scale_y_continuous(limits = c(20, 120), 
+                       breaks = seq(20, 120, 20)) +
+    
+    labs(title = "ED service times: calculating percentiles from observed averages", 
+         subtitle = "Assuming service time is exponentially distributed, we can use the observed mean to \ninfer the full probability distribution \n", 
+         y = "Observerd mean service time (minutes)", 
+         x = "Service time associated with given percentile (minutes)", 
+         caption  = "\n\nNote: Plot is based on simulated data") + 
+    
+    theme_classic(base_size = 12) + 
+    theme(plot.caption = element_text(hjust = -0, 
+                                      size = 8)); p1.ready.reckoner
+
+```
+
+
+
+\  
+\  
+\  
 
 
 ## Footnotes 
