@@ -43,30 +43,30 @@ perc_function <- function(rate, quantile.param = 0.5){
 
 # add in the percentiles: 
 df1.exponentials %<>% 
-    mutate(perc5 = map_dbl(rate,  # 1st arg - 1 for each row in df1
+    mutate(`5th percentile` = map_dbl(rate,  # 1st arg - 1 for each row in df1
                            perc_function,  # function to map 
                            quantile.param = 0.05),  # 2rd arg - fixed
                      
-           perc25 = map_dbl(rate,  
+           `25th percentile` = map_dbl(rate,  
                             perc_function,  
                             quantile.param = 0.25),  
            
-           perc50 = map_dbl(rate,  
+           `50th percentile` = map_dbl(rate,  
                             perc_function,  
                             quantile.param = 0.50),  
            
-           perc75 = map_dbl(rate,  
+           `75th percentile` = map_dbl(rate,  
                             perc_function,  
                             quantile.param = 0.75),  
            
-           perc95 = map_dbl(rate,  
+           `95th percentile` = map_dbl(rate,  
                             perc_function,  
                             quantile.param = 0.95)  
            )
 
 # result: 
-df1.exponentials
-str(df1.exponentials)
+# df1.exponentials
+# str(df1.exponentials)
 
 
 # reshape input for plotting: --------
@@ -78,12 +78,12 @@ df2.reshaped <-
     
     # set factor levels: 
     mutate(key = factor(key, 
-                        levels = c("perc5", 
-                                   "perc25",
-                                   "perc50",
-                                   "perc75",
-                                   "perc95")))
-str(df2.reshaped)
+                        levels = c("5th percentile", 
+                                   "25th percentile",
+                                   "50th percentile",
+                                   "75th percentile",
+                                   "95th percentile")))
+# str(df2.reshaped)
 
 # create plot: --------
 p1.ready.reckoner <- 
@@ -93,12 +93,27 @@ p1.ready.reckoner <-
                y = mean, 
                group = key, 
                colour = key)) + 
-    geom_line() + 
-    gghighlight() + 
     
-    labs(title = "Ready-reckoner", 
-         subtitle = Sys.time()); p1.ready.reckoner
+    geom_line() + 
+    gghighlight(label_params = list(segment.colour = "grey60",
+                                    segment.size = .1)) + 
+    
+    scale_y_continuous(limits = c(20, 120), 
+                       breaks = seq(20, 120, 20)) +
+    
+    labs(title = "ED service times: calculating percentiles from observed averages", 
+         subtitle = "Assuming service time is exponentially distributed, we can use the observed mean to infer the full \nprobability distribution \n", 
+         y = "Observerd mean service time (minutes)", 
+         x = "Service time associated with given percentile (minutes)", 
+         caption  = "\n\nNote: Plot is based on simulated data") + 
+    
+    theme_classic(base_size = 12) + 
+    theme(plot.caption = element_text(hjust = -0, 
+                                      size = 8)); p1.ready.reckoner
 
+# save plot: 
+ggsave("2018-12-09_exponential-percentiles-from-means.jpeg", 
+       width = 8)
 
 
 
