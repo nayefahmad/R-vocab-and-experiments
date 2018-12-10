@@ -1,0 +1,125 @@
+---
+title: "Calculating percentiles from observed averages"
+author: "Nayef Ahmad - VCH Decision Support"
+date: "December 9, 2018"
+output: 
+    html_document: 
+        code_folding: hide 
+        toc: yes 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+options(knitr.table.format = "html")
+
+
+library(kableExtra)
+library(tidyverse)
+library(magrittr)
+library(gghighlight)
+library(here)
+
+# shortcuts: 
+# > ctrl + alt + i ==> new code chunk
+# > ctrl + shift + k ==> knit doc 
+# \  ==> line break (include 2 spaces after)
+
+
+```
+
+## Intro: Service times in Emergency Departments  
+I came across the plot below in a paper on modeling wait times in Emergency Departments (EDs) in the UK (mayhew and Smith, 2007).^[Mayhew and Smith. Using queueing theory to analyse the Government's 4-hour completion time target in Accident and Emergency departments. *Health Care Management Science*. 2007.] 
+
+![](data/2018-12-09_ready-reckoner.jpeg)
+
+
+
+Apparently this is called a "ready-reckoner"?^[I suspect that's a weird Britishism that no one else uses.] Here's how the authors' describe it: 
+
+> We needed a convenient method of moving between average completion times and the inferred probability distributions [of Emergency Department service times]. This can be done using ready-reckoners which plot various percentiles calculated using different average completion times. 
+
+This is an interesting idea, because if you're measuring service standards in an Emergency Department (ED), one of the simplest metrics you could use is the average service time. It's easy to understand, and it's easy to calculate on an ongoing basis. 
+
+However, you know that there can be large deviations from the average, and you're concerned about the patients who have the longest service times - say, 90th percentile and upwards. Is there any simple way to understand how changes in the average will impact the service times of these patients? 
+
+Yes, that's exactly what the plot above is supposed to show. Let's try to recreate it with simulated data. 
+
+## Input data
+We'll create a set of exponential distributions with different rates/means. 
+
+Note that the kind of graph we're aiming for only makes sense for single-parameter distributions, or a set of multi-parameter distributions that vary only along a single parameter. 
+
+```{r}
+df1.exponentials <- 
+    data.frame(rate = seq(.01, .05, .001)) %>%
+    mutate(mean = 1/rate)
+
+```
+
+Next we'll write a simple function to extract the required percentiles from each individual exponential distribution. 
+
+```{r}
+# create function for adding percentiles: 
+perc_function <- function(rate, quantile.param = 0.5){
+    # generate sample from exponential dist: 
+    random.vars <- rexp(100000, rate)
+    
+    # return specified quantile: 
+    return(quantile(random.vars, quantile.param) %>% 
+               unname %>% unlist)
+}
+
+
+
+```
+
+
+Next, map the function across the rows: 
+
+```{r}
+# add in the percentiles: 
+df1.exponentials %<>% 
+    mutate(`5th percentile` = map_dbl(rate,  # 1st arg - 1 for each row in df1
+                           perc_function,  # function to map 
+                           quantile.param = 0.05),  # 2rd arg - fixed
+                     
+           `25th percentile` = map_dbl(rate,  
+                            perc_function,  
+                            quantile.param = 0.25),  
+           
+           `50th percentile` = map_dbl(rate,  
+                            perc_function,  
+                            quantile.param = 0.50),  
+           
+           `75th percentile` = map_dbl(rate,  
+                            perc_function,  
+                            quantile.param = 0.75),  
+           
+           `95th percentile` = map_dbl(rate,  
+                            perc_function,  
+                            quantile.param = 0.95)  
+           )
+
+
+
+```
+
+Here's what the input data looks like in the end: 
+
+```{r}
+df1.exponentials %>% 
+    head %>% 
+    kable() %>% 
+    kable_styling(bootstrap_options = c("striped",
+                                        "condensed", 
+                                        "responsive"), 
+                  full_width = FALSE, 
+                  position = "left")
+    
+```
+
+
+
+
+## Footnotes 
