@@ -8,8 +8,9 @@
 
 library(tidyverse)
 library(magrittr)
+library(gghighlight)
 
-rm(list = ls())
+# rm(list = ls())
 
 # input data: -------------
 # A set of exponential distributions rates
@@ -20,52 +21,52 @@ rm(list = ls())
 # a single parameter. 
 
 df1.exponentials <- 
-    data.frame(rate = seq(.01, .02, .001)) %>%
+    data.frame(rate = seq(.01, .05, .001)) %>%
     mutate(mean = 1/rate)
 
 
 # create function for adding percentiles: 
 perc_function <- function(rate, quantile.param = 0.5){
     # generate sample from exponential dist: 
-    random.vars <- rexp(1000, rate)
+    random.vars <- rexp(100000, rate)
     
     # return specified quantile: 
     return(quantile(random.vars, quantile.param) %>% 
-               unname)
+               unname %>% unlist)
 }
 
 
 # test the function: 
-perc_function(.002, .05)
-perc_function(.002)
+# perc_function(.002, .05)
+# perc_function(.002)
 
 
 # add in the percentiles: 
 df1.exponentials %<>% 
-    mutate(perc5 = map(rate,  # 1st arg - 1 for each row in df1
-                        perc_function,  # function to map 
-                        quantile.param = 0.05),  # 2rd arg - fixed
+    mutate(perc5 = map_dbl(rate,  # 1st arg - 1 for each row in df1
+                           perc_function,  # function to map 
+                           quantile.param = 0.05),  # 2rd arg - fixed
                      
-           perc25 = map(rate,  # 1st arg - 1 for each row in df1
-                         perc_function,  # function to map 
-                         quantile.param = 0.25),  # 3rd arg - fixed
+           perc25 = map_dbl(rate,  
+                            perc_function,  
+                            quantile.param = 0.25),  
            
-           perc50 = map(rate,  # 1st arg - 1 for each row in df1
-                         perc_function,  # function to map 
-                         quantile.param = 0.50),  # 3rd arg - fixed
+           perc50 = map_dbl(rate,  
+                            perc_function,  
+                            quantile.param = 0.50),  
            
-           perc75 = map(rate,  # 1st arg - 1 for each row in df1
-                         perc_function,  # function to map 
-                         quantile.param = 0.75),  # 3rd arg - fixed
+           perc75 = map_dbl(rate,  
+                            perc_function,  
+                            quantile.param = 0.75),  
            
-           perc95 = map(rate,  # 1st arg - 1 for each row in df1
-                         perc_function,  # function to map 
-                         quantile.param = 0.95)  # 3rd arg - fixed
+           perc95 = map_dbl(rate,  
+                            perc_function,  
+                            quantile.param = 0.95)  
            )
 
 # result: 
 df1.exponentials
-
+str(df1.exponentials)
 
 
 # reshape input for plotting: --------
@@ -73,7 +74,30 @@ df2.reshaped <-
     df1.exponentials %>% 
     gather(key = "key", 
            value = "value", 
-           -c(rate, mean)) %>% print()
+           -c(rate, mean)) %>% 
+    
+    # set factor levels: 
+    mutate(key = factor(key, 
+                        levels = c("perc5", 
+                                   "perc25",
+                                   "perc50",
+                                   "perc75",
+                                   "perc95")))
+str(df2.reshaped)
+
+# create plot: --------
+p1.ready.reckoner <- 
+    df2.reshaped %>% 
+    
+    ggplot(aes(x = value, 
+               y = mean, 
+               group = key, 
+               colour = key)) + 
+    geom_line() + 
+    gghighlight() + 
+    
+    labs(title = "Ready-reckoner", 
+         subtitle = Sys.time()); p1.ready.reckoner
 
 
 
