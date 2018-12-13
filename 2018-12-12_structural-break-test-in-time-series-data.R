@@ -47,13 +47,21 @@ sctest(m1,
        type = "Chow", 
        point = 51)
 # f(efp) = 3.5183, p-value = 7.083e-11
-# Low p-value suggests that this is a break 
+# Low p-value suggests that there is a break 
 
-
-# What if we try on some other point? 
-sctest(m1,
+# alternative specification: 
+sctest(y ~ x, 
+       data = df1.fake.data, 
        type = "Chow", 
-       point = 80)
+       point = 51)
+# F = 2883.4, p-value < 2.2e-16
+# Low p-value suggests that there is a break 
+
+#**********************************************
+# What if we try on some other point? 
+# sctest(m1,
+#        type = "Chow", 
+#        point = 80)
 
 # umm ... this test seems to think every point is a 
 # break point?? 
@@ -68,8 +76,7 @@ sctest(m1,
 # assesses whether the coefficients in a regression 
 # model are the same for periods [1,2, ...,K] and 
 # [K + 1, ...,T]
-
-
+#**********************************************
 
 
 # 2) Situation 2: no break in series -----
@@ -91,12 +98,19 @@ df2.no.break %>%
 m2 <- lm(y ~ x, 
          data = df2.no.break)
 
+sctest(m2, 
+       type = "Chow", 
+       point = 51)
+# f(efp) = 0.51053, p-value = 0.9981
+# no breakpoint detected 
+
+# alternative specification: 
 sctest(y ~ x,
        data = df2.no.break, 
        type = "Chow", 
        point = 51)
 # f(efp) = 0.51053, p-value = 0.9981
-# definitely no breakpoint 
+# no breakpoint detected 
 
 
 
@@ -108,7 +122,8 @@ df3.with.covariate <-
                          rep(1, 50)), 
                category = sample(c("A", "B"), 
                                    100, 
-                                   replace = TRUE)) %>% 
+                                   replace = TRUE) %>% 
+                   as.factor) %>% 
     mutate(y_orig = ifelse(group == 0, 
                            2*x,
                            2*x[51]),  # hold constant at twice the value of x[51]
@@ -133,7 +148,7 @@ sctest(y ~ x + category,
        data = df3.with.covariate, 
        type = "Chow", 
        point = 51)
-
+# F = 2004.2, p-value < 2.2e-16
 # yes, we still see the breakpoint
 
 
@@ -146,7 +161,8 @@ df4.no.break.with.covariate <-
            y = y_orig + z, 
            category = sample(c("A", "B"), 
                              100, 
-                             replace = TRUE))
+                             replace = TRUE) %>% 
+               as.factor)
 
 str(df4.no.break.with.covariate)
 
@@ -158,7 +174,7 @@ m4 <- lm(y ~ x + category,
 sctest(m4, 
        type = "Chow", 
        point = 51) 
-# f(efp) = 0.98549, p-value = 0.6358 
+# f(efp) = 0.61884, p-value = 0.9958
 # no breakpoint detected 
 
 # alternative specification: 
@@ -166,5 +182,5 @@ sctest(y ~ x + category,
        data = df4.no.break.with.covariate, 
        type = "Chow", 
        point = 51)
-# F = 0.43091, p-value = 0.7313
+# F = 0.093457, p-value = 0.9635
 # no breakpoint detected 
