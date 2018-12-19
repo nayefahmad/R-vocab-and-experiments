@@ -10,6 +10,9 @@ library(forecast)
 library(fpp)
 library(ggplot2)
 library(tidyverse)
+library(ggpubr)
+
+# rm(list = ls())
 
 # reference: https://robjhyndman.com/hyndsight/tslm-decomposition/ 
 
@@ -46,9 +49,20 @@ summary(m1.decompose_df)
 # note: this is really convenient! We can just just "trend" as a predictor! 
 
 # >> plot the trend and the orig time series: --------
-# todo: ggplot this
-predict(m1.decompose_df) %>% plot()
-lines(as.numeric(df))
+p1.data.and.trend <- 
+      data.frame(data = as.numeric(df), 
+           trend = predict(m1.decompose_df), 
+           period = 1:20) %>% 
+      gather(key = "key", 
+             value = "val", 
+             -period) %>% 
+      ggplot(aes(x = period, 
+                 y = val, 
+                 group = key, 
+                 colour = key)) + 
+      geom_line() + 
+      theme(legend.position = "none"); p1.data.and.trend
+
 
 
 # > model 2: approximate the seasonal pattern using Fourier terms -------
@@ -72,7 +86,7 @@ fourier(df, 2)  # %>% str
 # number of sine and cosine terms to return. Thus, the matrix returned has 2*K
 # columns.
 
-# plot the fourier terms: 
+# >> plot the individual fourier terms: 
 fourier(df, 2) %>% 
       as.data.frame() %>% 
       gather() %>% 
@@ -92,12 +106,37 @@ sum <- fourier(df, 2) %>%
       apply(MARGIN = 1, 
             FUN = sum)
 
-data.frame(period = rep(1:20), 
-           value = sum) %>% 
+# >> plot sum of fourier terms: 
+p2.fourier.terms <- 
+      data.frame(period = rep(1:20), 
+                 value = sum) %>% 
       ggplot(aes(x = period, 
-                 y = value)) + 
-      geom_line()
+                 y = value)) +
+      geom_hline(yintercept = 0, 
+                 col = "grey60") + 
+      geom_line(col = "coral2"); p2.fourier.terms
+
 
 # compare with the original series: 
-predict(m1.decompose_df) %>% plot()
-lines(as.numeric(df))
+ggarrange(p1.data.and.trend, 
+          p2.fourier.terms, 
+          nrow = 2)
+
+
+# now let's add in the final trend + fourier series: 
+p3.final.series <- 
+      data.frame(data = as.numeric(df), 
+                 trend = predict(m1.decompose_df), 
+                 sum = sum, 
+                 period = 1:20) %>% 
+      mutate(final.model = trend + (trend * sum)) %>%  # todo: what's going on here? 
+      
+      ggplot(aes(x = period, 
+                 y = final.model)) + 
+      geom_line() + 
+      theme(legend.position = "none"); p3.final.series
+
+# the fourier terms seem to do a pretty decent job of tracking the variation 
+# from the trend line
+
+
