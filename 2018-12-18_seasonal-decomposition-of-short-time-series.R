@@ -17,7 +17,7 @@ library(ggpubr)
 # reference: https://robjhyndman.com/hyndsight/tslm-decomposition/ 
 
 
-# input dataset: ----------------
+# 1) input dataset: ----------------
 df <- ts(c(2735.869,2857.105,2725.971,2734.809,2761.314,2828.224,2830.284,
            2758.149,2774.943,2782.801,2861.970,2878.688,3049.229,3029.340,3099.041,
            3071.151,3075.576,3146.372,3005.671,3149.381),
@@ -27,7 +27,7 @@ df <- ts(c(2735.869,2857.105,2725.971,2734.809,2761.314,2828.224,2830.284,
 autoplot(df)
 
 
-# standard decomposition approaches: -----------
+# 2) standard decomposition approaches (don't work): -----------
 # try stl: 
 stl(df)
 # Error in stl(df) : series is not periodic or has less than two periods
@@ -38,15 +38,17 @@ decompose(df)
 
 
 
-# Fit models using tslm: --------------------
+# 3) Fit models using tslm: --------------------
 
-# > model 1: --------------
+# > 3.1 model 1: trend only --------------
 # ?tslm  # for fitting regression with time series components 
 
 m1.decompose_df <- tslm(df ~ trend) 
 summary(m1.decompose_df)
 
 # note: this is really convenient! We can just just "trend" as a predictor! 
+# you can also just use "season": e.g. fit.beer <- tslm(beer2 ~ trend + season)
+
 
 # >> plot the trend and the orig time series: --------
 p1.data.and.trend <- 
@@ -65,7 +67,7 @@ p1.data.and.trend <-
 
 
 
-# > model 2: approximate the seasonal pattern using Fourier terms -------
+# > 3.2) model 2: approximate the seasonal pattern using Fourier terms -------
 
 m2.fourier <- tslm(df ~ trend + fourier(df,2))
 summary(m2.fourier)
@@ -151,7 +153,12 @@ p3.final.series <-
                  y = value, 
                  group = key, 
                  col = key)) + 
-      geom_line(); p3.final.series
+      geom_line() + 
+      theme(legend.position = "bottom"); p3.final.series
+
+
+# 4) decomposition into trend/season/remainder: ------------
+
 
 
 
