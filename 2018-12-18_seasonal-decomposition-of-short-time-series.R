@@ -11,6 +11,7 @@ library(fpp)
 library(ggplot2)
 library(tidyverse)
 library(ggpubr)
+library(broom)
 
 # rm(list = ls())
 
@@ -71,6 +72,9 @@ p1.data.and.trend <-
 
 m2.fourier <- tslm(df ~ trend + fourier(df,2))
 summary(m2.fourier)
+
+# save coeffs: 
+df1.coeffs.from.m2 <- tidy(m2.fourier)
 
 
 # >> how does fourier( ) work? ------
@@ -159,6 +163,21 @@ p3.final.series <-
 
 # 4) decomposition into trend/season/remainder: ------------
 
+# first let's create the trend series from model m2: 
+trend.m2 <- 
+    df1.coeffs.from.m2$estimate[1] +  # intercept 
+    df1.coeffs.from.m2$estimate[2] * seq_along(df)
+    
 
+df2.decomposed <- 
+    cbind(data = df, 
+          trend = trend.m2, 
+          season = df - trend.m2 - resid(m2.fourier), 
+          remainder = resid(m2.fourier))
+
+df2.decomposed
+
+# plot decomposed series: 
+autoplot(df2.decomposed, facets = TRUE)
 
 
