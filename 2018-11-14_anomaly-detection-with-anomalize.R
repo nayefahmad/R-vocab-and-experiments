@@ -16,10 +16,10 @@ library(anomalize)
 
 # Example data: create df with google trends data
 google_trends_df <-  gtrends(
-  c("Fentanyl"), #keywords -- start with one
+  c("gingerbread"), #keywords -- start with one
   gprop = "web", #choose: web, news, images, froogle, youtube
-  geo = c("CA-BC"), #only pull results for BC, Canada 
-  time = "2004-01-01 2018-11-08")[[1]] #timeframe
+  geo = c("CA"), #only pull results for BC, Canada 
+  time = "2004-01-01 2018-11-30")[[1]] #timeframe
 
 
 # str(google_trends_df)
@@ -31,7 +31,7 @@ ggplot(data=google_trends_df,
   geom_line() + 
   theme_classic() +
   labs(title = "Google Trends Data", 
-       subtitle="CA-BC search volume for 'Fentanyl'", 
+       subtitle="CA search volume for 'eggnog'", 
        x="Time", y="Relative Interest") 
 
 
@@ -64,10 +64,10 @@ google_trends_df_tbl %>%
   
   # Anomaly Visualization
   plot_anomalies(time_recomposed = TRUE) +
-  labs(title = "Google Trends Data - STL + IQR Method",
+  labs(title = "Anomaly detection in Google searches for 'gingerbread' in Canada",
        x="Time",
        y="Relative Interest", 
-       subtitle = "CA-BC search volume for 'Fentanyl' between Jan'04-Nov'18")
+       subtitle = "Other than Dec 1st and Nov 1st each year since 2004, the only outlier is Aug 1st, 2011. \nWonder what happened then? \n\n")
 
 
 
@@ -86,7 +86,7 @@ google_trends_df_tbl %>%
   labs(title = "Google Trends Data - Twitter + IQR Method",
        x="Time",
        y="Relative Interest", 
-       subtitle = "CA-BC search volume for 'Fentanyl' between Jan'04-Nov'18"
+       subtitle = "CA search volume for 'gingerbread' between Jan'04-Nov'18"
   )
 
 
@@ -108,7 +108,7 @@ google_trends_df_tbl %>%
   labs(title = "Google Trends Data - Twitter + GESD Method",
        x="Time",
        y="Relative Interest",
-       subtitle = "CA-BC search volume for 'Fentanyl' between Jan'04-Nov'18"
+       subtitle = "CA search volume for 'gingerbread' between Jan'04-Nov'18"
   )
 
 
