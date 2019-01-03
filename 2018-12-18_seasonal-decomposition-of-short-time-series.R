@@ -198,7 +198,7 @@ autoplot(df,
       # Plot seasonally-adjusted data, label it "Seasonally adjusted"
       autolayer(df3.seasonally.adjusted, 
                 series = "Seasonally adjusted") + 
-      
+            
       theme(legend.position = "bottom")
 
 
