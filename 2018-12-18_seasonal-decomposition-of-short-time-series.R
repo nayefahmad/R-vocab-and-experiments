@@ -171,13 +171,36 @@ trend.m2 <-
 
 df2.decomposed <- 
     cbind(data = df, 
-          trend = trend.m2, 
-          season = df - trend.m2 - resid(m2.fourier), 
-          remainder = resid(m2.fourier))
+          trend = trend.m2,                            # from model m2.fourier
+          season = df - trend.m2 - resid(m2.fourier),  # from model m2.fourier
+          remainder = resid(m2.fourier))               # from model m2.fourier
 
 df2.decomposed
+str(df2.decomposed)  
+# note that this is not a df, so we can't use $ to subset columns. 
+# e.g. to get teh season component, we write: 
+# df2.decomposed[,'season']
 
 # plot decomposed series: 
 autoplot(df2.decomposed, facets = TRUE)
+
+
+
+# 5) seasonally-adjusted series: --------
+df3.seasonally.adjusted <- df - df2.decomposed[, 'season']
+
+# plot: 
+# ?autolayer
+
+autoplot(df, 
+         series = "Data") +  # plot orig data, label it "Data" 
+      
+      # Plot seasonally-adjusted data, label it "Seasonally adjusted"
+      autolayer(df3.seasonally.adjusted, 
+                series = "Seasonally adjusted") + 
+      
+      theme(legend.position = "bottom")
+
+
 
 
