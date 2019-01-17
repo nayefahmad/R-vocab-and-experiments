@@ -922,6 +922,23 @@ input <- input %>% rnorm %>% print
 input %<>% rnorm %>% print 
 
 
+# the "tee pipe" operator: --------------------------------------------
+
+# using "tee pipe" (%T>%) 
+rnorm(200) %>%
+      matrix(ncol = 2) %T>%
+      plot %>% 
+      # call plot(), but don't take the result of plot through the rest of the 
+      # pipe. 
+      # Instead, the thing that was passed to plot( ) is piped through
+      colSums
+
+
+# without the tee pipe (doesn't work): 
+rnorm(200) %>%
+      matrix(ncol = 2) %>%
+      plot %>% 
+      colSums  # doesn't work because you can't call colSums on a plot 
 
 
 
