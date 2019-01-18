@@ -2,7 +2,7 @@
 
 My notes and experiments with R. This is where I play with new packages, and try out and practice new things. 
 
-Here are a few of the things I've been exploring recently: 
+Here are a few of the things I've been exploring recently (which don't really fit in another repo): 
 
 * [Conway's game of life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) - in R!
 * Gower's dissimilarity index for mixed numeric/categorical data 
