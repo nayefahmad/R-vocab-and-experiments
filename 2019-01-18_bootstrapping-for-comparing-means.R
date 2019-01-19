@@ -7,3 +7,140 @@
 
 #**************************************************************************
 
+library(tidyverse)
+library(rsample)
+library(janitor)
+
+# reference: 
+# https://tidymodels.github.io/rsample/articles/Working_with_rsets.html 
+
+# rename for convenience: 
+df1.attrition <- attrition %>%   # factors that lead to employee attrition
+      clean_names()
+
+str(df1.attrition)
+
+
+# Traditionally, the bootstrap has been primarily used to empirically determine
+# the sampling distribution of a test statistic. Given a set of samples with
+# replacement, a statistic can be calculated on each analysis set and the
+# results can be used to make inferences (such as confidence intervals).
+
+
+
+#********************************************************************
+# Rsample basics: ----------
+#********************************************************************
+
+# https://tidymodels.github.io/rsample/articles/Basics.html
+
+# > what's a resample? --------
+# We define a resample as the result of a two-way split of a data set. For
+# example, when bootstrapping, one part of the resample is a sample with
+# replacement of the original data. The other part of the split contains the
+# instances that were not contained in the bootstrap sample
+
+
+
+# > what's an rset object? -------- 
+# The main class in the package (rset) is for a set or collection of resamples. 
+# In 10-fold cross-validation, the set would consist of the 10 different 
+# resamples of the original data.
+
+# > mtcars example: ------
+set.seed(1)
+
+bootstrap_resamples <- bootstraps(mtcars, 
+                                  times = 10)
+
+str(bootstrap_resamples, 
+    max.level = 1)
+# 10 obs. of  2 variables: "splits" and "id" 
+
+# examine result: 
+bootstrap_resamples  # not very useful 
+bootstrap_resamples$splits[[1]]  # not very useful 
+
+bootstrap_resamples$splits[[1]]$data  # first bootstrap sample 
+bootstrap_resamples$splits[[2]]$data  # second bootstrap sample 
+
+
+# > individual resamples are "rsplit" objects: -----
+
+# two partitions that comprise a resample: 
+# 1) "analysis" data: those that we selected in the resample. For a bootstrap,
+#     this is the sample with replacement. For 10-fold cross-validation, 
+#     this is the 90% of the data. These data are often used to fit a model or 
+#     calculate a statistic in traditional bootstrapping.
+
+# 2) "assessment" data:  the section of the original data not covered by the 
+#     analysis set. Often used to evaluate the performance of a model that was
+#     fit to the analysis data.
+
+
+
+
+
+
+
+
+
+
+#********************************************************************
+# differences in mean/median monthly income between genders: ------
+#********************************************************************
+
+# > boxplot: -------
+p1.boxplots <- df1.attrition %>% 
+      ggplot(aes(x = gender, 
+                 y = monthly_income)) + 
+      geom_boxplot() + 
+      
+      stat_summary(fun.y = mean, 
+                   col = "firebrick", 
+                   geom = "point") + 
+      
+      # data is positively skewed, so log it: 
+      scale_y_log10(); p1.boxplots
+
+
+# compare medians: -------------
+
+# If we wanted to compare the genders, we could conduct a t-test or rank-based
+# test. Instead, let’s use the bootstrap to see if there is a difference in the
+# median incomes for the two groups. We need a simple function to compute this
+# statistic on the resample
+
+# > function to calc difference in medians: ---------
+
+?rsample::analysis
+
+
+median_diff_fn <- function(splits)(
+      
+      # input: an "rsplit" object 
+      # output: ?? 
+      
+      x <- analysis(splits)
+      
+      
+      
+      
+      
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
