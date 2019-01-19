@@ -114,7 +114,7 @@ p1.boxplots <- df1.attrition %>%
 
 # > 2.2) create resamples: ------------
 boots.attrition <- bootstraps(df1.attrition, 
-                              times = 50)
+                              times = 500)
 
 
 
@@ -128,7 +128,7 @@ boots.attrition <- bootstraps(df1.attrition,
 # >> 2.3.1) function to calc difference in medians: ---------
 
 # fn definition: 
-median_diff_fn <- function(splits, FUN = round, ...){
+compare_male_female_stat <- function(splits, FUN = median, ...){
       
       #**************************************************************
       # inputs: 
@@ -164,10 +164,63 @@ median_diff_fn <- function(splits, FUN = round, ...){
 
 
 # fn test: 
-median_diff_fn(boots.attrition$splits[[1]], 
-               mean)  # note that you can't put quotes around the function name
+compare_male_female_stat(boots.attrition$splits[[1]], 
+                         mean)  # note that you can't put quotes around the function name
+
+
+
+# 2.3.2) map function across all splits: ------------
+# create a new col in the object boots.attrition: 
+
+boots.attrition$diff_median <- map_dbl(boots.attrition$splits, 
+                                       compare_male_female_stat)
+
+
+boots.attrition
+
+
+
+# 2.3.3) plot distribution: 
+boots.attrition %>% 
+      ggplot(aes(x = diff_median))+
+      geom_density() + 
+      geom_vline(xintercept = 0, 
+                 colour = "red") + 
+      labs(title = "diff in medians (male - female)")
 
 
 
 
 
+
+
+# 2.4) compare means between genders: 
+boots.attrition$diff_mean <- map_dbl(boots.attrition$splits, 
+                                     compare_male_female_stat, 
+                                     FUN = mean)
+
+
+# plot diff: 
+boots.attrition %>% 
+      ggplot(aes(x = diff_mean))+
+      geom_density() + 
+      geom_vline(xintercept = 0, 
+                 colour = "red") + 
+      labs(title = "diff in means (male - female)")
+
+
+
+
+# 2.5) compare max between genders: 
+boots.attrition$diff_max <- map_dbl(boots.attrition$splits, 
+                                     compare_male_female_stat, 
+                                     FUN = max)
+
+
+# plot diff: 
+boots.attrition %>% 
+      ggplot(aes(x = diff_max))+
+      geom_density() + 
+      geom_vline(xintercept = 0, 
+                 colour = "red") + 
+      labs(title = "diff in max (male - female)")
