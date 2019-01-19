@@ -29,12 +29,12 @@ str(df1.attrition)
 
 
 #********************************************************************
-# Rsample basics: ----------
+# 1) Rsample basics: ----------
 #********************************************************************
 
 # https://tidymodels.github.io/rsample/articles/Basics.html
 
-# > what's a resample? --------
+# > 1.1) what's a resample? --------
 # We define a resample as the result of a two-way split of a data set. For
 # example, when bootstrapping, one part of the resample is a sample with
 # replacement of the original data. The other part of the split contains the
@@ -42,12 +42,12 @@ str(df1.attrition)
 
 
 
-# > what's an rset object? -------- 
+# > 1.2) what's an rset object? -------- 
 # The main class in the package (rset) is for a set or collection of resamples. 
 # In 10-fold cross-validation, the set would consist of the 10 different 
 # resamples of the original data.
 
-# > mtcars example: ------
+# > 1.3) mtcars example: ------
 set.seed(1)
 
 bootstrap_resamples <- bootstraps(mtcars, 
@@ -65,7 +65,7 @@ bootstrap_resamples$splits[[1]]$data  # first bootstrap sample
 bootstrap_resamples$splits[[2]]$data  # second bootstrap sample 
 
 
-# > individual resamples are "rsplit" objects: -----
+# > 1.4) individual resamples are "rsplit" objects: -----
 
 # two partitions that comprise a resample: 
 # 1) "analysis" data: those that we selected in the resample. For a bootstrap,
