@@ -112,42 +112,60 @@ p1.boxplots <- df1.attrition %>%
       # data is positively skewed, so log it: 
       scale_y_log10(); p1.boxplots
 
+# > 2.2) create resamples: ------------
+boots.attrition <- bootstraps(df1.attrition, 
+                              times = 50)
 
-# > 2.2) compare medians: -------------
+
+
+# > 2.3) compare medians: -------------
 
 # If we wanted to compare the genders, we could conduct a t-test or rank-based
 # test. Instead, let’s use the bootstrap to see if there is a difference in the
 # median incomes for the two groups. We need a simple function to compute this
 # statistic on the resample
 
-# >> 2.2.1) function to calc difference in medians: ---------
+# >> 2.3.1) function to calc difference in medians: ---------
 
-?rsample::analysis
-
-
-median_diff_fn <- function(splits){
+# fn definition: 
+median_diff_fn <- function(splits, FUN = round, ...){
       
-      # input: an "rsplit" object 
-      # output: ?? 
+      #**************************************************************
+      # inputs: 
+      # > an "rsplit" object 
+      # > function to call on the data (e.g. mean/median)
+      #     DO NOT PUT QUOTES AROUND NAME OF FUNCTION! 
       
-      x <- analysis(splits)
+      # output: difference (male - female) in statistics for the male 
+      #     group vs the female group 
+      
+      # example function call: 
+      # median_diff_fn(split, mean)  # to find mean
+      
+      #**************************************************************
+      
+      # get the analysis data from the rsplit object: 
+      df <- analysis(splits)
+      
+      # find median for Male: 
+      male <- df %>% filter(gender == "Male") %>% 
+            pull(monthly_income) %>% 
+            FUN()
+      
+      # find median for Female: 
+      female <- df %>% filter(gender == "Female") %>% 
+            pull(monthly_income) %>% 
+            FUN()
       
       
-      
-      
+      return(male-female)
       
 }
 
 
-
-
-
-
-
-
-
-
-
+# fn test: 
+median_diff_fn(boots.attrition$splits[[1]], 
+               mean)  # note that you can't put quotes around the function name
 
 
 
