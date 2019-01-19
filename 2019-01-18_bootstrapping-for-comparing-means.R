@@ -47,26 +47,8 @@ str(df1.attrition)
 # In 10-fold cross-validation, the set would consist of the 10 different 
 # resamples of the original data.
 
-# > 1.3) mtcars example: ------
-set.seed(1)
 
-bootstrap_resamples <- bootstraps(mtcars, 
-                                  times = 10)
-
-str(bootstrap_resamples, 
-    max.level = 1)
-# 10 obs. of  2 variables: "splits" and "id" 
-
-# examine result: 
-bootstrap_resamples  # not very useful 
-bootstrap_resamples$splits[[1]]  # not very useful 
-
-bootstrap_resamples$splits[[1]]$data  # first bootstrap sample 
-bootstrap_resamples$splits[[2]]$data  # second bootstrap sample 
-
-
-# > 1.4) individual resamples are "rsplit" objects: -----
-
+# >> 1.2.1) individual resamples are "rsplit" objects: ------
 # two partitions that comprise a resample: 
 # 1) "analysis" data: those that we selected in the resample. For a bootstrap,
 #     this is the sample with replacement. For 10-fold cross-validation, 
@@ -79,6 +61,33 @@ bootstrap_resamples$splits[[2]]$data  # second bootstrap sample
 
 
 
+# > 1.3) mtcars example: ------
+set.seed(1)
+
+bootstrap_resamples <- bootstraps(mtcars, 
+                                  times = 10)
+
+str(bootstrap_resamples, 
+    max.level = 1)
+# 10 obs. of  2 variables: "splits" and "id" 
+
+# examine result: 
+bootstrap_resamples  # not very useful 
+
+
+# >> 1.3.1) metadata about a split: -----
+first_resample <- bootstrap_resamples$splits[[1]]  
+first_resample  # <32/15/32>
+# 32 data points in the analysis set 
+# 15 data points in the assessment set 
+# 32 data points in the original data 
+
+# >> 1.3.1) data contained within the split: -----
+first_resample$data  # first bootstrap sample data 
+
+# get just the analysis/assessment data: 
+analysis(first_resample)  %>% str
+assessment(first_resample) %>% str
 
 
 
@@ -87,10 +96,10 @@ bootstrap_resamples$splits[[2]]$data  # second bootstrap sample
 
 
 #********************************************************************
-# differences in mean/median monthly income between genders: ------
+# 2) differences in mean/median monthly income between genders: ------
 #********************************************************************
 
-# > boxplot: -------
+# > 2.1) boxplot: -------
 p1.boxplots <- df1.attrition %>% 
       ggplot(aes(x = gender, 
                  y = monthly_income)) + 
@@ -104,19 +113,19 @@ p1.boxplots <- df1.attrition %>%
       scale_y_log10(); p1.boxplots
 
 
-# compare medians: -------------
+# > 2.2) compare medians: -------------
 
 # If we wanted to compare the genders, we could conduct a t-test or rank-based
 # test. Instead, let’s use the bootstrap to see if there is a difference in the
 # median incomes for the two groups. We need a simple function to compute this
 # statistic on the resample
 
-# > function to calc difference in medians: ---------
+# >> 2.2.1) function to calc difference in medians: ---------
 
 ?rsample::analysis
 
 
-median_diff_fn <- function(splits)(
+median_diff_fn <- function(splits){
       
       # input: an "rsplit" object 
       # output: ?? 
@@ -127,7 +136,7 @@ median_diff_fn <- function(splits)(
       
       
       
-)
+}
 
 
 
