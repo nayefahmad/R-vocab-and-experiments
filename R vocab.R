@@ -1131,6 +1131,25 @@ plot(p57~p08)
 
 
 
+# using functions as arguments to other functions: -----------
+# KEY POINT: DON'T PUT QUOTES AROUND THE ARG WHEN YOU CALL THE FUNCTION: 
+
+do_something <- function(FUN = mean, ...){
+      set.seed(1)
+      x <- rnorm(100)
+      
+      return(FUN(x))
+      
+      
+}
+
+do_something()
+do_something(mean)
+do_something(median)
+do_something(round)
+do_something(max)
+
+
 # SAVING R OBJECTS TO FILE: ---------------------------------
 # let's say it takes 30 min to read in a csv. You don't want to do that 
 #     every time. So, read in once, save as an R object that you can 
