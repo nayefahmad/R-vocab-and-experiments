@@ -64,6 +64,7 @@ str(df1.attrition)
 # > 1.3) mtcars example: ------
 set.seed(1)
 
+# bootstrapping mtcars dataset: 
 bootstrap_resamples <- bootstraps(mtcars, 
                                   times = 10)
 
@@ -77,17 +78,17 @@ bootstrap_resamples  # not very useful
 
 # >> 1.3.1) metadata about a split: -----
 first_resample <- bootstrap_resamples$splits[[1]]  
-first_resample  # <32/15/32>
+first_resample  # <32/11/32>
 # 32 data points in the analysis set 
-# 15 data points in the assessment set 
+# 11 data points in the assessment set 
 # 32 data points in the original data 
 
 # >> 1.3.1) data contained within the split: -----
 first_resample$data  # first bootstrap sample data 
 
 # get just the analysis/assessment data: 
-analysis(first_resample)  %>% str
-assessment(first_resample) %>% str
+analysis(first_resample)  %>% str  # get the "analysis"/training data 
+assessment(first_resample) %>% str  # # get the "assessment"/test data 
 
 
 
@@ -113,6 +114,7 @@ p1.boxplots <- df1.attrition %>%
       scale_y_log10(); p1.boxplots
 
 # > 2.2) create resamples: ------------
+# bootstrapping attrition dataset 
 boots.attrition <- bootstraps(df1.attrition, 
                               times = 500)
 
@@ -132,9 +134,10 @@ compare_male_female_stat <- function(splits, FUN = median, ...){
       
       #**************************************************************
       # inputs: 
-      # > an "rsplit" object 
+      # > an "rsplit" object (i.e. single data point in the "splits" column that
+      #     results from calling bootstraps() on a dataset) 
       # > function to call on the data (e.g. mean/median)
-      #     DO NOT PUT QUOTES AROUND NAME OF FUNCTION! 
+      #     DO NOT PUT QUOTES AROUND THE NAME OF THE FUNCTION! 
       
       # output: difference (male - female) in statistics for the male 
       #     group vs the female group 
@@ -172,7 +175,7 @@ compare_male_female_stat(boots.attrition$splits[[1]],
 # 2.3.2) map function across all splits: ------------
 # create a new col in the object boots.attrition: 
 
-boots.attrition$diff_median <- map_dbl(boots.attrition$splits, 
+boots.attrition$diff_median <- map_dbl(boots.attrition$splits,  # each rsplit is passed to the function compare_male_female_stat(), and bound to the formal argument "splits" 
                                        compare_male_female_stat)
 
 
@@ -180,21 +183,35 @@ boots.attrition
 
 
 
-# 2.3.3) plot distribution: 
+# >> 2.3.3) plot distribution: 
 boots.attrition %>% 
       ggplot(aes(x = diff_median))+
       geom_density() + 
       geom_vline(xintercept = 0, 
                  colour = "red") + 
-      labs(title = "diff in medians (male - female)")
+      geom_vline(xintercept = boots.attrition$diff_median %>% mean, 
+                 col = "grey70") + 
+      labs(title = "diff in medians (male - female)") 
+
+
+# 2.4) Interpretation of sampling distribution: --------- 
+
+# The sampling distribution is centered around -250. However, we know that the 
+# center of the sampling distribution of Y-bar = (median(male) - median(female)) 
+# is not necessarily the center of the population distribution of the 
+# parameter Y. 
+
+# However, the variance of the sampling dist. also allows us to estimate variance of the 
+# population. 
+
+# Putting these 2 pieces of info together (the center of sampling dist, and the variance
+# of sampling dist.), we can construct a 95% confidence interval for the population
+# parameter Y. CIs contructed in this way are guaranteed to capture the true
+# population parameter 95% of the time.
 
 
 
-
-
-
-
-# 2.4) compare means between genders: 
+# 2.5) compare means between genders: ---------------
 boots.attrition$diff_mean <- map_dbl(boots.attrition$splits, 
                                      compare_male_female_stat, 
                                      FUN = mean)
@@ -211,7 +228,7 @@ boots.attrition %>%
 
 
 
-# 2.5) compare max between genders: 
+# 2.6) compare max between genders: ---------
 boots.attrition$diff_max <- map_dbl(boots.attrition$splits, 
                                      compare_male_female_stat, 
                                      FUN = max)
