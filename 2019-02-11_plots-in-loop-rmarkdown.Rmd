@@ -1,0 +1,47 @@
+---
+title: "Testing loops for plots"
+author: "Nayef Ahmad"
+date: "February 11, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(gapminder)
+library(tidyverse)
+
+
+
+p1 <- gapminder %>% 
+      filter(country == "Canada") %>% 
+      select(lifeExp, 
+             year) %>% 
+      ggplot(aes(x = year, 
+                 y = lifeExp)) +
+      geom_line()
+
+
+
+p2 <- gapminder %>% 
+      filter(country == "China") %>% 
+      select(lifeExp, 
+             year) %>% 
+      ggplot(aes(x = year, 
+                 y = lifeExp)) +
+      geom_line()
+
+
+list1 <- list(p1, p2)
+
+names(list1) <- c("plot1","plot2")
+
+```
+
+```{r message = FALSE}
+list1
+
+```
+
