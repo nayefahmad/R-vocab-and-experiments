@@ -15,12 +15,13 @@ library(tidyr)
 df1.data <- 
     data.frame(stringsAsFactors=FALSE,
                patientid = c(1L, 1L, 2L, 2L, 2L, 2L, 3L, 3L),
-               team = c("a", "b", "c", "d", "c", "t", "a", "e")) %>% 
+               team = c("a", "b", "c", "d", "c", "t", "a", "e"))  # %>% 
     
-    mutate(id = 1:n()) %>% 
-    select(id, 
-           everything())
+    # mutate(id = 1:n()) %>% 
+    # select(id, 
+    #        everything())
 
+# result: 
 # df1.data
 
 
