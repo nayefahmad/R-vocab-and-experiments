@@ -35,7 +35,7 @@ df2.nested <-
 df2.nested
 # df2.nested$data
 
-# modify nested dataframe using spread: ----------
+# modify nested dataframe: ----------
 df3.spread <- 
     df2.nested %>% 
     mutate(spread_teams = map(data, 
@@ -43,7 +43,7 @@ df3.spread <-
                               # this function just transposes the team names, and creates 
                               #     10 columns for each patient
                               function(x){
-                                  c(t(x$team), rep("NA", 10-length(x$team)))  # todo: 10 is assumed to be the max number of rows
+                                  c(t(x$team), rep("NA", 10-length(x$team)))  # todo: 10 is assumed to be the max number of rows; is this right? 
                                   }))
 
 # result: 
