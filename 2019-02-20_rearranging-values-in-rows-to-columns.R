@@ -15,11 +15,7 @@ library(tidyr)
 df1.data <- 
     data.frame(stringsAsFactors=FALSE,
                patientid = c(1L, 1L, 2L, 2L, 2L, 2L, 3L, 3L),
-               team = c("a", "b", "c", "d", "c", "t", "a", "e"))  # %>% 
-    
-    # mutate(id = 1:n()) %>% 
-    # select(id, 
-    #        everything())
+               team = c("a", "b", "c", "d", "c", "t", "a", "e"))  
 
 # result: 
 # df1.data
@@ -50,6 +46,7 @@ df3.spread <-
                                   c(t(x$team), rep("NA", 10-length(x$team)))  # todo: 10 is assumed to be the max number of rows
                                   }))
 
+# result: 
 # df3.spread
 
 
