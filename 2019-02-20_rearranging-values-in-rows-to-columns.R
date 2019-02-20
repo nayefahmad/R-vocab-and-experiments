@@ -25,6 +25,11 @@ df1.data <-
 # df1.data
 
 
+# df1.data <- read_csv("G:/QUIST/Production/Deepak K/2019-02-20_team-names.csv") %>% 
+#     rename(patientid = PatientID, 
+#            team = `Team Moved`)
+
+
 # group by and nest: ---------
 df2.nested <- 
     df1.data %>% 
@@ -32,7 +37,7 @@ df2.nested <-
     nest
 
 df2.nested
-df2.nested$data
+# df2.nested$data
 
 # modify nested dataframe using spread: ----------
 df3.spread <- 
@@ -49,9 +54,11 @@ df3.spread <-
 
 
 # return dataframe with 1 row for each patient, and 
-bind_cols(df3.spread[1], 
-          as.data.frame(do.call(rbind, df3.spread$spread_teams)))
-    
+df4.output <- bind_cols(df3.spread[1], 
+                        as.data.frame(do.call(rbind, df3.spread$spread_teams)))
+
+# write_csv(df4.output, 
+#           "G:/QUIST/Production/Deepak K/2019-02-20_team-names-rearranged.csv")    
 
 
 
