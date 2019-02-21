@@ -43,7 +43,8 @@ df3.spread <-
                               # this function just transposes the team names, and creates 
                               #     10 columns for each patient
                               function(x){
-                                  c(t(x$team), rep("NA", 10-length(x$team)))  # todo: 10 is assumed to be the max number of rows; is this right? 
+                                  c(t(x$team),  # transpose the column of team names 
+                                    rep("NA", 10-length(x$team)))  # todo: 10 is assumed to be the max number of rows; is this right? 
                                   }))
 
 # result: 
