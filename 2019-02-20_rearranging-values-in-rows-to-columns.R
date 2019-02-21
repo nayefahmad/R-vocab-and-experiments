@@ -4,11 +4,16 @@
 # 2019-02-20
 # Nayef 
 
+# Problem: data has several rows per patient, with each row corresponding to one
+# Community team that they have an active referral with. We want to rearrange
+# the data so that there's one row per patient, with each team in a separate
+# column (long format to wide format). Patients can be associated with different
+# number of teams
+
 #**********************************************************
 
 
 library(tidyverse)
-library(tidyr)
 
 
 # set up example data: -------------
@@ -44,7 +49,7 @@ df3.spread <-
                               #     10 columns for each patient
                               function(x){
                                   c(t(x$team),  # transpose the column of team names 
-                                    rep("NA", 10-length(x$team)))  # todo: 10 is assumed to be the max number of rows; is this right? 
+                                    rep(NA, 10-length(x$team)))  # todo: 10 is assumed to be the max number of rows; is this right? 
                                   }))
 
 # result: 
