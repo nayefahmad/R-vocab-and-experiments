@@ -1150,6 +1150,27 @@ do_something(round)
 do_something(max)
 
 
+
+# alternative, using tidy eval to use a function as an arg to another function: 
+# TODO: DOESN'T WORK 
+
+# do_somethinge_else <- function(fn){
+#     
+#     # "quote" the argument the user supplies, without evaluating: 
+#     fn <- enexpr(fn)
+#     
+#     set.seed(1)
+#     x <- rnorm(100)
+#     
+#     # now "unquote" the expression: 
+#     return(x %>% !!fn)
+#     
+# }
+# 
+# 
+# do_somethinge_else(mean)
+
+
 # SAVING R OBJECTS TO FILE: ---------------------------------
 # let's say it takes 30 min to read in a csv. You don't want to do that 
 #     every time. So, read in once, save as an R object that you can 
