@@ -149,6 +149,51 @@ my_scatterplot(mtcars, mpg, cyl)
 my_scatterplot(mtcars, mpg, hp)
 
 
+# another example: 
+my_summary <- function(df, var){
+    var <- enexpr(var)
+    summarise(df,
+              mean(!!var), 
+              quantile(!!var, .5), 
+              quantile(!!var, .90)
+              ) 
+    
+}
+
+# test: 
+my_summary(mtcars, mpg)
+my_summary(mtcars, hp)
+
+
+
+
+
+
+# 5) QUOSURE = CLOSURE + QUOTATION: ----------------
+
+# This is useful in cases where variables are defined in different environments
+# and we want to make sure we're getting the value from the right enviroment (?)
+
+
+# Quosures capture both the expression AND THE ENVIRONMENT in which they should
+# be evaluated.
+
+?rlang::enquo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
