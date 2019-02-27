@@ -1399,6 +1399,19 @@ mtcars %>%
       head
 
 
+
+# > using "{.}" as an identity operator: ---------
+iris %>% 
+    group_by(Species) %>% 
+    summarise(mean_sepal = mean(Sepal.Length)) %>% 
+    {.}
+    
+# Having "{.}" at the end of the pipe means we can now comment out the line
+# before and run it without making any other changes
+
+
+
+
 #***************************************************
 # DATAPASTA PACKAGE ----
 #***************************************************
