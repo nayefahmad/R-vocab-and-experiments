@@ -508,7 +508,11 @@ groups.5 <- cutree(c1.auto.cluster, 5)
 # str(groups.5) 
 # this is just a numeric vector: each entry is the cluster number that the corresponding element should be assigned to.
 
+<<<<<<< HEAD
 list3.5clusters <- sapply(unique(groups.5), 
+=======
+list4.5clusters <- sapply(unique(groups.5), 
+>>>>>>> 7ab47280592ebb2463d1aead47d0be8e544f844a
                           function(x){df1.auto$name[groups.5 == x]})
 
 
@@ -518,7 +522,11 @@ df9.5cl.summary <- table(groups.5,
       mutate(cluster = c("cluster1", 
                          "cluster2", 
                          "cluster3", 
+<<<<<<< HEAD
                          "cluster4",
+=======
+                         "cluster4", 
+>>>>>>> 7ab47280592ebb2463d1aead47d0be8e544f844a
                          "cluster5")) %>% 
       select(cluster, 
              everything())
