@@ -1,0 +1,72 @@
+---
+title: "Testing loops for plots"
+author: "Nayef Ahmad"
+date: "February 11, 2019"
+output: 
+      html_document: 
+            toc: yes
+            code_folding: show 
+            toc_float: true 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+```
+
+```{r echo = FALSE, warning = FALSE}
+library(gapminder)
+library(tidyverse)
+
+```
+
+
+# Print plots in a list 
+
+```{r}
+p1 <- gapminder %>% 
+      filter(country == "Canada") %>% 
+      select(lifeExp, 
+             year) %>% 
+      ggplot(aes(x = year, 
+                 y = lifeExp)) +
+      geom_line()
+
+
+
+p2 <- gapminder %>% 
+      filter(country == "China") %>% 
+      select(lifeExp, 
+             year) %>% 
+      ggplot(aes(x = year, 
+                 y = lifeExp)) +
+      geom_line()
+
+
+list1 <- list(p1, p2)
+
+names(list1) <- c("plot1","plot2")
+
+```
+
+```{r message = FALSE}
+list1
+
+```
+
+
+
+
+# Scrollable window of results: 
+```{r}
+gapminder %>% 
+      filter(country == "China") %>% 
+      select(country, 
+             lifeExp, 
+             year) %>% 
+      kable() %>% 
+      kable_styling() %>% 
+      scroll_box(width = "100%", 
+                 height = "400px")
+```
+

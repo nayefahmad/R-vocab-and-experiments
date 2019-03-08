@@ -6,6 +6,7 @@ output:
     html_document: 
         code_folding: hide 
         toc: yes
+        self_contained: no
 ---
 
 ```{r setup, include=FALSE, message=FALSE}

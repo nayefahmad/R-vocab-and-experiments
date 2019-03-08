@@ -91,7 +91,8 @@ country_model <- function(df){
 }
 
 
-# create all the models, save in a new column, rename "by_country" to "models_by_country" : 
+# create all the models, save in a new column, rename "by_country" to
+# "models_by_country" :
 models_by_country <- by_country %>%
       mutate(model = map(data, country_model))  # data is the list-column in by_country. Each element is a df
 
@@ -102,7 +103,8 @@ models_by_country$model[[9]]
 # map() is almost exactly the same as lapply()/sapply()
 # take each element of data, and apply function country_model() to it
 
-# map_lgl(), map_int(), map_dbl() and map_chr() return vectors of the corresponding type (or die trying).
+# map_lgl(), map_int(), map_dbl() and map_chr() return vectors of the
+# corresponding type (or die trying).
 
 # map2() takes 2 input vectors, applies a fn to take ith element 
 # of each of 2 inputs each time: 
