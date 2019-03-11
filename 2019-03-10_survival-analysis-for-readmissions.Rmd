@@ -6,7 +6,7 @@ output:
     html_document: 
         toc: yes
         toc_float: yes
-        code_folding: show
+        code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -33,10 +33,16 @@ library(ggpubr)
 
 
 ## Understanding readmission patterns
+As the COO of a hospital, you are interested in readmission patterns, such as the proportion of patients who are readmitted to your hospital within 7 days of discharge. 
 
+You have collected historical data on readmissions, and want to see if they can help you answer questions such as: 
+
+* When do readmissions occur? For example, is a patient more likely to be readmitted on Day 3 after discharge, or on Day 5, or after Day 10, and so on. 
+* What proportion of patients are readmitted, and what proportion are not? 
 
 
 ## Data
+You have data on 15 patients. Seven of them were discharged, but not observed to have been readmitted yet. Thus, we don't really have the value of the variable `days before readmit` for these patients.  
 
 ```{r echo = FALSE}
 
@@ -68,8 +74,12 @@ df1.readmits %>%
 
 ```
 
+Now let's explore alternative ways of visualizing this data, and what conclusions we can draw from each. 
 
-## Modeling time-to-readmission, conditional on being readmitted
+
+## Option 1: Density of time-to-readmission
+
+The simplest thing to do is to just plot a histogram or density function of time-to-readmission, for the patients who have been observed as readmits. 
 
 ```{r}
 
@@ -86,7 +96,7 @@ p1.density
 ```
 
 
-## Modeling time-to-readmission, without conditioning
+## Option 2: Survival curve 
 
 Reference: https://rviews.rstudio.com/2017/09/25/survival-analysis-with-r/ 
 
@@ -107,7 +117,7 @@ km1.survival <- survfit(Surv(days.before.readmit,
                              not.censored) ~ 1,
                         data = df1.readmits)
 
-summary(km1.survival)
+# summary(km1.survival)
 
 ```
 
@@ -135,3 +145,8 @@ ggarrange(p1.density,
 
 ```
 
+
+There's a difference between these two: 
+
+* Modeling time-to-readmission, **conditional on being readmitted**
+* Modeling time-to-readmission, **without conditioning on readmission status** 
