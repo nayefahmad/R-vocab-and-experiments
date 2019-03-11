@@ -42,7 +42,7 @@ You have collected historical data on readmissions, and want to see if they can 
 
 
 ## Data
-You have data on 15 patients. Seven of them were discharged, but not observed to have been readmitted yet. Thus, we don't really have the value of the variable `days before readmit` for these patients.  
+You have data on 15 patients. Seven of them were discharged, but not observed to have been readmitted yet. Thus, we don't really have the value of the variable `days before readmit` for these patients. In the stats lingo, these are *right-censored* data.   
 
 ```{r echo = FALSE}
 
@@ -50,7 +50,7 @@ df1.readmits <-
     data.frame(stringsAsFactors=FALSE,
                 patient_id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L,
                                13L, 14L, 15L),
-       days.before.readmit = c(1L, 2L, 2L, 2L, 3L, 3L, 4L, 6L, 2L, 12L, 15L, 30L,
+       days.before.readmit = c(1L, 2L, 2L, 2L, 3L, 3L, 4L, 7L, 2L, 12L, 15L, 30L,
                                2L, 22L, 4L),
               not.censored = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 0L, 0L, 0L, 0L, 0L,
                                0L, 0L),
@@ -74,10 +74,13 @@ df1.readmits %>%
 
 ```
 
+\  
+\  
+
 Now let's explore alternative ways of visualizing this data, and what conclusions we can draw from each. 
 
 
-## Option 1: Density of time-to-readmission
+## Visualization Option 1: Density of time-to-readmission
 
 The simplest thing to do is to just plot a histogram or density function of time-to-readmission, for the patients who have been observed as readmits. 
 
@@ -89,16 +92,16 @@ p1.density <-
     
     ggplot(aes(x = days.before.readmit)) + 
     scale_x_continuous(expand = c(0,0)) +
-    geom_density() 
+    geom_density() + 
+    labs(x = "Days before readmit", 
+         y = "Probability")
     
 p1.density
     
 ```
 
 
-## Option 2: Survival curve 
-
-Reference: https://rviews.rstudio.com/2017/09/25/survival-analysis-with-r/ 
+## Visualization Option 2: Survival curve^[Reference: https://rviews.rstudio.com/2017/09/25/survival-analysis-with-r/ ]
 
 Plot a Kaplan-Meier curve: 
 
@@ -128,7 +131,9 @@ p2.survival <- autoplot(km1.survival,
                         firsty = 1) + 
     scale_y_continuous(limits = c(0,1)) + 
     scale_x_continuous(expand = c(0, 0), 
-                       breaks = seq(0, 30, 2)) 
+                       breaks = seq(0, 30, 2)) + 
+        labs(x = "Days before readmit",
+             y = "Survival probability")
 
 p2.survival
 
@@ -151,6 +156,28 @@ There's a difference between these two:
 * Modeling time-to-readmission, **conditional on being readmitted**
 * Modeling time-to-readmission, **without conditioning on readmission status** 
 
-## Advangtages of the survival curve: 
+### Advantages of the survival curve: 
 * For the density plot, note that we throw away all data points that don't have a defined end date for `days to readmission`, because they still haven't been readmitted. A major advantage of the survival analysis is that it can use these data points to inform inferences about how long someone is likely to "survive" - i.e. remain outside of the hospital. For example, even though we don't know when Patient 10 will be readmitted (or if they ever will be), **we know that they have already "survived" past Day 1, and this is important information**. 
+
+\  
+
 * From an operational perspective, at the time of discharge of a patient, **we don't know whether or not they will be readmitted**. Therefore, it may be more useful to examine readmission patterns across both populations - those who are readmitted, and those who are not. 
+
+\  
+
+* You can directly read off the survival curve to answer questions such as the following: "**I just discharged a patient. What's the probability that they'll be readmitted within 4 days?**" The answer, based on all the data we have available, including the *right-censored* data, is about 51%.^[The survival curve gives the probability that a patient will survive x days or longer, so the probability that a patient will be readmitted within x days is `1 - S(x)`, where `S(x)` is the value of the survival curve at x (i.e. the y-axis value)] 
+
+\  
+
+* Since the survival curve never reaches the x-axis, this makes it clear that **there is a significant proportion of patients who are never readmitted**. This is not clear in the histogram/density plot of known time-to-readmission cases. 
+
+```{r}
+p2.survival + 
+    geom_vline(xintercept = 4, 
+               col = "red") + 
+    geom_hline(yintercept = 0.49, 
+               col = "red")
+
+```
+
+
