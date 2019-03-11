@@ -78,9 +78,10 @@ p1.density <-
     filter(not.censored == 1) %>% 
     
     ggplot(aes(x = days.before.readmit)) + 
-    geom_density()
+    scale_x_continuous(expand = c(0,0)) +
+    geom_density() 
     
-p1.density    
+p1.density
     
 ```
 
@@ -108,10 +109,17 @@ km1.survival <- survfit(Surv(days.before.readmit,
 
 summary(km1.survival)
 
+```
 
+
+```{r}
 p2.survival <- autoplot(km1.survival,
                         conf.int = FALSE, 
-                        firsty = 1)
+                        firsty = 1) + 
+    scale_y_continuous(limits = c(0,1)) + 
+    scale_x_continuous(expand = c(0, 0), 
+                       breaks = seq(0, 30, 2)) 
+
 p2.survival
 
 ```
