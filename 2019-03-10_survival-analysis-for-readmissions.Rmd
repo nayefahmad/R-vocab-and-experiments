@@ -22,7 +22,7 @@ library(kableExtra)
 # \  ==> line break (include 2 spaces after)
 ```
 
-## Libraries 
+
 ```{r}
 library(tidyverse)
 library(survival)
@@ -150,3 +150,7 @@ There's a difference between these two:
 
 * Modeling time-to-readmission, **conditional on being readmitted**
 * Modeling time-to-readmission, **without conditioning on readmission status** 
+
+## Advangtages of the survival curve: 
+* For the density plot, note that we throw away all data points that don't have a defined end date for `days to readmission`, because they still haven't been readmitted. A major advantage of the survival analysis is that it can use these data points to inform inferences about how long someone is likely to "survive" - i.e. remain outside of the hospital. For example, even though we don't know when Patient 10 will be readmitted (or if they ever will be), **we know that they have already "survived" past Day 1, and this is important information**. 
+* From an operational perspective, at the time of discharge of a patient, **we don't know whether or not they will be readmitted**. Therefore, it may be more useful to examine readmission patterns across both populations - those who are readmitted, and those who are not. 
