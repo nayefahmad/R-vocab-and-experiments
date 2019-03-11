@@ -2,20 +2,32 @@
 title: "Survival analysis for readmission data"
 author: "Nayef Ahmad - VCH Decision Support"
 date: "March 10, 2019"
-output: html_document
+output: 
+    html_document: 
+        toc: yes
+        toc_float: yes
+        code_folding: show
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
 
 library(kableExtra)
+
+# shortcuts: 
+# > ctrl + alt + i ==> new code chunk
+# > ctrl + shift + k ==> knit doc 
+# \  ==> line break (include 2 spaces after)
 ```
 
 ## Libraries 
 ```{r}
 library(tidyverse)
 library(survival)
-
+library(ggfortify)  # one-line survival plots with ggplot2::autoplot.
+library(ggpubr)
 
 ```
 
@@ -26,14 +38,16 @@ library(survival)
 
 ## Data
 
-```{r}
+```{r echo = FALSE}
 
 df1.readmits <- 
     data.frame(stringsAsFactors=FALSE,
                 patient_id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L,
                                13L, 14L, 15L),
-       days.before.readmit = c(1L, 2L, 2L, 2L, 3L, 3L, 4L, 6L, NA, NA, NA, NA, NA,
-                               NA, NA),
+       days.before.readmit = c(1L, 2L, 2L, 2L, 3L, 3L, 4L, 6L, 2L, 12L, 15L, 30L,
+                               2L, 22L, 4L),
+              not.censored = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 0L, 0L, 0L, 0L, 0L,
+                               0L, 0L),
                      notes = c(NA, NA, NA, NA, NA, NA, NA, NA,
                                "no observed readmit", "no observed readmit",
                                "no observed readmit", "no observed readmit",
@@ -43,8 +57,10 @@ df1.readmits <-
 
 
 
+```
 
-# view: 
+View the data: 
+``` {r} 
 df1.readmits %>% 
     kable() %>% 
     kable_styling(bootstrap_options = c("striped")) %>%
@@ -56,14 +72,58 @@ df1.readmits %>%
 ## Modeling time-to-readmission, conditional on being readmitted
 
 ```{r}
-df1.readmits %>% 
+
+p1.density <- 
+    df1.readmits %>% 
+    filter(not.censored == 1) %>% 
+    
     ggplot(aes(x = days.before.readmit)) + 
     geom_density()
     
-    
+p1.density    
     
 ```
 
 
 ## Modeling time-to-readmission, without conditioning
+
+Reference: https://rviews.rstudio.com/2017/09/25/survival-analysis-with-r/ 
+
+Plot a Kaplan-Meier curve: 
+
+```{r include = FALSE}
+# Surv( ) builds the standard survival object: 
+Surv(df1.readmits$days.before.readmit,
+     df1.readmits$not.censored)
+
+# Note that a “+” after the time in the print out of km indicates censoring.
+```
+
+
+```{r}
+# Kaplan-Meier curve: 
+km1.survival <- survfit(Surv(days.before.readmit, 
+                             not.censored) ~ 1,
+                        data = df1.readmits)
+
+summary(km1.survival)
+
+
+p2.survival <- autoplot(km1.survival,
+                        conf.int = FALSE, 
+                        firsty = 1)
+p2.survival
+
+```
+
+
+
+
+## What's the difference? 
+```{r}
+ggarrange(p1.density, 
+          p2.survival, 
+          nrow = 2)
+
+```
 
