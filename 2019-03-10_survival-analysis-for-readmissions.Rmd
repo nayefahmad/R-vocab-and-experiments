@@ -90,9 +90,13 @@ p1.density <-
     
     ggplot(aes(x = days.before.readmit)) + 
     scale_x_continuous(expand = c(0,0)) +
-    geom_density() + 
+    scale_y_continuous(expand = c(0, 0)) + 
+    geom_bar(fill = "skyblue4") + 
     labs(x = "Days before readmit", 
-         y = "Probability")
+         y = "Number of cases") + 
+    theme_light() + 
+    theme(panel.grid.minor = element_line(colour="grey95"), 
+          panel.grid.major = element_line(colour="grey95"))
     
 p1.density
     
@@ -130,14 +134,25 @@ km1.survival <- survfit(Surv(days.before.readmit,
 
 
 ```{r}
+
+# ?autoplot.survfit
+
 p2.survival <- autoplot(km1.survival,
                         conf.int = FALSE, 
-                        firsty = 1) + 
-    scale_y_continuous(limits = c(0,1)) + 
+                        firsty = 1, 
+                        surv.colour = "skyblue4",
+                        surv.size = 1.5, 
+                        censor.size = 5, 
+                        censor.colour = "firebrick") + 
+    scale_y_continuous(limits = c(0,1), 
+                       expand = c(0, 0)) + 
     scale_x_continuous(expand = c(0, 0), 
                        breaks = seq(0, 30, 2)) + 
         labs(x = "Days before readmit",
-             y = "Survival probability")
+             y = "Survival probability") + 
+    theme_light() + 
+    theme(panel.grid.minor = element_line(colour="grey95"), 
+          panel.grid.major = element_line(colour="grey95"))
 
 p2.survival
 
