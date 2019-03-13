@@ -74,9 +74,14 @@ df1.readmits %>%
 
 \  
 \  
+\  
 
 Now let's explore alternative ways of visualizing this data, and what conclusions we can draw from each. 
 
+
+\  
+\  
+\  
 
 ## Visualization Option 1: Density of time-to-readmission
 
@@ -107,7 +112,7 @@ Without further context, this gives the impression that the vast majority of pat
 
 \  
 \  
-
+\  
 
 ## Visualization Option 2: Survival curve
 
@@ -145,7 +150,8 @@ p2.survival <- autoplot(km1.survival,
                         censor.size = 5, 
                         censor.colour = "firebrick") + 
     scale_y_continuous(limits = c(0,1), 
-                       expand = c(0, 0)) + 
+                       expand = c(0, 0), 
+                       breaks = seq(0, 1, .1)) + 
     scale_x_continuous(expand = c(0, 0), 
                        breaks = seq(0, 30, 2)) + 
         labs(x = "Days before readmit",
@@ -159,7 +165,11 @@ p2.survival
 ```
 
 
+************************************
 
+\  
+\  
+\  
 
 ## What's the difference? 
 ```{r}
@@ -188,8 +198,6 @@ There's a difference between these two:
 
 \  
 
-* Since the survival curve never reaches the x-axis, this makes it clear that **there is a significant proportion of patients who are never readmitted**. This is not clear in the histogram/density plot of known time-to-readmission cases. 
-
 ```{r}
 p2.survival + 
     geom_vline(xintercept = 4, 
@@ -198,5 +206,9 @@ p2.survival +
                col = "red")
 
 ```
+
+
+* Since the survival curve never reaches the x-axis, this makes it clear that **there is a significant proportion of patients who are never readmitted**. This is not clear in the histogram/density plot of known time-to-readmission cases. 
+
 
 
