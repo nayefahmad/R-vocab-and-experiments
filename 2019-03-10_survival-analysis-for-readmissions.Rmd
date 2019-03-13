@@ -35,25 +35,23 @@ library(ggpubr)
 ## Understanding readmission patterns
 As the COO of a hospital, you are interested in readmission patterns, such as the proportion of patients who are readmitted to your hospital within 7 days of discharge. 
 
-You have collected historical data on readmissions, and want to see if they can help you answer questions such as: 
+You have collected historical data on readmissions, and want to see if they can help you answer questions such as the following: 
 
-* When do readmissions occur? For example, is a patient more likely to be readmitted on Day 3 after discharge, or on Day 5, or after Day 10, and so on. 
+* When do readmissions occur? For example, is a patient more likely to be readmitted on Day 3 after discharge, or on Day 5, or after Day 10?  
 * What proportion of patients are readmitted, and what proportion are not? 
 
 
 ## Data
-You have data on 15 patients. Seven of them were discharged, but not observed to have been readmitted yet. Thus, we don't really have the value of the variable `days before readmit` for these patients. In the stats lingo, these are *right-censored* data.   
+You have data on 15 patients.^[It's a small hospital] Seven of them were discharged, but not observed to have been readmitted (yet). Thus, we don't really have the value of the variable `days before readmit` for these patients. In the stats lingo, these are *right-censored* data.   
 
-```{r echo = FALSE}
+```{r}
+# paste from Excel using datapasta add-in: 
 
 df1.readmits <- 
     data.frame(stringsAsFactors=FALSE,
-                patient_id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L,
-                               13L, 14L, 15L),
-       days.before.readmit = c(1L, 2L, 2L, 2L, 3L, 3L, 4L, 7L, 2L, 12L, 15L, 30L,
-                               2L, 22L, 4L),
-              not.censored = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 0L, 0L, 0L, 0L, 0L,
-                               0L, 0L),
+                patient_id = c(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L),
+       days.before.readmit = c(1L, 2L, 2L, 2L, 3L, 3L, 4L, 7L, 2L, 12L, 15L, 30L, 2L, 22L, 4L),
+              not.censored = c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
                      notes = c(NA, NA, NA, NA, NA, NA, NA, NA,
                                "no observed readmit", "no observed readmit",
                                "no observed readmit", "no observed readmit",
@@ -100,10 +98,16 @@ p1.density
     
 ```
 
+Without further context, this gives the impression that the vast majority of patients are readmitted in 5 days or less. 
 
-## Visualization Option 2: Survival curve^[Reference: https://rviews.rstudio.com/2017/09/25/survival-analysis-with-r/ ]
 
-Plot a Kaplan-Meier curve: 
+\  
+\  
+
+
+## Visualization Option 2: Survival curve
+
+Plot a Kaplan-Meier curve:^[Reference: https://rviews.rstudio.com/2017/09/25/survival-analysis-with-r/ ] 
 
 ```{r include = FALSE}
 # Surv( ) builds the standard survival object: 
