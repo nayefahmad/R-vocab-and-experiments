@@ -35,7 +35,7 @@ stocks_long_by_time <-
 
 # > 2.1 Notes: --------
 # The var which is dropped with the minus sign (here, "time") will be
-# repeated across rows in the long format
+# repeated across rows in the resulting long format
 
 # "time" variable is unique across rows in the original data
 
@@ -61,6 +61,14 @@ stocks_long_by_stock <-
     gather(key = time, 
            value = price, 
            -stock) %>% print
+
+# again, note that the dropped variable, "stock", will be repeated across rows
+# in the resulting long format. Also, it was unique across rows in the wide format. 
+
+
+stocks_long_by_stock
+stocks_long_by_time
+
 
     
 
