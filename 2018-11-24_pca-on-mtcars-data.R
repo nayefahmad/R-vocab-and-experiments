@@ -9,6 +9,7 @@ library(tidyverse)
 library(broom)
 library(ggrepel)
 library(here)
+library(ggfortify)
 
 # reference: https://www.datacamp.com/community/tutorials/pca-analysis-r 
 
@@ -114,6 +115,10 @@ p2.mtcars.2components <-
                       size = 4); p2.mtcars.2components
 
 
+# another option: ggfortify::autoplot: 
+autoplot(mtcars.pca, 
+         loadings = TRUE, 
+         loadings.label = TRUE)
 
 
 # Project new data onto the new basis: -----
