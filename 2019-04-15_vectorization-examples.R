@@ -15,7 +15,8 @@
 
 # Write a program to: 
 # > toss a coin n times and print out after every 100 tosses the proportion of heads minus 1/2
-# > 
+# > print out after every 100 tosses the number of heads minus half the number of tosses
+# > do these numbers appear to approach 0 as n increases? 
 
 
 #*******************************************************************
@@ -64,5 +65,39 @@ coin_toss(1000)
 
 
 
-# > 1.2 vectorized solution: 
+# > 1.2 vectorized solution: ----------
 
+# function definition: 
+coin_toss_vectorized <- function(n, step = 100) {
+    
+    if (n < 100) {return(cat("n must be greater than 100"))}
+    
+    # Record num heads at each step
+    tosses <- cumsum(sample(c(0, 1), n, replace = TRUE))
+    
+    # define step for summaries: 
+    steps <- seq(step, n, by = step)
+    
+    # Compute summaries
+    percent <- tosses[steps] / steps - .5
+    number <- tosses[steps] - steps/2
+    
+    # retuen result
+    return(cbind(percent, number))
+    
+}
+
+
+# function test: 
+set.seed(10)
+coin_toss_vectorized(1000)
+
+set.seed(10)
+coin_toss(1000)
+
+# vectorized and non-vectorized functions give same result 
+
+
+# compare speeds: 
+system.time(coin_toss(100000))  # elapsed = 12.65 sec
+system.time(coin_toss_vectorized(100000))  # elapsed = 0 sec!!!
