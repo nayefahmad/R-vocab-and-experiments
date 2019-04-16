@@ -1,15 +1,14 @@
 
 
-#*******************************************************************
+#****************************************************************************
 # Vectorization examples 
 # 2019-04-15
 # Nayef 
 
-#*******************************************************************
+#****************************************************************************
 
 
-#*******************************************************************
-# Example 1 -------------
+# Example 1: Coin tosses -------------
 
 # Reference: https://www.r-bloggers.com/how-to-use-vectorization-to-streamline-simulations/
 
@@ -19,16 +18,13 @@
 # > do these numbers appear to approach 0 as n increases? 
 
 
-#*******************************************************************
 
-
-
-# > 1.1) non-vectorized solution: ----------
+# > 1.1) non-vectorized solution: -------------------------------------------
 
 # function definition: 
 coin_toss <- function(n){
     
-    result <- c()  # empty vector 
+    result <- c()  # empty vector that we'll fill via the loop 
     
     for (i in 1:n) {
         
@@ -38,6 +34,7 @@ coin_toss <- function(n){
             
         } else {
             # creating a vector, "tosses" that has history of all tosses
+            # We also fill this vector using the loop
             tosses <- c(tosses ,sample(c(0,1), 1))
             
         }
@@ -65,7 +62,7 @@ coin_toss(1000)
 
 
 
-# > 1.2 vectorized solution: ----------
+# > 1.2) vectorized solution: ------------------------------------------------
 
 # function definition: 
 coin_toss_vectorized <- function(n, step = 100) {
@@ -75,11 +72,11 @@ coin_toss_vectorized <- function(n, step = 100) {
     # Record num heads at each step
     tosses <- cumsum(sample(c(0, 1), n, replace = TRUE))
     
-    # define step for summaries: 
+    # define vector of indices, based on step argument: 
     steps <- seq(step, n, by = step)
     
-    # Compute summaries
-    percent <- tosses[steps] / steps - .5
+    # Compute summaries, indexing into vector "tosses", using the "steps" vector
+    percent <- tosses[steps]/steps - .5
     number <- tosses[steps] - steps/2
     
     # retuen result
@@ -101,3 +98,32 @@ coin_toss(1000)
 # compare speeds: 
 system.time(coin_toss(100000))  # elapsed = 12.65 sec
 system.time(coin_toss_vectorized(100000))  # elapsed = 0 sec!!!
+
+
+
+# > 1.3) Notes: ------------
+
+cumsum  # function (x)  .Primitive("cumsum")
+
+# The .Primitive above means that cumsum is implemented as a C function. 
+# Reference: http://www.noamross.net/blog/2014/4/16/vectorization-in-r--why.html 
+
+# In the vectorized solution, we first create a vector of sampled results, then
+# **pass the entire vector to cumsum( ) to operate on in one go**.
+
+# In contrast, in the non-vectorized solution, at every stage, the operations
+# only work with one coin toss at a time. Also, we are growing a vector through
+# a for loop, which means there's overhear evey iteration of the loop, to
+# allocate memory, etc.
+
+
+
+
+
+
+
+
+
+
+
+
