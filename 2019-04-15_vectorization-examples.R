@@ -108,10 +108,14 @@ cumsum  # function (x)  .Primitive("cumsum")
 # The .Primitive above means that cumsum is implemented as a C function. 
 # Reference: http://www.noamross.net/blog/2014/4/16/vectorization-in-r--why.html 
 
-# In the vectorized solution, we first create a vector of sampled results, then
+# In the **vectorized** solution, we first create a vector of sampled results, then
 # **pass the entire vector to cumsum( ) to operate on in one go**.
 
-# In contrast, in the non-vectorized solution, at every stage, the operations
+# Also, calculations of percentages are vectorized: "tosses[steps]/steps" will
+# return a vector, the first element of which will be the first element of
+# tosses[steps] divided by the first element of steps, and so on
+
+# In contrast, in the **non-vectorized** solution, at every stage, the operations
 # only work with one coin toss at a time. Also, we are growing a vector through
 # a for loop, which means there's overhear evey iteration of the loop, to
 # allocate memory, etc.
