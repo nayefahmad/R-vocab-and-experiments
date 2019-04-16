@@ -7,6 +7,8 @@
 
 #****************************************************************************
 
+library(tidyverse)
+
 
 # Example 1: Coin tosses -------------
 
@@ -128,6 +130,43 @@ cumsum  # function (x)  .Primitive("cumsum")
 
 
 
+#****************************************************************************
+# Example 2: 2D Random walk ---------
+
+# Reference: "Writing Efficient Programs in R (and Beyond)"
+#****************************************************************************
 
 
+# 2.1) non-vectorized solution: ---------------------------------------------
 
+# define function: 
+rw2d1 <- 
+    function(n) {
+        xpos = ypos = numeric(n)
+        xdir = c(TRUE, FALSE)
+        pm1 = c(1, -1)
+        
+        for(i in 2:n)
+            if (sample(xdir, 1)) {
+                xpos[i] = xpos[i-1] + sample(pm1, 1)
+                ypos[i] = ypos[i-1]
+            }
+        else {
+            xpos[i] = xpos[i-1]
+            ypos[i] = ypos[i-1] + sample(pm1, 1)
+        }
+        data.frame(x = xpos,
+                   y = ypos)
+    }
+
+
+# test function: 
+rw2d1(10)
+
+rw2d1(15000) %>% 
+    ggplot(aes(x=x, y=y)) + 
+    geom_path() + 
+    theme_light() +
+    theme(panel.grid.minor = element_line(colour = "grey95"), 
+      panel.grid.major = element_line(colour = "grey95"))
+      
