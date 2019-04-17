@@ -165,7 +165,7 @@ rw2d1(10)
 
 rw2d1(15000) %>% 
     ggplot(aes(x=x, y=y)) + 
-    geom_path() + 
+    geom_path(col = "dodgerblue3") + 
     theme_light() +
     theme(panel.grid.minor = element_line(colour = "grey95"), 
       panel.grid.major = element_line(colour = "grey95"))
