@@ -134,6 +134,8 @@ cumsum  # function (x)  .Primitive("cumsum")
 # Example 2: 2D Random walk ---------
 
 # Reference: "Writing Efficient Programs in R (and Beyond)"
+# PDF: https://www.stat.auckland.ac.nz/~ihaka/downloads/Taupo.pdf 
+
 #****************************************************************************
 
 
@@ -143,8 +145,8 @@ cumsum  # function (x)  .Primitive("cumsum")
 rw2d1 <- 
     function(n) {
         xpos = ypos = numeric(n)
-        xdir = c(TRUE, FALSE)
-        pm1 = c(1, -1)
+        xdir = c(TRUE, FALSE)  # should we change xpos? If no, we'll change ypos  
+        pm1 = c(1, -1)  # which direction to change xpos
         
         for(i in 2:n)
             if (sample(xdir, 1)) {
@@ -163,6 +165,7 @@ rw2d1 <-
 # test function: 
 rw2d1(10)
 
+# plot result: 
 rw2d1(15000) %>% 
     ggplot(aes(x=x, y=y)) + 
     geom_path(col = "dodgerblue3") + 
@@ -170,3 +173,69 @@ rw2d1(15000) %>%
     theme(panel.grid.minor = element_line(colour = "grey95"), 
       panel.grid.major = element_line(colour = "grey95"))
       
+
+
+
+
+# 2.2) First vectorized solution: ---------------------------------------------
+
+# Rather than computing the position element by element, this
+# version computes the vectors of position changes and then
+# uses cumsum to compute the positions.
+
+# To compute n positions we need n − 1 position changes.
+
+
+# define function: 
+rw2d2 <- function(n) {
+    
+    # Compute all step sizes: 
+    steps <- sample(c(-1, 1), 
+                    n-1, 
+                    replace = TRUE) 
+    
+    # determine whether or not to step in x-direction: 
+    xdir <- sample(c(TRUE, FALSE), 
+                   n-1, 
+                   replace = TRUE)
+    
+    # find full vector of xpos: 
+    # if xdir = TRUE, we change xdir by amout "steps" (-1 or 1)
+    
+    # Vectorization: 
+    # > ifelse is vectorized - applies on the whole xdir vector 
+    # > cumsum is also vectorized 
+    xpos <- c(0, cumsum(ifelse(xdir, 
+                               steps, 
+                               0)))
+    
+    # change ypos when you don't change xpos: 
+    ypos <- c(0, cumsum(ifelse(xdir, 
+                               0, 
+                               steps)))
+    
+    # return result: 
+    data.frame(x = xpos, 
+               y = ypos)
+    
+}
+
+
+# test function: 
+set.seed(4); rw2d2(10)
+
+
+# plot result: 
+# plot result: 
+rw2d2(15000) %>% 
+    ggplot(aes(x=x, y=y)) + 
+    geom_path(col = "dodgerblue3") + 
+    theme_light() +
+    theme(panel.grid.minor = element_line(colour = "grey95"), 
+          panel.grid.major = element_line(colour = "grey95"))
+
+
+
+# 2.3) Second vectorized solution: ---------------------------------------------
+
+
