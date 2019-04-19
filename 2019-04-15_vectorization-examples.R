@@ -113,6 +113,9 @@ cumsum  # function (x)  .Primitive("cumsum")
 # In the **vectorized** solution, we first create a vector of sampled results, then
 # **pass the entire vector to cumsum( ) to operate on in one go**.
 
+# cumsum takes a vector as input, and **returns a vector the 
+#   accumulates the input vector at every stage** 
+
 # Also, calculations of percentages are vectorized: "tosses[steps]/steps" will
 # return a vector, the first element of which will be the first element of
 # tosses[steps] divided by the first element of steps, and so on
@@ -139,7 +142,7 @@ cumsum  # function (x)  .Primitive("cumsum")
 #****************************************************************************
 
 
-# 2.1) non-vectorized solution: ---------------------------------------------
+# > 2.1) non-vectorized solution: ---------------------------------------------
 
 # define function: 
 rw2d1 <- 
@@ -177,7 +180,7 @@ rw2d1(15000) %>%
 
 
 
-# 2.2) First vectorized solution: ---------------------------------------------
+# > 2.2) First vectorized solution: ---------------------------------------------
 
 # Rather than computing the position element by element, this
 # version computes the vectors of position changes and then
@@ -221,6 +224,12 @@ rw2d2 <- function(n) {
 }
 
 
+# >> 2.2.1) Notes: -----
+# note the importance of cumsum() in this example as well as
+# in Example 1
+
+
+
 # test function: 
 set.seed(4); rw2d2(10)
 
@@ -236,6 +245,6 @@ rw2d2(15000) %>%
 
 
 
-# 2.3) Second vectorized solution: ---------------------------------------------
+# > 2.3) Second vectorized solution: ---------------------------------------------
 
 
