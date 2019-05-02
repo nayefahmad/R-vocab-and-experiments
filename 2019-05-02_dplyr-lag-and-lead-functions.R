@@ -16,7 +16,7 @@ options(readr.default_locale=readr::locale(tz="America/Los_Angeles"))
 # todo: add in timestamps 
 
 
-# Problem statement: -------------
+# 1) Problem statement: -------------
 
 # You have data on the locations where patients are in a hospital, with
 # timestamps for each location. You want to modify the data so that at every
@@ -69,6 +69,27 @@ df1.location_data %<>%
 df1.location_data %<>% 
     mutate(location_2steps_forward = lead(location, 2), 
            location_3steps_forward = lead(location, 3)) %>% print    
+
+
+
+
+# 2) Problem statement 2: -----------
+
+# for a given location, what's the distribution of frequencies of going to each
+# of the other locations? 
+
+# Required result: ---------
+# Distribution of "destinations" from ACWR as a starting point. 
+
+tibble::tribble(
+    ~start_loc, ~end_loc, ~count,
+        "ACWR", "INTKWR",      1,
+        "ACWR",     "AC",      1
+    )
+
+# Note that from the data above, we want to exclude rows where both the location 
+#   and next_location are ACWR 
+
 
 
 
