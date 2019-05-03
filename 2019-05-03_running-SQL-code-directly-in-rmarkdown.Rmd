@@ -1,0 +1,52 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+cnx <- dbConnect(odbc::odbc(),
+                  dsn = "cnx_SPDBSCSTA001")
+
+```
+
+```{sql connection = cnx, output.var = "eddata"}
+
+select PatientID
+	, StartDate
+	, StartTime
+	, DispositionDate
+	, DispositionTime
+	, TriageAcuityDescription
+	, AdmittedFlag
+	, BedRequestDate
+	, BedRequestTime
+from EDMart.[dbo].[vwEDVisitIdentifiedRegional]
+where FacilityLongName = 'Lions Gate Hospital' 
+	and (StartDate = '2017-07-27' and StartTime <= '21:35' 
+		or 
+		StartDate < '2017-07-27' ) 
+
+	and (DispositionDate = '2017-07-27' and DispositionTime > '21:35'
+		or 
+		DispositionDate > '2017-07-27')
+
+order by StartDate
+	, StartTime
+	, DispositionDate
+	, DispositionTime
+	, AdmittedFlag
+
+
+```
+
+
+
+```{r}
+write_csv(eddata,
+        here::here("2019-05-03_lgh_ED-patients-census-on-2017-07-27.csv"))
+                   
+```
+
+
