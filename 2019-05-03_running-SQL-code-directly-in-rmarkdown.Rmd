@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Running SQL code directly in RMarkdown"
 output: html_document
 ---
 
@@ -10,6 +10,8 @@ cnx <- dbConnect(odbc::odbc(),
                   dsn = "cnx_SPDBSCSTA001")
 
 ```
+
+Remove the option `output.var = "eddata"` to view the results in RStudio, rather than saving to a dataframe. 
 
 ```{sql connection = cnx, output.var = "eddata"}
 
