@@ -15,9 +15,11 @@ library(tidyverse)
 # Reference: https://www.r-bloggers.com/how-to-use-vectorization-to-streamline-simulations/
 
 # Write a program to: 
-# > toss a coin n times and print out after every 100 tosses the proportion of heads minus 1/2
-# > print out after every 100 tosses the number of heads minus half the number of tosses
-# > do these numbers appear to approach 0 as n increases? 
+# > toss a coin n times and print out after every 100 tosses the proportion of
+#   heads minus 1/2 
+# > print out after every 100 tosses the number of heads minus half the number
+#   of tosses 
+# > do these numbers appear to approach 0 as n increases?
 
 
 
@@ -81,7 +83,7 @@ coin_toss_vectorized <- function(n, step = 100) {
     percent <- tosses[steps]/steps - .5
     number <- tosses[steps] - steps/2
     
-    # retuen result
+    # return result
     return(cbind(percent, number))
     
 }
@@ -110,8 +112,8 @@ cumsum  # function (x)  .Primitive("cumsum")
 # The .Primitive above means that cumsum is implemented as a C function. 
 # Reference: http://www.noamross.net/blog/2014/4/16/vectorization-in-r--why.html 
 
-# In the **vectorized** solution, we first create a vector of sampled results, then
-# **pass the entire vector to cumsum( ) to operate on in one go**.
+# In the **vectorized** solution, we first create a vector of sampled results,
+# then **pass the entire vector to cumsum( ) to operate on in one go**.
 
 # cumsum takes a vector as input, and **returns a vector the 
 #   accumulates the input vector at every stage** 
@@ -246,5 +248,10 @@ rw2d2(15000) %>%
 
 
 # > 2.3) Second vectorized solution: ---------------------------------------------
+# A potential problem with the previous version is the use of the
+# ifelse function to deal with the x and y directions separately.
+# As a final improvement let’s deal with the four step directions
+# separately and simply choose one of the four directions at
+# random.
 
 
