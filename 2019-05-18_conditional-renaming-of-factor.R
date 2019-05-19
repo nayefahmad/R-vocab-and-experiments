@@ -56,6 +56,26 @@ head(df, 10)
 # 
 # levels(df$colour)
 
-
+# This works as expected. Since we don't specify what to do
+# when fruit != apple, we just get NAs. However, we do
+# get a factor, as desired.
+# df <- df %>% 
+#     mutate(colour = case_when(fruit == "apple" ~ 
+#                                   fct_recode(colour, 
+#                                              green = "red")))
+# 
+# str(df)
+# df
  
 
+# So why does it all break down when we add the last
+# condition to the case_when()? 
+
+df <- df %>% 
+    mutate(colour = case_when(fruit == "apple" ~ 
+                                  fct_recode(colour, 
+                                             green = "red"), 
+                              TRUE ~ colour))
+
+str(df)
+df
