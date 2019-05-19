@@ -31,20 +31,31 @@ head(df, 10)
 
 
 
-# Solution: ---------------
+# Solution 1: ---------------
 
 # help(package = "forcats")
 # ?fct_recode
 # ?fct_match
+# ?fct_expand
 # ?replace
 
 # This works, but isn't very elegant bcoz requires
 # converting colour to character then back to factor: 
-df <- df %>% 
-    mutate(colour = case_when(fruit == "apple" ~ "green", 
+df <- df %>%
+    mutate(colour = case_when(fruit == "apple" ~ "green",
                               TRUE ~ as.character(colour)) %>% factor)
 
 str(df)
 head(df, 10)
 
+
+
+# Solution 2: ----------------
+# df <- df %>% 
+#     mutate(colour = fct_expand(df$colour, "green"))
+# 
+# levels(df$colour)
+
+
+ 
 
