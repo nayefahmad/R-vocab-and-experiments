@@ -6,5 +6,5 @@
 #' output: html_document
 #' ---
 
-#' Reference: https://www.youtube.com/watch?v=nERXS3ssntw
+#' Reference: https://tidyverts.github.io/tidy-forecasting-principles/ 
 
