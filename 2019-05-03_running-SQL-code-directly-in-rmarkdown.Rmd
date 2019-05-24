@@ -6,6 +6,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+library(odbc)
+
 cnx <- dbConnect(odbc::odbc(),
                   dsn = "cnx_SPDBSCSTA001")
 
@@ -43,11 +45,15 @@ order by StartDate
 
 ```
 
+# View the data
+```{r}
+head(eddata)
+```
 
 
 ```{r}
-write_csv(eddata,
-        here::here("2019-05-03_lgh_ED-patients-census-on-2017-07-27.csv"))
+# write_csv(eddata,
+#         here::here("2019-05-03_lgh_ED-patients-census-on-2017-07-27.csv"))
                    
 ```
 
