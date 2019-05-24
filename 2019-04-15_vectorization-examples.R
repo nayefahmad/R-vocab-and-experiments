@@ -254,4 +254,35 @@ rw2d2(15000) %>%
 # separately and simply choose one of the four directions at
 # random.
 
+# define function: 
+rw2d3 <- function(n){
+    
+    xsteps <- c(-1, 1, 0, 0)
+    ysteps <- c(0, 0, -1, 1)
+    
+    # randomly choose a direction: 
+    dir <- sample(1:4, 
+                  n - 1, 
+                  replace = TRUE)
+    
+    xpos <- c(0, cumsum(xsteps[dir]))
+    ypos <- c(0, cumsum(ysteps[dir]))
+    
+    return(data.frame(x = xpos, 
+                      y = ypos))
+    
+}
 
+
+
+# test function: 
+set.seed(4); rw2d3(10)
+
+
+# plot result: 
+rw2d3(15000) %>% 
+    ggplot(aes(x=x, y=y)) + 
+    geom_path(col = "dodgerblue3") + 
+    theme_light() +
+    theme(panel.grid.minor = element_line(colour = "grey95"), 
+          panel.grid.major = element_line(colour = "grey95"))
