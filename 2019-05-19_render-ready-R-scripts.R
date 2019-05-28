@@ -15,7 +15,10 @@
 #' Note that pressing return at the end of one of these lines will 
 #' ensure the next line is also human-readable text. 
 #' 
-#' Reference: https://happygitwithr.com/r-test-drive.html 
+#' References: 
+#' 
+#' * https://happygitwithr.com/r-test-drive.html 
+#' * https://yihui.name/knitr/demo/stitch/
 #' 
 ## here is a regular code comment, that will remain as such
 summary(VADeaths)
