@@ -1,67 +1,72 @@
 
+#'--- 
+#' title: "Bootstrapping the sampling distribution of the difference between 2 means"
+#' author: "Nayef Ahmad"
+#' date: "2019-01-19"
+#' output: 
+#'   html_document: 
+#'     code_folding: "show"
+#' ---
 
-#**************************************************************************
-# Bootstrapping the sampling distribution of the difference between 2 means 
-# 2019-01-19 
-# Nayef 
+#' Reference: https://tidymodels.github.io/rsample/articles/Working_with_rsets.html  
 
-#**************************************************************************
-
+#+ libraries, message = FALSE 
 library(tidyverse)
 library(rsample)
 library(janitor)
 
-# reference: 
-# https://tidymodels.github.io/rsample/articles/Working_with_rsets.html 
 
 # rename for convenience: 
 df1.attrition <- attrition %>%   # factors that lead to employee attrition
       clean_names()
 
-str(df1.attrition)
+# str(df1.attrition)
 
 
-# Traditionally, the bootstrap has been primarily used to empirically determine
-# the sampling distribution of a test statistic. Given a set of samples with
-# replacement, a statistic can be calculated on each analysis set and the
-# results can be used to make inferences (such as confidence intervals).
+#' Traditionally, the bootstrap has been primarily used to empirically determine
+#' the sampling distribution of a test statistic. Given a set of samples with
+#' replacement, a statistic can be calculated on each analysis set and the
+#' results can be used to make inferences (such as confidence intervals).
 
 
+#' 
+#' ### 1) `Rsample` basics
 
-#********************************************************************
-# 1) Rsample basics: ----------
-#********************************************************************
+#' https://tidymodels.github.io/rsample/articles/Basics.html
 
-# https://tidymodels.github.io/rsample/articles/Basics.html
-
-# > 1.1) what's a resample? --------
-# We define a resample as the result of a two-way split of a data set. For
-# example, when bootstrapping, one part of the resample is a sample with
-# replacement of the original data. The other part of the split contains the
-# instances that were not contained in the bootstrap sample
-
+#'
+#' #### what's a `resample`? 
+#' We define a resample as the result of a two-way split of a data set. For
+#' example, when bootstrapping, one part of the resample is a sample with
+#' replacement of the original data. The other part of the split contains the
+#' instances that were not contained in the bootstrap sample
 
 
-# > 1.2) what's an rset object? -------- 
-# The main class in the package (rset) is for a set or collection of resamples. 
-# In 10-fold cross-validation, the set would consist of the 10 different 
-# resamples of the original data.
+#'
+#' #### what's an `rset` object?
+#'
+#' The main class in the package (`rset`) is for a set or collection of
+#' `resample`s. In 10-fold cross-validation, the set would consist of the 10
+#' different resamples of the original data.
+
+#'
+#' #### individual resamples are `rsplit` objects
+#'
+#' There are two partitions that comprise a `resample`:
+#'
+#' 1. *"analysis"* data: those that we selected in the resample. For a bootstrap,
+#' this is the sample with replacement. For 10-fold cross-validation, this is
+#' the 90% of the data. These data are often used to fit a model or calculate a
+#' statistic in traditional bootstrapping.
+#' 
+
+#' 2. *"assessment"* data:  the section of the original data not covered by the
+#' analysis set. Often used to evaluate the performance of a model that was fit
+#' to the analysis data.
 
 
-# >> 1.2.1) individual resamples are "rsplit" objects: ------
-# two partitions that comprise a resample: 
-# 1) "analysis" data: those that we selected in the resample. For a bootstrap,
-#     this is the sample with replacement. For 10-fold cross-validation, 
-#     this is the 90% of the data. These data are often used to fit a model or 
-#     calculate a statistic in traditional bootstrapping.
-
-# 2) "assessment" data:  the section of the original data not covered by the 
-#     analysis set. Often used to evaluate the performance of a model that was
-#     fit to the analysis data.
-
-
-
-# > 1.3) mtcars example: ------
+#'
+#' ### 2) mtcars example
 set.seed(1)
 
 # bootstrapping mtcars dataset: 
@@ -75,15 +80,16 @@ str(bootstrap_resamples,
 # examine result: 
 bootstrap_resamples  # not very useful 
 
-
-# >> 1.3.1) metadata about a split: -----
+#'
+#' #### metadata about a split: 
 first_resample <- bootstrap_resamples$splits[[1]]  
 first_resample  # <32/11/32>
 # 32 data points in the analysis set 
 # 11 data points in the assessment set 
 # 32 data points in the original data 
 
-# >> 1.3.1) data contained within the split: -----
+#'
+#' #### data contained within the split: 
 first_resample$data  # first bootstrap sample data 
 
 # get just the analysis/assessment data: 
@@ -95,10 +101,11 @@ assessment(first_resample) %>% str  # # get the "assessment"/test data
 
 
 
-
-#********************************************************************
-# 2) differences in mean/median monthly income between genders: ------
-#********************************************************************
+#' \  
+#' \  
+#' \  
+#' 
+#' ### 3) differences in mean/median monthly income between genders
 
 # > 2.1) boxplot: -------
 p1.boxplots <- df1.attrition %>% 
