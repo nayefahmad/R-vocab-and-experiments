@@ -5,6 +5,9 @@
 #' date: "2019-01-19"
 #' output: 
 #'   html_document: 
+#'     toc: true
+#'     toc_float: true
+#'     toc_depth: 5
 #'     code_folding: "show"
 #' ---
 
@@ -14,6 +17,7 @@
 library(tidyverse)
 library(rsample)
 library(janitor)
+library(kableExtra)
 
 
 # rename for convenience: 
@@ -34,25 +38,30 @@ df1.attrition <- attrition %>%   # factors that lead to employee attrition
 
 #' https://tidymodels.github.io/rsample/articles/Basics.html
 
-#'
-#' #### what's a `resample`? 
-#' We define a resample as the result of a two-way split of a data set. For
+#' \  
+#' 
+#' #### What's a *resample*? 
+#' We define a *resample* as the result of a two-way split of a data set. For
 #' example, when bootstrapping, one part of the resample is a sample with
 #' replacement of the original data. The other part of the split contains the
 #' instances that were not contained in the bootstrap sample
+#' 
+#' Here, each resample has class `rsplit` - see below. 
 
 
-#'
-#' #### what's an `rset` object?
+#' \  
+#' 
+#' #### What's an `rset` object?
 #'
 #' The main class in the package (`rset`) is for a set or collection of
-#' `resample`s. In 10-fold cross-validation, the set would consist of the 10
-#' different resamples of the original data.
+#' resamples (aka `rsplit`s). In 10-fold cross-validation, the set would consist
+#' of the 10 different resamples of the original data.
 
+#' \  
+#' 
+#' #### Individual resamples are `rsplit` objects
 #'
-#' #### individual resamples are `rsplit` objects
-#'
-#' There are two partitions that comprise a `resample`:
+#' There are two partitions that comprise an `rsplit`:
 #'
 #' 1. *"analysis"* data: those that we selected in the resample. For a bootstrap,
 #' this is the sample with replacement. For 10-fold cross-validation, this is
@@ -65,11 +74,17 @@ df1.attrition <- attrition %>%   # factors that lead to employee attrition
 #' to the analysis data.
 
 
-#'
-#' ### 2) mtcars example
+#' \  
+#' \    
+#' 
+#' ### 2) `mtcars` example
 set.seed(1)
 
-# bootstrapping mtcars dataset: 
+#' \   
+#'  
+#' #### Bootstrapping mtcars dataset: 
+#' 
+
 bootstrap_resamples <- bootstraps(mtcars, 
                                   times = 10)
 
@@ -80,19 +95,27 @@ str(bootstrap_resamples,
 # examine result: 
 bootstrap_resamples  # not very useful 
 
-#'
-#' #### metadata about a split: 
+#' \  
+#' 
+#' #### Metadata about a split: 
 first_resample <- bootstrap_resamples$splits[[1]]  
 first_resample  # <32/11/32>
-# 32 data points in the analysis set 
-# 11 data points in the assessment set 
-# 32 data points in the original data 
 
 #'
-#' #### data contained within the split: 
+#' We learn the following about this particular resample: 
+#'
+#' * 32 data points in the analysis set 
+#' * 11 data points in the assessment set 
+#' * 32 data points in the original data 
+
+#' \ 
+#'  
+#' #### Data contained within the split: 
 first_resample$data  # first bootstrap sample data 
 
-# get just the analysis/assessment data: 
+#' \  
+#' 
+#' #### Get just the analysis/assessment data: 
 analysis(first_resample)  %>% str  # get the "analysis"/training data 
 assessment(first_resample) %>% str  # # get the "assessment"/test data 
 
@@ -105,9 +128,12 @@ assessment(first_resample) %>% str  # # get the "assessment"/test data
 #' \  
 #' \  
 #' 
-#' ### 3) differences in mean/median monthly income between genders
+#' ### 3) Compare *median* monthly income between genders
+#' 
+#' \  
+#' 
 
-# > 2.1) boxplot: -------
+#' #### boxplot: 
 p1.boxplots <- df1.attrition %>% 
       ggplot(aes(x = gender, 
                  y = monthly_income)) + 
@@ -120,21 +146,29 @@ p1.boxplots <- df1.attrition %>%
       # data is positively skewed, so log it: 
       scale_y_log10(); p1.boxplots
 
-# > 2.2) create resamples: ------------
+#' \  
+#' 
+#' #### Create resamples: 
+
 # bootstrapping attrition dataset 
 boots.attrition <- bootstraps(df1.attrition, 
                               times = 500)
 
 
+#' \  
+#' 
+#' #### Compare medians between genders: 
+#' 
 
-# > 2.3) compare medians: -------------
+#' If we wanted to compare the genders, we could conduct a t-test or rank-based
+#' test (e.g. Wilcoxon's). Instead, let’s use the bootstrap to see if there is a
+#' difference in the median incomes for the two groups. We need a simple
+#' function to compute this statistic on the resample
+#' 
+#' \  
+#' 
 
-# If we wanted to compare the genders, we could conduct a t-test or rank-based
-# test. Instead, let’s use the bootstrap to see if there is a difference in the
-# median incomes for the two groups. We need a simple function to compute this
-# statistic on the resample
-
-# >> 2.3.1) function to calc difference in medians: ---------
+#' #### Function to calc difference in medians: 
 
 # fn definition: 
 compare_male_female_stat <- function(splits, FUN = median, ...){
@@ -178,19 +212,27 @@ compare_male_female_stat(boots.attrition$splits[[1]],
                          mean)  # note that you can't put quotes around the function name
 
 
-
-# 2.3.2) map function across all splits: ------------
+#' \  
+#' 
+#' #### Map function across all splits: 
 # create a new col in the object boots.attrition: 
 
-boots.attrition$diff_median <- map_dbl(boots.attrition$splits,  # each rsplit is passed to the function compare_male_female_stat(), and bound to the formal argument "splits" 
-                                       compare_male_female_stat)
-
+boots.attrition <- boots.attrition %>% 
+  mutate(diff_median = map_dbl(boots.attrition$splits,  # each rsplit is passed to the function compare_male_female_stat(), and bound to the formal argument "splits" 
+                               compare_male_female_stat))
 
 boots.attrition
 
 
-
-# >> 2.3.3) plot distribution: 
+#' \  
+#' 
+#' #### Plot distribution of difference in medians
+#'
+#' Even though you actually only have one sample for males and one sample for
+#' females, bootstrapping allows to to "pretend" that we actually have 500
+#' samples of each, so that we could calculate the difference in means 500
+#' times, and see what its distribution looks like.
+#' 
 boots.attrition %>% 
       ggplot(aes(x = diff_median))+
       geom_density() + 
@@ -200,29 +242,37 @@ boots.attrition %>%
                  col = "grey70") + 
       labs(title = "diff in medians (male - female)") 
 
+#' \  
+#' 
+#' #### Interpretation of sampling distribution:  
+#' 
 
-# 2.4) Interpretation of sampling distribution: --------- 
+#' The sampling distribution is centered around -250 (grey line in the graph above).
+#'  However, we know that the center of the sampling distribution of Y-bar = (median(male) - median(female)) 
+#' is not necessarily the center of the population distribution of the 
+#' parameter Y. 
+#' 
 
-# The sampling distribution is centered around -250. However, we know that the 
-# center of the sampling distribution of Y-bar = (median(male) - median(female)) 
-# is not necessarily the center of the population distribution of the 
-# parameter Y. 
+#' However, the variance of the sampling dist. also allows us to estimate
+#' variance of the population.
+#' 
 
-# However, the variance of the sampling dist. also allows us to estimate variance of the 
-# population. 
-
-# Putting these 2 pieces of info together (the center of sampling dist, and the variance
-# of sampling dist.), we can construct a 95% confidence interval for the population
-# parameter Y. CIs contructed in this way are guaranteed to capture the true
-# population parameter 95% of the time.
+#' Putting these 2 pieces of info together (the center of sampling dist, and the
+#' variance of sampling dist.), we can construct a 95% confidence interval for
+#' the population parameter Y. CIs contructed in this way are guaranteed to
+#' capture the true population parameter 95% of the time.
 
 
+#' \  
+#' 
+#' ### 4) Compare *means* between genders: 
+boots.attrition <- boots.attrition %>% 
+  mutate(diff_mean = map_dbl(boots.attrition$splits, 
+                             compare_male_female_stat, 
+                             FUN = mean))
 
-# 2.5) compare means between genders: ---------------
-boots.attrition$diff_mean <- map_dbl(boots.attrition$splits, 
-                                     compare_male_female_stat, 
-                                     FUN = mean)
-
+boots.attrition 
+                
 
 # plot diff: 
 boots.attrition %>% 
@@ -233,9 +283,9 @@ boots.attrition %>%
       labs(title = "diff in means (male - female)")
 
 
-
-
-# 2.6) compare max between genders: ---------
+#' \  
+#'
+#' ### 5) Compare max between genders: 
 boots.attrition$diff_max <- map_dbl(boots.attrition$splits, 
                                      compare_male_female_stat, 
                                      FUN = max)
@@ -248,3 +298,12 @@ boots.attrition %>%
       geom_vline(xintercept = 0, 
                  colour = "red") + 
       labs(title = "diff in max (male - female)")
+
+#'
+#' **Question**: Do the relative heights give an estimate of the prob that the
+#' highest paid person will be male vs female? E.g. if the male spike is 6 and
+#' the female one is 4, does this mean there's a 60% chance that in the
+#' population as a whole, the highest paid person is male?
+#' 
+#' \  
+#' \  
