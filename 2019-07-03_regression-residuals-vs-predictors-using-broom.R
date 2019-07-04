@@ -41,7 +41,7 @@ df2 <-
   df1 %>% 
   gather(key = "predictor", 
          value = "value", 
-         -contains("."))
+         -contains("."))  # contains() used to select vars with "." in name 
 
 df2 %>% 
   datatable() %>% 
@@ -54,5 +54,8 @@ df2 %>%
   ggplot(aes(x = value, 
              y = .resid)) + 
   geom_point() + 
+  geom_smooth() + 
   facet_wrap(~predictor, 
-             scales = "free")
+             scales = "free")  # x-axis for some predictors is small (e.g. `am`), but 
+                               # for others it's large (e.g. `disp`). So we need 
+                               # to set scales free 
