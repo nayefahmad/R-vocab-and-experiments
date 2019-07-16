@@ -39,7 +39,7 @@ coin_toss <- function(n){
         } else {
             # creating a vector, "tosses" that has history of all tosses
             # We also fill this vector using the loop
-            tosses <- c(tosses ,sample(c(0,1), 1))
+            tosses <- c(tosses, sample(c(0,1), 1))
             
         }
         
@@ -62,7 +62,7 @@ coin_toss <- function(n){
 
 # function test: 
 set.seed(10)
-coin_toss(1000)
+coin_toss(1000)  # note that we require n > 100 
 
 
 
