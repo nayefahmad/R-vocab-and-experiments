@@ -39,11 +39,23 @@ df1.data %>%
               "responsive"))
 
 
-#' ## Confidence interval for Poisson mean Reference:
+#' ## Confidence interval for Poisson mean:
 #' * **Using normal approx**: https://stats.stackexchange.com/questions/15371/how-to-calculate-a-confidence-level-for-a-poisson-distribution
-#' * **Without normal approx**: https://en.wikipedia.org/wiki/Poisson_distribution#Confidence_interval
+#' * **Without normal approx**: http://ms.mcmaster.ca/peter/s743/poissonalpha.html
 #'
 #' 
+
+
+#' ## Confidence interval for binomial proportion: 
+
+#' See Brown, Cai, DasGupta (2001), Statistical Science
+#'
+#' The standard "textbook" CI for binomial proportion has poor coverage when the
+#' actual proportion is close to 0 or 1
+#' 
+
+
+
 
 
 
