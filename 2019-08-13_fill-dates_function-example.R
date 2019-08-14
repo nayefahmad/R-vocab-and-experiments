@@ -14,6 +14,7 @@
 library(denodoExtractor)
 library(tidyverse)
 library(kableExtra)
+library(DT)
 
 
 #' I run into this problem often enough that I decided to create a function for
@@ -39,18 +40,30 @@ df %>%
   kable() %>% 
   kable_styling(bootstrap_options = c("striped","condensed","responsive"), 
                 full_width = F)
-            
+
+#' \  
+#' \  
+#' \  
+#' 
+    
 #' ## Problem statement
 #'
 #' How do I get a dataframe with 1 row for each day in January, regardless of
-#' whether or not there was an admit on that date?
+#' whether or not there was an admit on that date? This is not hard to do, but
+#' it is a little tedious, and I want to remove as much friction as possible, so
+#' that it's easy to focus on the big-picture goals of whatever analysis I'm
+#' doing.
 #'
-#' ### Why? 
-#' 
-#' Most obiously, to plot a time series, calculate a rate with the
-#' correct denominator, etc.
+#' ### Why?
+#'
+#' Most obiously, to plot a time series, calculate a rate with the correct
+#' denominator, etc.
 #' 
 
+#' \  
+#' \  
+#' \  
+#' 
 
 #' ## Solution 
 #' 
@@ -66,16 +79,25 @@ df %>%
 
 
 #' ### Run the function:
+#' 
+#' You only need to supply three arguments: 
+#' 
+#' * the name of the column that has dates in it 
+#' * the start date of the range that you want to "fill in"
+#' * the end date of the range that you want to "fill in"
+
 #+ run-function
 df %>% fill_dates(admit_date, 
                   "2019-01-01", 
                   "2019-01-31") %>% 
   
   # this part is not part of the example: 
-  kable() %>% 
-  kable_styling(bootstrap_options = c("striped","condensed","responsive"), 
-                full_width = F)
+  datatable()
 
+#' \  
+#' \  
+#' \  
+#' 
 
 #' ### Quick plot
 #' 
@@ -83,6 +105,7 @@ df %>% fill_dates(admit_date,
 df %>% fill_dates(admit_date, 
                   "2019-01-01", 
                   "2019-01-31") %>%
+  replace_na(replace = list(admits = 0)) %>% 
   
   ggplot(aes(x = dates_fill, 
              y = admits)) + 
