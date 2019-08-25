@@ -644,7 +644,11 @@ r.files <- filter(files.df,
 
 
 # FILL CONTAINER WITH LOOP: ----------------------
-# create an empty container and fill it using a loop. We require that any type and any number of objects can be placed in the container, regardless of whether they are numeric or character or logical: 
+
+# create an empty container and fill it using a loop. We require that any type
+# and any number of objects can be placed in the container, regardless of
+# whether they are numeric or character or logical:
+
 container <- vector(mode="list")
 # container <- list()  # this also seems to work? 
 
