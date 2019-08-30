@@ -73,10 +73,10 @@ coin_toss_vectorized <- function(n, step = 100) {
     
     if (n < 100) {return(cat("n must be greater than 100"))}
     
-    # Record num heads at each step
+    # Record cumulative num heads at each step
     tosses <- cumsum(sample(c(0, 1), n, replace = TRUE))
     
-    # define vector of indices, based on step argument: 
+    # define vector of indices, based on `step` argument: 
     steps <- seq(step, n, by = step)
     
     # Compute summaries, indexing into vector "tosses", using the "steps" vector
