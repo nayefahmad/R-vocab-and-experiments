@@ -34,7 +34,7 @@ library(dbplyr)
 #+ rest 
 # example from fable website: ----------
 
-
+aus_retail %>% str(max.level = 1)
 aus_retail %>% summary
 
 #' Top 1000 rows: 
@@ -108,7 +108,7 @@ STL(ts1) %>% autoplot()
 #' Now let's fit a model 
 #' 
 
-# model fitting: ---------
+# model fitting and forecast: ---------
 
 ts1 %>% 
   model(RW(value ~ drift())) %>% 
@@ -123,37 +123,41 @@ ts1 %>%
 
 
 # admits forecasting: --------
-setup_denodo()
-
-df2.lgh_admits <- 
-  vw_adtc %>% 
-  dplyr::filter(facility_name == "LGH Lions Gate", 
-                admit_date_id >= "20170101", 
-                admit_date_id < "20190901") %>% 
-  dplyr::select(admit_date_id, 
-                nursing_unit_desc_at_ad) %>% 
-  dplyr::count(admit_date_id, 
-               nursing_unit_desc_at_ad) %>% 
-  dplyr::collect()
-
-
-df2.lgh_admits %>% 
-  dplyr::ungroup() %>% 
-  dplyr::filter(nursing_unit_desc_at_ad %in% c("LGH 6 East", 
-                                               "LGH 6 West",
-                                               "LGH 6 Surgical Close Observation")) %>% 
-  fill_dates(admit_date_id, 
-             "2017-01-01", 
-             "2019-09-01") %>% 
-
-  dplyr::arrange(admit_date_id) %>% 
-  dplyr::mutate(row_number = 1:dplyr::n()) %>% View()
-  
-    
-
-  fabletools::model(ets_model = ETS(n)) %>% 
-  fabletools::forecast(h = 10) %>% 
-  autoplot()
+# setup_denodo()
+# 
+# df2.lgh_admits <-
+#   vw_adtc %>%
+#   dplyr::filter(facility_name == "LGH Lions Gate",
+#                 admit_date_id >= "20170101",
+#                 admit_date_id < "20190901") %>%
+#   dplyr::select(admit_date_id,
+#                 nursing_unit_desc_at_ad) %>%
+#   dplyr::count(admit_date_id,
+#                nursing_unit_desc_at_ad) %>%
+#   dplyr::collect()
+# 
+# 
+# df2.lgh_admits %>%
+#   dplyr::ungroup() %>%
+#   dplyr::filter(nursing_unit_desc_at_ad %in% c("LGH 6 East",
+#                                                "LGH 6 West",
+#                                                "LGH 6 Surgical Close Observation")) %>%
+#   fill_dates(admit_date_id,
+#              "2017-01-01",
+#              "2019-09-01") %>%
+# 
+#   dplyr::arrange(admit_date_id) %>%
+#   dplyr::mutate(row_number = 1:dplyr::n(), 
+#                 admit_date = ymd(admit_date_id)) %>% 
+#   
+#   tidyr::drop_na() %>% 
+#   
+#   as_tsibble(index = admit_date, 
+#              key = nursing_unit_desc_at_ad) %>% 
+# 
+#   fabletools::model(ets_model = RW(n)) %>%
+#   fabletools::forecast(h = "10 months") %>%
+#   autoplot()
   
 
 
