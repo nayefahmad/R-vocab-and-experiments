@@ -15,20 +15,55 @@
 #' 
 #' * https://tidyverts.org/ 
 #' * https://github.com/business-science/sweep
-#' 
+#' * model fitting: https://fable.tidyverts.org/articles/fable.html
 
 
 
 #+ lib, include = FALSE 
 library(magrittr)
 library(ggplot2)
+library(tsibble)
+library(tsibbledata)  # for example data 
 library(feasts)
 library(fable)  # installed from github
+library(DT)
+library(lubridate)
+library(denodoExtractor)
+library(dbplyr)
 
 #+ rest 
-#' To begin, we'll simulate a random walk, then plot and analyze it using
-#' `tsibble`, `feasts`, and `fable` packages
-#' 
+# example from fable website: ----------
+
+
+aus_retail %>% summary
+
+#' Top 1000 rows: 
+aus_retail %>% 
+  head(1000) %>% 
+  datatable(extensions = 'Buttons',
+            options = list(dom = 'Bfrtip', 
+                           buttons = c('excel', "csv")))
+
+#' Note that the data is in tidy format, and this makes it easy to produce 2
+#' forecasts simultaneously, for 2 seperate levels of the variable `State`.
+#'
+#' Also note that in the final part of the pipe, you have the pass the data back
+#' to `autoplot` to show both the historical data and the forecast
+aus_retail %>%
+  dplyr::filter(State %in% c("New South Wales", "Victoria"),
+                Industry == "Department stores") %>% 
+  
+  fabletools::model(ets = ETS(box_cox(Turnover, 0.3)),
+                    arima = ARIMA(log(Turnover)),
+                    snaive = SNAIVE(Turnover)) %>% 
+  
+  fabletools::forecast(h = "2 years") %>% 
+  autoplot(dplyr::filter(aus_retail, year(Month) > 2014))
+
+
+
+#+ 
+#' Let's simulate a random walk and try forecasting
 
 # function for a random walk: ----------
 random_walk <- function(t = 100,
@@ -48,7 +83,12 @@ random_walk <- function(t = 100,
 # random_walk(drift = .01)
 
 #+ 
-# simulate the random walk: ---------
+#' Next we'll simulate a random walk, then plot and analyze it using
+#' `tsibble`, `feasts`, and `fable` packages
+#' 
+
+# simulate a random walk: ---------
+set.seed(1)
 df1 <- data.frame(time = 1:100, 
                   value = random_walk(drift = .01))
 
@@ -71,7 +111,9 @@ STL(ts1) %>% autoplot()
 # model fitting: ---------
 
 ts1 %>% 
-  model(RW(value ~ drift()))  
+  model(RW(value ~ drift())) %>% 
+  forecast(h = 10) %>% 
+  autoplot(ts1) 
   
 
 
@@ -80,6 +122,38 @@ ts1 %>%
 
 
 
+# admits forecasting: --------
+setup_denodo()
 
+df2.lgh_admits <- 
+  vw_adtc %>% 
+  dplyr::filter(facility_name == "LGH Lions Gate", 
+                admit_date_id >= "20170101", 
+                admit_date_id < "20190901") %>% 
+  dplyr::select(admit_date_id, 
+                nursing_unit_desc_at_ad) %>% 
+  dplyr::count(admit_date_id, 
+               nursing_unit_desc_at_ad) %>% 
+  dplyr::collect()
+
+
+df2.lgh_admits %>% 
+  dplyr::ungroup() %>% 
+  dplyr::filter(nursing_unit_desc_at_ad %in% c("LGH 6 East", 
+                                               "LGH 6 West",
+                                               "LGH 6 Surgical Close Observation")) %>% 
+  fill_dates(admit_date_id, 
+             "2017-01-01", 
+             "2019-09-01") %>% 
+
+  dplyr::arrange(admit_date_id) %>% 
+  dplyr::mutate(row_number = 1:dplyr::n()) %>% View()
+  
+    
+
+  fabletools::model(ets_model = ETS(n)) %>% 
+  fabletools::forecast(h = 10) %>% 
+  autoplot()
+  
 
 
