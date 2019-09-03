@@ -23,7 +23,7 @@
 library(magrittr)
 library(ggplot2)
 library(feasts)
-# library(fable)  todo: FAILs to install
+library(fable)  # installed from github
 
 #+ rest 
 #' To begin, we'll simulate a random walk, then plot and analyze it using
@@ -35,16 +35,22 @@ random_walk <- function(t = 100,
                         drift = 0,
                         sd_white_noise = .5){
   
-  # Note that rnorm returns a vector
+  # rnorm(t) generates all t random steps at once 
+  # cumsum() sums it all up with the drift parameter at each step, 
+  #   to find position at any point in time 
+  
   return(cumsum(drift + rnorm(t, mean = 0, sd = sd_white_noise)))
   
 }
 
 
+# test: 
+# random_walk(drift = .01)
+
 #+ 
 # simulate the random walk: ---------
 df1 <- data.frame(time = 1:100, 
-                  value = random_walk())
+                  value = random_walk(drift = .01))
 
 ts1 <- df1 %>% as_tsibble(index = time)
 autoplot(ts1)
@@ -65,7 +71,7 @@ STL(ts1) %>% autoplot()
 # model fitting: ---------
 
 ts1 %>% 
-  model(RW(value ~ drift()))
+  model(RW(value ~ drift()))  
   
 
 
