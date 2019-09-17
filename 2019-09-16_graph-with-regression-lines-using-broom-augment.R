@@ -1,5 +1,4 @@
 
-
 library(tidyverse)
 library(broom)
 
@@ -7,12 +6,13 @@ mtcars.modified <-
   mtcars %>% 
   mutate(cyl = as.factor(cyl))
 
-
+# fit model: 
 m1 <- lm(mpg ~ hp + cyl, 
          data = mtcars.modified)
 
+# plot regression lines: 
 m1 %>% 
-  broom::augment() %>% 
+  broom::augment() %>%  # augment( ) will add columns including the fitted values, residuals
   
   ggplot() + 
   
@@ -27,4 +27,4 @@ m1 %>%
              aes(x = hp, 
                  y = mpg, 
                  col = cyl), 
-             alpha = .2)
+             alpha = .2) 
