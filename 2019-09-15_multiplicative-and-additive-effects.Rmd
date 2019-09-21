@@ -1,0 +1,90 @@
+---
+title: "Additive and Multiplicative Effects"
+author: "Nayef Ahmad"
+date: "2019-09-15"
+output: 
+  html_document: 
+    code_folding: hide
+---
+
+```{r include = FALSE}
+library(tidyverse)
+```
+
+Normal and lognormal distributions are closely related, but the variability of the former is the result of independent additive effects, whereas the variability of the latter is based on independent multiplicative effects. Here we do a simple simulation to explore these two types of effects.
+
+The article [Log-normal Distributions across the Sciences: Keys and Clues](https://watermark.silverchair.com/51-5-341.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAoMwggJ_BgkqhkiG9w0BBwagggJwMIICbAIBADCCAmUGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMuMoYuT8hPTBnPBF0AgEQgIICNkBBiaBGQFdjIvCzU6H8Gp5HqHRy8eyDYKy9q255kaKFxblUmxh0dAu2tsChHGl6QKauwVgrJoiGVdi14v7AA2sUKApCPuWG47qbpqt9wMu9PmX-OjWM3VqBnD-_EM5TIELjcaVr1cw0TYCTSIBSi_TW81uagw3eXDnE7VS2iCZhLkK4HRzxwnRS8KD3p6PRWp7cHKOtSt_MaWVUVcDPf1x01MzTjoBG9nfVTxzOJGMATXJb_KTzEiF9A3Dk4pvdMi3OAZp9s6oKrqrm-ZTP_AopEpaOFGkgPmKXh8k9F44CgjhPhPLZRQIQHLu-_xWryu7_rn8310zwLmvhwqdVP-up8gM8tgmm6JQR_zn7zFqI0_pZCNeOZh0jI4x2GhBPcYkI_P_rRiz5S96b2gpC3QQTRMQXmZeXgx1jAdri3dKttKKtGJhyUUAOnKiaP5lhPCIg5RdAxhijJsx3zztzQztWj6HmDwrnV95JQpy7u28kwoGrLz1k-CV4g2sR6fWk4K9uMPXvreJSk0cMbNyUMN9KiJnGecYWzIhnkbb8C0_rbO4ZY1mLRRZlu89gJvmMRpIadcLxY5igHUIn0Pe2CFnUtfMw42LmSNS40Q7gcU0o4Sbqno5rnSUeNn2W1MgTDN21hpw04_n0UXoCbc9Z5Rom-lvPs-e1roouLNU1uU9Mvo9OCEvFApDvsClkzSozn8_BxH8cUpaDS7gdfxJQ2Lq9z20PBYQnjaMIG9qVp7sGBVHNEHAv) suggests the following as a way to get an intuition about the difference between additive and multiplicative effects:  
+
+
+> Some basic principles of additive and multiplicative effects can easily be demonstrated with the help of two ordinary dice with sides numbered from 1 to 6. Adding the two numbers, which is the principle of most games, leads to
+values from 2 to 12, with a mean of 7, and a symmetrical frequency distribution. The total range can be described as
+7 plus or minus 5 (that is, 7 ± 5) where, in this case, 5 is not the standard deviation. Multiplying the two numbers, however, leads to values between 1 and 36 with a highly skewed distribution. The total variability can be described as 6 multiplied or divided by 6 (or 6 ×/ 6). In this case, the symmetry has moved to the multiplicative level.
+
+
+
+```{r}
+
+sum_dice <- function(){
+    sample(1:6, 1, replace = TRUE) + sample(1:6, 1, replace = TRUE)
+}
+
+
+multiply_dice <- function(){
+    sample(1:6, 1, replace = TRUE) * sample(1:6, 1, replace = TRUE)
+}
+
+
+samples <- 10000
+
+df1.results <- data.frame(sums = replicate(samples, sum_dice()), 
+                          products = replicate(samples, multiply_dice()))
+
+
+
+# plot the histograms: 
+df1.results %>% 
+    ggplot(aes(x = sums)) + 
+    geom_bar(fill = "steelblue4") + 
+    scale_x_continuous(breaks = 1:12) + 
+    labs(title = "Distribution of possible outcomes when you sum the values of 2 dice", 
+         subtitle = sprintf("Based on %i replications", 
+                            samples)) + 
+    theme_light() + 
+    theme(panel.grid.minor = element_line(colour="grey95"), 
+        panel.grid.major = element_line(colour="grey95"))
+
+
+
+
+```
+
+
+Note that the distribution in symmetric. That's not the case when effects are multiplicative: 
+
+```{r}
+df1.results %>% 
+    ggplot(aes(x = products)) + 
+    geom_bar(fill = "steelblue4") + 
+    scale_x_continuous(breaks = 1:36) + 
+    labs(title = "Distribution of possible outcomes when you multiply the values of 2 dice", 
+         subtitle = sprintf("Based on %i replications", 
+                            samples)) + 
+    theme_light() + 
+    theme(panel.grid.minor = element_line(colour="grey95"), 
+        panel.grid.major = element_line(colour="grey95"))
+
+
+```
+
+
+### Some Interpretations: 
+Analogous to the regression context, we can think of multiplicative effects as follows: if the total output $Y = ab$, then the marginal impact of $a$ is **dependent on the level of $b$**. When the latter is held at $b_1$, then the marginal impact of increasing $a$ by 1 is to increase $Y$ by $b_1$. 
+
+However, if $b$ is held at $b_2$, then the marginal impact of $a$ is $b_2$. 
+
+This dependence does not exist in the additive context. 
+
+### Some Implications: 
+It's probably a good idea to characterize lognormally distributed data using the median rather than the mean, both because it fits more intuitively with our idea of a "typical" value, and because it is easier to transform to get the mean/median of the normal distribution on the log-scale. 
+
+For example if $Y$ is the median on the untransformed scale, then $lnY$ is the mean/median on the symmetric log-scale. 
