@@ -127,6 +127,11 @@ expr(f(!!x, y))  # f(a + b, y)
 
 # This is a simple but powerful pattern if we want to wrap around any function 
 
+# Note: in general, for capturing a singe variable, enquo() seems to be preferable,
+# as it also captures environment (see below). 
+
+# enexpr() is preferred when you have to capture an *expression*, such as `a + b`
+
 # example function:  
 my_scatterplot <- function(df, xvar, yvar){
     
@@ -174,42 +179,60 @@ my_summary(mtcars, hp)
 # This is useful in cases where variables are defined in different environments
 # and we want to make sure we're getting the value from the right enviroment (?)
 
-
 # Quosures capture both the expression AND THE ENVIRONMENT in which they should
 # be evaluated.
+
+# In general, it seems like the quosure created by enquo() is always preferable
+# to using enexpr(). Todo: Is this true? 
+
+# References: 
+# > https://adv-r.hadley.nz/evaluation.html#quosures
+# > https://laderast.github.io/2017/12/19/understanding-tidyeval/
+
+
+# Here's an example of a problem that was fixed using a quosure: 
+# https://github.com/business-science/tibbletime/pull/83/commits/b3f1a9a492cefcaa1bf70cca1ac5360d789a816a
+
+# The issue was in the {tibbletime} package, where the collapse_by( ) function
+# would fail if user had a df with a colname `start_date`
+
 
 ?rlang::enquo
 
 
+# example 1:  
+my_scatterplot_enquo <- function(df, xvar, yvar){
+    
+    # "quote"/"capture" the value that the user inputs (the actual arg),
+    # but don't evaluate it: 
+    xvar <- enquo(xvar)  # you can also use enexpr( ), but this seems preferable
+    yvar <- enquo(yvar)
+    
+    
+    # "unquote" the quoted expression and pass to ggplot: 
+    ggplot(df, 
+           aes(!!xvar, !!yvar)) + 
+        geom_point(colour = "red")
+    
+}
+
+
+# test the fn: 
+my_scatterplot_enquo(mtcars, mpg, cyl)
+my_scatterplot_enquo(mtcars, mpg, hp)
 
 
 
+# example 2
+# try a that replicates dplyr::select(): 
+grab_col <- function(df, col_required){
+    
+    col_required <- enquo(col_required)
+    
+    df %>% pull(!!col_required)
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# test the fn: 
+mtcars %>% grab_col(mpg)
 
 
