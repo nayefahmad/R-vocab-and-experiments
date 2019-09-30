@@ -1,0 +1,30 @@
+---
+title: "2019-09-27_test-ggplotly-in-rmarkdown"
+author: "Nayef"
+date: "27/09/2019"
+output: html_document
+---
+
+```{r lib, include = FALSE}
+library(tidyverse)
+library(plotly)
+library(widgetframe)
+
+# knitr options: 
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+
+```
+
+```{r}
+p <- 
+  mtcars %>% 
+  ggplot(aes(x = wt, 
+             y = hp, 
+             col = as.factor(cyl))) +
+  geom_point()
+
+ggplotly(p)
+
+
+```
+
