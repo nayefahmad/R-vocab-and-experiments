@@ -1,6 +1,6 @@
 
 #'--- 
-#' title: "Linear programming in R with lpSolve and lpSolveAPI"
+#' title: "Linear programming in R with `{lpSolve}` and `{lpSolveAPI}`"
 #' author: "Nayef Ahmad"
 #' date: "2019-10-02"
 #' output: 
@@ -12,6 +12,8 @@
 #' ---
 
 #' Reference: https://www.r-bloggers.com/linear-programming-in-r/
+#' 
+#' All credits to the writer of that post. This is just me fooling around with the code they wrote. 
 #'
 #' # Problem Statement
 #'
@@ -48,8 +50,43 @@ library(lpSolveAPI)
 #' # Solution with lpSolve
 # Solution with lpSolve -----------
 #+ rest 
+
+#' ## Objective function  
+#' 
+#' Here are the coefficients of the decision variables: 
+#' 
+#' * Cost of each unit of **4P** is $30 
+#' * Cost of each unit of **3P** is $40 
+#' * Cost of each unit of **wooden blocks** is $80 
+#' 
+#' Therefore, the obj function is: 
+#' 
+#' $Cost = 30*4P + 40*3P + 80*WoodenBlocks$ 
+#' 
+
+
 ## Set the coefficients of the decision variables -> C
 C <- c(30, 40, 80)
+
+
+
+#' ## Constraint matrix 
+#' 
+#' There is one row for each constraint, and one column for each decision variable.  
+#' 
+#' * First row is for the **Seat constraint**. It says that: 
+#' 
+#'     * Each unit of **4P** uses 1 seat from the seat inventory 
+#'     * Each unit of **3P** uses 1 seat from the seat inventory 
+#'     * Each unit of **wooden blocks** *adds* 1 seat to the seat inventory 
+#' 
+#' * Second row is for the **Legs constraint** 
+#' 
+#' * Third row is for the **Backs constraint** 
+#' 
+#' * Fourth row is for the **Min production constraint**
+#' 
+#' 
 
 # Create constraint martix B
 A <- matrix(c(1, 1, -10,
@@ -57,12 +94,16 @@ A <- matrix(c(1, 1, -10,
               1, 0, -2,
               1, 1, 0), nrow=4, byrow=TRUE)
 
+
 # Right hand side for the constraints
 B <- c(500, 200, 100, 1000)
 
 # Direction of the constraints
 constranints_direction  <- c("<=", "<=", "<=", ">=")
 
+
+#' ## Solution with `lp` function 
+#' 
 # Find the optimal solution
 optimum <-  lp(direction="min",
                objective.in = C,
