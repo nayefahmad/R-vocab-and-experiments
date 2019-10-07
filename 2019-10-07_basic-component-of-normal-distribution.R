@@ -16,15 +16,15 @@
 #+ lib, include = FALSE 
 library(tidyverse)
 
-#' At first glance, the probability density function (pdf) of the normal
-#' distribution has a lot going on. At its heart, though, is a fairly simple
+#' At first glance, the [probability density function (pdf) of the normal
+#' distribution](https://sites.nicholas.duke.edu/statsreview/files/2013/06/normpdf1.jpg) has a lot going on. At its heart, though, is a fairly simple
 #' function: $e^{(-x^2)}$
 #'
 #' Let's see how we can go from this simple building block to something closer
 #' to the actual normal distribution.
 #' 
 
-#' # Proto-normal distribution: `exp(-(x^2))` 
+#' # The "proto-normal" distribution: `exp(-(x^2))` 
 #' Define the function: 
 exp_fun <- function(x){
   exp(-(x^2))
@@ -75,7 +75,7 @@ data.frame(x = c(0, 10)) %>%
       
 
 #' Note that the curve with maximum spread is an **envelope around all the other curves**. 
-#' This is not how actual normal distributions behave - see [this page](https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiP89z6-IrlAhX4HTQIHaDRATEQjRx6BAgBEAQ&url=http%3A%2F%2Fdpuadweb.depauw.edu%2Fharvey_web%2FData_Analysis%2FPages%2Finvestigation2225.html&psig=AOvVaw1_RbmlntR8kCaIA91Enuod&ust=1570565062783678) 
+#' This is not how actual normal distributions behave - see [this page](http://dpuadweb.depauw.edu/harvey_web/Data_Analysis/Pages/investigation2225.html) 
 #' for example. The areas under all of these curves cannot all be equal (and 
 #' hence they can't all be 1.0). Thus, these don't work as probability density functions. 
 #' 
@@ -84,6 +84,7 @@ data.frame(x = c(0, 10)) %>%
 #' 
 #' For comparison, here are the normal distributions with those parameters: 
 #' 
+#' TODO: 
 
 
 
