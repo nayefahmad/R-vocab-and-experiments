@@ -53,7 +53,7 @@ data.frame(x = c(-5, 5)) %>%
 #' 
 
 exp_fun_with_mean_var <- function(x, mu = 5, var = 1){
-  exp(-((x-mu)^2)/var)
+  exp(-((x-mu)^2/2*var^2))
 }
 
 #' Let's look at graphs with the same centre and different spreads: 
@@ -82,5 +82,10 @@ data.frame(x = c(0, 10)) %>%
 #' This is a hint that this simple exponential has to be **scaled** somehow 
 #' in order to impose the structure we want. 
 #' 
+#' For comparison, here are the normal distributions with those parameters: 
+#' 
+
+
+
 
 
