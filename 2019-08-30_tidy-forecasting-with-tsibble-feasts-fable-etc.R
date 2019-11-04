@@ -25,7 +25,7 @@ library(ggplot2)
 library(tsibble)
 library(tsibbledata)  # for example data 
 library(feasts)
-library(fable)  # installed from github
+library(fable)
 library(DT)
 library(lubridate)
 library(denodoExtractor)
