@@ -5,6 +5,7 @@ date: "2019-09-15"
 output: 
   html_document: 
     toc: yes
+    toc_float: yes
     code_folding: hide
 ---
 
@@ -60,7 +61,7 @@ df1.results %>%
 ```
 
 
-Note that the distribution in symmetric. That's not the case when effects are multiplicative: 
+Note that the distribution is symmetric. That's not the case when effects are multiplicative: 
 
 ```{r}
 df1.results %>% 
@@ -125,7 +126,7 @@ df2.results %>%
     ggplot(aes(x = products)) + 
     geom_histogram(fill = "steelblue4") + 
     scale_x_continuous(breaks = 1:36) + 
-    labs(title = "Distribution of possible outcomes when you multiply the values of 2 dice", 
+    labs(title = "Distribution of possible outcomes when you multiply the values \nof 2 \"continuous\" dice", 
          subtitle = sprintf("Based on %i replications", 
                             samples)) + 
     theme_light() + 
@@ -135,9 +136,12 @@ df2.results %>%
 
 ```
 
-The shape of the curve is much clearer here. Now let's try one more thing: is the distribution of the $log(product)$ approximately normal? 
+The shape of the curve is much clearer here. 
 
-```{r}
+```{r, eval = FALSE}
+
+# Now let's try one more thing: is the distribution of the $log(product)$ approximately normal? 
+
 df2.results %>% 
     ggplot(aes(x = log(products))) + 
     geom_histogram(fill = "steelblue4") + 
