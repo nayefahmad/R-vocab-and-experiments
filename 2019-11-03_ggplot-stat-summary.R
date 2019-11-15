@@ -67,7 +67,7 @@ mtcars %>%
 
 
 
-#' # Plot with normmal-based CI around mean
+#' # Plot with normal-based CI around mean
 #' 
 #' Now use function `mean_cl_normal` from package `{Hmisc}`. This gives the
 #' sample mean and lower and upper Gaussian confidence limits based on the
