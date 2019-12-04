@@ -15,3 +15,6 @@ rsconnect/documents/2018-12-09_converting-means-to-percentiles.Rmd/rpubs.com/rpu
 R-vocab-and-experiments.Rproj
 2019-05-19_render-ready-R-scripts.html
 *.dcf
+*.css
+*.ttf
+*.eot
