@@ -29,21 +29,26 @@ library(tidyverse)
 # function sees the recipe (the R code) to make that value.
 
 
-f1 <- function(hello){expr(hello)}
+f1 <- function(hello){expr(hello)}  # hello is an expression here 
 f1(a+b)  
 #> hello 
 
 # Q. Why does it return "hello"?
-# Ans. Because "hello" is the name of the formal argument used in
-#   the definition of the function. 
+# Ans. Because "hello" is the expression ("recipe") passed as the formal argument
+# in the definition of the function. Note that the expression is NOT evaluated: 
+# if it were evaluated, there would be an error, as we have not bound any value 
+# to the expression hello. 
 
-#   Regardless of what actual argument you pass to this function, it always just
-#   returns its formal argument. 
+#   Regardless of what actual expression you pass to this function, it always just
+#   returns the expression that is its formal argument. 
 
 # todo: How is this useful?
 # Maybe in cases where you want a "strong default" value for an argument, 
 #   where users can't change the value, but it's useful to be explicit that  
 #   this is a fixed parameter
+# 
+# More generally, this can be useful when you capture an expression that you 
+# might use later in several places? See section 3.1 below. 
 
 
 # compare with: 
@@ -77,6 +82,12 @@ f3 <- function(z){enexpr(z)}
 
 f3(a+b)  # a + b 
 
+# Important: note that even if a and b are defined in the global env, f3 DOES
+# NOT return the sum of a and b. That is, it doesn't return the "cake", but 
+# just the "recipe" for the cake. 
+
+# This is useful when we want to allow the user to supply a recipe that can 
+# later be used for something else. 
 
 
 # > 2.3) "Evaluating" arguments versus "Quoting" arguments: -------
