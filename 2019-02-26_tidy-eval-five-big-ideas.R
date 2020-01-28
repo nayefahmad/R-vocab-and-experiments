@@ -111,6 +111,12 @@ xy_quoted <- expr(x + y)
 
 
 # Now we can unquote with the "bang bang" operator ("!!"), along with expr()
+# Before "!!", xy_quoted is "captured" or "frozen in time" - you can't use it 
+# to combine with other things in more complex expressions. 
+
+# The "!!" operator "unfreezes" the captured expression so that it can be 
+# combined with other expressions. 
+
 expr(!!xy_quoted)  # x + y
 
 expr(!!xy_quoted + z)  # x + y + z
@@ -146,8 +152,8 @@ expr(f(!!x, y))  # f(a + b, y)
 # example function:  
 my_scatterplot <- function(df, xvar, yvar){
     
-    # "quote"/"capture" the value that the user inputs (the actual arg),
-    # but don't evaluate it: 
+    # "quote"/"capture" the value that the user inputs (the expression in the actual 
+    # arg), but don't evaluate it: 
     xvar <- enexpr(xvar)  
     yvar <- enexpr(yvar)
     
@@ -164,6 +170,12 @@ my_scatterplot <- function(df, xvar, yvar){
 my_scatterplot(mtcars, mpg, cyl)
 my_scatterplot(mtcars, mpg, hp)
 
+# withough quote/unquote pattern, the above calls would fail because there are 
+# no vars called "cyl" or "hp" or "mpg" in the global env. 
+
+# What we're saying is: "hey, take this expression (e.g. "mpg"), and just 
+# HOLD ON FOR NOW. Dont' evaluate it, UNTIL you're inside of a ggplot call. 
+# ggplot will know how to deal with the expression, so don't do anything until then" 
 
 # another example: 
 my_summary <- function(df, var){
