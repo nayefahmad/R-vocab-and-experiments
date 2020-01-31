@@ -200,7 +200,7 @@ my_summary(mtcars, hp)
 # 5) QUOSURE = CLOSURE + QUOTATION: ----------------
 
 # This is useful in cases where variables are defined in different environments
-# and we want to make sure we're getting the value from the right enviroment (?)
+# and we want to make sure we're getting the value from the right environment (?)
 
 # Quosures capture both the expression AND THE ENVIRONMENT in which they should
 # be evaluated.
