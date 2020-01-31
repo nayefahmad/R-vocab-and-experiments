@@ -16,3 +16,9 @@
   cols: 2
   description: dataset to pin
   type: table
+- path: data_to_pin
+  name: data_to_pin
+  rows: 3
+  cols: 2
+  description: dataset to pin
+  type: table
