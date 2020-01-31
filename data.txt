@@ -10,3 +10,9 @@
   cols: 2
   description: dataset to pin
   type: table
+- path: data_to_pin.csv
+  name: data_to_pin.csv
+  rows: 3
+  cols: 2
+  description: dataset to pin
+  type: table
