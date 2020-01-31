@@ -4,3 +4,9 @@
   cols: 5
   description: The iris data set
   type: table
+- path: df-to-pin
+  name: df-to-pin
+  rows: 3
+  cols: 2
+  description: dataset to pin
+  type: table
