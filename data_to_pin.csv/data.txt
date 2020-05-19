@@ -1,0 +1,10 @@
+path:
+- data.csv
+- data.rds
+rows: 3
+cols: 2
+columns:
+  a: integer
+  b: factor
+description: dataset to pin
+type: table
