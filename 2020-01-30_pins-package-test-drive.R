@@ -49,10 +49,31 @@ rm(list = ls())
 pin_get("sales_by_month")
 
 
+#' ## Pinning to GitHub
+#' 
+
+#' What repo to save in?
+#' 
+
+board_register_github(repo = "nayefahmad/R-vocab-and-experiments")
+
+#' Create and pin the data: 
+#' 
+
+df_to_pin <- data.frame(a = 1:3, 
+                        b = c("apple", "orange", "melon"))
+
+pin(df_to_pin, 
+    name = "data_to_pin", 
+    description = "dataset to pin",
+    board = "github")
 
 
+#' Delete local copy, then download from the pin: 
+#' 
 
-
+rm(list = ls())
+pin_get("data.csv", board = "github")
 
 
 
