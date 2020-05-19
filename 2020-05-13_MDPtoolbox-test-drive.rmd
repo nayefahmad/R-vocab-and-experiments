@@ -1,0 +1,172 @@
+---
+title: "Mx policy optimization using MDPs"
+author: "Nayef"
+date: "5/13/2020"
+output: 
+   html_document: 
+     keep_md: yes
+     code_folding: hide
+     toc: true
+     toc_float:
+       collapsed: false
+     toc_folding: false
+     number_sections: true
+---
+
+<style type="text/css">
+
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #0039a6;
+}
+h2 { /* Header 2 */
+  font-size: 18px;
+  color: #0039a6;
+}
+h3 { /* Header 3 */
+  font-size: 14px;
+  color: #0039a6;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = FALSE, 
+                      warning = FALSE)
+
+```
+
+
+# Libraries
+```{r}
+library(tidyverse)
+library(MDPtoolbox)
+```
+
+# Overview 
+
+Markov decision processes are a canonical framework for solving sequential decision problems - i.e. those where decision points recur over time. They can accommodate problems where the results of actions are stochastic, and dependent on the current state of the system. 
+
+To me, this sounds like the right framework for identifying optimum replacement policies. In a stationary MDP,^[this means that the transition probability matrix and reward matrix don't change over time] a replacement policy has the form: *if state = S, always do action A*. In the maintenance context, the state is the current age of the part. Actions are *Wait, Replace* and possibly *Repair in-place*.    
+
+My go-to reference on this topic is [*Decision Making Under Uncertainty*](https://mitpress.mit.edu/books/decision-making-under-uncertainty), by M. Kochenderfer et.al. [Here's](https://www.cs.rice.edu/~vardi/dag01/givan1.pdf) some material available online. 
+
+# Forest management example
+
+This example is generated from built-in functions in the `MDPtoolbox` package in R. There is a very similar package of the same name in Python - I'm not sure which came first. 
+
+We can create an example MDP problem using `mdp_example_forest()` and solve it using `mdp_value_iteration()`.  
+
+The story here is that a forest has value for two different purposes: first, a fully-grown forest is valuable as a wildlife sanctuary. Second, a forest is valuable because it can be cut down for wood. Every year we have to decide whether to cut down the forest or not. If we're unlucky, a forest fire will occur and destroy all the value of the forest. 
+
+## Problem formulation
+
+1. **States:** Let 1, ... S be the states of the forest. the Sth state being the oldest. 
+
+1. **Actions:** `action=1` means "Wait", while `action=2` means "Cut".  
+
+1. **Transition probabilities**: 
+    1. Any time you take `action 2` (Cut), you transition back to `State 1` (youngest state)
+    1. In `state i`, if you take `action 1` (Wait), there's a `(1-p)` prob of moving to `state i+1`, and a `p` prob of moving back to `State 1`. `p` is the prob of a forest fire (unexpected failure). 
+    
+1. **Rewards:**
+    1. `r1` is the reward when forest is in the oldest state and action Wait is performed. r1 is a real greater than 0. By default, r1 is set to 4
+    1. `r2` is the reward when forest is in the oldest state and action Cut is performed r2 is a real greater than 0. By default, r2 is set to 2
+
+Create transition prob and reward matrices: 
+```{r}
+mdp_ex1 <- mdp_example_forest(S=10, r1=4, r2=3, p=.2)  
+mdp_ex1
+```
+
+## Solution
+Now, solve the problem to find optimal policy and associated discounted reward: 
+```{r}
+mdp_value_iteration(mdp_ex1$P, mdp_ex1$R, discount = 0.3)
+```
+
+
+# Infant mortality WUC example 
+
+## Problem formulation
+
+This is fake data. 
+
+1. **States**: 
+    * State 0 is a brand-new part. State 1 is the part after e.g. 100 FH. State 2 is the part after 200 FH, and so on. In this example we'll stick with 3 states. 
+    * There are extensions of MDPs that allow for continuous state spaces, which might be worth looking into. 
+
+1. **Actions**: Action 1 is Wait; Action 2 is Replace. In more realistic models, we might have another action for "Repair in-place". 
+
+1. **Rewards**:
+    * All rewards are between -1 and 1 inclusive. Positive rewards for surviving, negative rewards for failing. Zero reward for state transitions that are impossible (e.g. moving back in time in absence of a failure). 
+    * The younger a part is, the higher the reward for surviving (because this is an infant mortality example, and hazard is highest when young)
+
+1. **Data**: 
+    * P(failure) within a particular state is exactly what we get from the "window risk" of our PredMx dashboard - i.e. P(failure) between X1 and X2 flight hours. 
+    * **The reward matrix has to be filled in in consultation with experts; we can't just derive it from the data. I actually think this is a good thing, and an opportunity to add significant value. We can help decision makers to clearly state their assumptions, and show how policies change in response to them**. We might also be able to use the CoU data to help. 
+
+**Transition matrix**:
+
+```{r}
+# transition probs under action=1 (wait)
+P_1 <- matrix(c(.65, .35, .00, 
+                .50, .00, .50, 
+                .20, .00, .80    
+              ),
+              ncol = 3, byrow = TRUE)
+
+
+# transition probs under action=2 (replace)
+P_2 <- matrix(c(1, 0, 0,     
+                1, 0, 0,
+                1, 0, 0
+              ),
+              ncol = 3, byrow = TRUE)
+
+P <- array(c(P_1, P_2), dim = c(3, 3, 2))
+P
+```
+
+**Reward matrix**:
+
+```{r}
+# reward matrix under action=1 (wait):  
+R_1 <- matrix(c(-.65, .30, 0.0,     
+                -.50, 0.0, .20,
+                -.20, 0.0, .10
+              ),
+              ncol = 3, byrow = TRUE)
+
+# reward matrix under action=2 (replace):  
+R_2 <- matrix(c(-.50, 0, 0,     
+                -.10, 0, 0,
+                -.05, 0, 0
+              ),
+              ncol = 3, byrow = TRUE)
+
+R <- array(c(R_1, R_2), dim = c(3,3,2))
+R
+```
+
+## Solution 
+
+```{r}
+mdp_value_iteration(P, R, discount = .2)
+```
+
+* In state 1, we should wait
+* In state 2, we should replace
+* In state 3, we should wait. 
+
+Question: how would we ever get to state 3 if we're always replacing in state 2? I guess it could happen in messy operational realities that a part wasn't replaced in state 2 even though that is the optimal policy. 
+
+\  
+\  
+\  
+
+********************************************************
+
+# Footnotes 
+
