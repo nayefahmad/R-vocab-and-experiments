@@ -1,0 +1,168 @@
+---
+title: "Poisson binomial simulation"
+author: "Nayef"
+date: "6/10/2020"
+output: 
+   html_document: 
+     keep_md: yes
+     code_folding: hide
+     toc: true
+     toc_float:
+       collapsed: false
+     toc_folding: false
+     number_sections: true
+---
+
+<style type="text/css">
+
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: #0039a6;
+}
+h2 { /* Header 2 */
+  font-size: 18px;
+  color: #0039a6;
+}
+h3 { /* Header 3 */
+  font-size: 14px;
+  color: #0039a6;
+}
+
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
+# Libraries 
+```{r}
+library(tidyverse)
+```
+
+# Overview
+For a given WUC, there are $I$ tails. 
+
+Given: prob of failure of tail $i$ in a given window, denoted $p_i$. 
+
+We will treat each tail's status over the window as a single Bernoulli trial. The total number of failures, $T$ is a sum of Bernoulli trials, which has a [Poisson binomial distribution](https://en.wikipedia.org/wiki/Poisson_binomial_distribution)
+
+
+# Data 
+Let's draw the $p_i$ values from $U(0,1)$. 
+
+## Functions
+
+```{r}
+gen_params <- function(num_tails = 15, 
+                            max_fail_prob = 1.0){
+  if (max_fail_prob > 1){
+    stop("Max fail prob must be less than or equal to 1.0")
+  }
+  
+  tail_id <- paste0("sn_", 1:num_tails)
+  fail_prob <- runif(num_tails, max = max_fail_prob)
+  
+  df <- data.frame(tail_id = tail_id, 
+                   fail_prob = fail_prob)
+  
+  return(df)
+} 
+
+
+gen_fails <- function(df){
+  df_with_fail <- 
+    df %>% 
+    mutate(is_fail = map_dbl(fail_prob, 
+                             function(x){
+                               sample(c(1,0), 
+                                      size = 1, 
+                                      prob = c(x, 1-x))
+                               }
+                             ))
+  return(df_with_fail)
+  
+}
+
+
+total_fails <- function(df){
+  sum(df$is_fail)
+}
+
+
+gen_totals <- function(df_with_params, iter = 1000){
+  totals <- replicate(iter, 
+                      df_with_params %>% gen_fails() %>% total_fails())
+  
+  return(totals)
+  
+}
+
+
+calc_mean_sd <- function(df_with_params){
+  df <- 
+    df_with_params %>% 
+    mutate(not_fail_prob = 1-fail_prob, 
+           pq_product = fail_prob * not_fail_prob)
+  
+  mean_sd_list <- list(mean = sum(df$fail_prob),
+                   sd = sqrt(sum(df$pq_product)))
+  return(mean_sd_list)
+}
+
+
+# fn to plot with overlaid normal
+plot_pois_binom <- function(num_tails = 15, 
+                            max_fail_prob = 1.0, 
+                            binwidth = 5, 
+                            iter = 1000){
+  # generate params:  
+  df_with_params <- 
+    gen_params(num_tails = num_tails, 
+               max_fail_prob = max_fail_prob) 
+  
+  # generate distribution of pois binom: 
+  totals_vector <- 
+      gen_totals(df_with_params)
+  
+  # get mean, sd for normal overlay on plot: 
+  pois_binom_mean <- calc_mean_sd(df_with_params)[[1]] %>% round(1)
+  pois_binom_sd   <- calc_mean_sd(df_with_params)[[2]] %>% round(1)
+  
+  # plot
+  data.frame(total_fails = totals_vector) %>% 
+    ggplot(aes(x = total_fails)) + 
+    geom_histogram(aes(y=..density..), 
+                   binwidth = binwidth) + 
+    # stat_density(geom="line", 
+    #              col = "black") +
+    
+    labs(title = str_glue("Distribution of the sum of {num_tails} Bernoulli trials (aka Poisson binomial distribution)"), 
+         subtitle = str_glue("Num tails: {num_tails}  \nFail probabilities: U(0, {max_fail_prob})  \n\nEstimated mean: {pois_binom_mean}  \nEstimated SD: {pois_binom_sd}  \n\nRed line is Normal dist with matching mean, sd"), 
+         caption = str_glue("Histogram binwidth: {binwidth}\nIterations: {iter}")) + 
+    
+    stat_function(fun = dnorm, 
+                  color = "red",
+                  size = 1, 
+                  args = list(mean = pois_binom_mean, 
+                              sd = pois_binom_sd))
+}
+
+
+
+```
+
+
+# Case 1: Small sample 
+```{r}
+plot_pois_binom(num_tails = 15, max_fail_prob = 1, binwidth = 1)
+```
+
+
+# Case 2: Large sample
+```{r}
+plot_pois_binom(num_tails = 300, max_fail_prob = 1, binwidth = 5)
+```
+
