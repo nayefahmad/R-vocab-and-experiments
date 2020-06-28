@@ -29,14 +29,14 @@ library(tidyverse)
 #' 
 #' 1. Each player flips a coin
 #' 
-#' 2. We count the total number of heads that a team gets
+#' 2. We count the total number of Heads that a team gets
 #' 
-#' 3. Divide the total number of heads by the team size, to get the proportion of heads 
+#' 3. Divide the total number of Heads by the team size, to get the proportion of Heads 
 #' 
-#' 4. The team with the higher proportion of heads wins the game
+#' 4. The team with the higher proportion of Heads wins the game
 #' 
 #' 
-#' The question we are investigatins is: **is the smaller team at an advantage or a disadvantage in this game?**
+#' The question we are investigating is: **is the smaller team at an advantage or a disadvantage in this game?**
 #' 
 #' We know, of course, that smaller samples give more highly variable results. 
 #' See [Kahneman and Tversky's example about babies' gender proportions](https://en.wikipedia.org/wiki/Insensitivity_to_sample_size), for example.
@@ -50,7 +50,7 @@ library(tidyverse)
 
 #' # Simulation setup 
 #' 
-#' We'll define a function to return a vector with the proportion of heads for each 
+#' We'll define a function to return a vector with the proportion of Heads for each 
 #' iteration of the game. 
 #' 
 
@@ -62,7 +62,7 @@ head_prop_sims <- function(n_sims,
     # team_size: this is the parameter n for the binomial random variable generator
     
     # example: 
-    # for the first simulated result, the proportion of heads 
+    # for the first simulated result, the proportion of Heads 
     # will be a binomial r.v. with parameters n = team_size, p = 0.5 
     
     # same for the second simulated result, and so on. 
@@ -80,7 +80,7 @@ head_prop_sims <- function(n_sims,
 #' # Analysis
 #' 
 #' Using our function with two different values for `team_size`, we get 
-#' simulated heads proportions for both the small and large teams. 
+#' simulated Heads proportions for both the small and large teams. 
 #' 
 #' 
 
